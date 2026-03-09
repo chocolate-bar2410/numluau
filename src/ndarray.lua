@@ -2,9 +2,29 @@ local schema = {}
 local meta = {}
 
 meta.__index = function(ndarray,index)
-    if typeof(index) == "number" then return ndarray.data[index] end
+    if typeof(index) == "number" then return ndarray.Data[index] end
 
-    return ndarray[index] or schema[index]
+    if typeof(index) == "table" then
+        
+        if typeof(index[1]) == "string" and index[1] == "slice" then
+            local Result = {}
+
+            for i = index[2],index[3],index[4] or 1 do
+                Result[i] = rawget(ndarray,"Data")[i]
+            end
+
+
+        end
+        local result = ndarray.Data
+
+        for i = 1,#index do
+            result = result[index[i]]
+        end
+
+        return result
+    end
+
+    return rawget(ndarray,index) or schema[index]
 end
 
 
@@ -22,7 +42,6 @@ local function ProcessArray(array : {},prevndim : number?,prevshape : {}?)
     for i, v in array do
         if not Size then 
             Size = #v 
-            print(v,Size)
             continue 
         end
 
@@ -67,13 +86,13 @@ local function ProcessArray(array : {},prevndim : number?,prevshape : {}?)
 end
 
 
-return function(array : {})
+return function(data : {})
     local ndArray = {}
-    ndArray.Data = array
+    ndArray.Data = data
     ndArray.Shape = {}
 
-    local valid,ndim,shape = ProcessArray(array)
-    print(valid,ndim,shape)
+    local valid,ndim,shape = ProcessArray(data)
+
     if valid ~= true then return end
 
     local i,j = 1,#shape
@@ -86,5 +105,5 @@ return function(array : {})
     ndArray.ndim = ndim
     ndArray.Shape = shape
 
-    return ndArray
+    return setmetatable(ndArray, meta)
 end
