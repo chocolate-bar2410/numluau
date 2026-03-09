@@ -3,8 +3,9 @@ local meta = {}
 
 --[[
 to do:
+    - negative index column slicing
     - multidimensional slicing
-    
+
 reference:
     - https://www.youtube.com/watch?v=VXU4LSAQDSc
 ]]
