@@ -1,3 +1,12 @@
+local schema = {}
+local meta = {}
+
+meta.__index = function(ndarray,index)
+    if typeof(index) == "number" then return ndarray.data[index] end
+
+    return ndarray[index] or schema[index]
+end
+
 
 local function ProcessArray(array : {},prevndim : number?,prevshape : {}?)
     local ndim = prevndim or 0
@@ -8,16 +17,21 @@ local function ProcessArray(array : {},prevndim : number?,prevshape : {}?)
 
     local SameSize = true
     local Size = nil 
+    local Recursive = false
 
     for i, v in array do
         if not Size then 
             Size = #v 
+            print(v,Size)
             continue 
         end
+
+        Recursive = Recursive or typeof(v) == "table"
 
         SameSize = #v == Size
     end
  
+    if not Recursive then return true,1,{#array} end
 
     if not SameSize then 
         error("Malformed array: Array elements must be the same size")
@@ -61,6 +75,13 @@ return function(array : {})
     local valid,ndim,shape = ProcessArray(array)
     print(valid,ndim,shape)
     if valid ~= true then return end
+
+    local i,j = 1,#shape
+    while i > j do
+        shape[i], shape[j] = shape[j],shape[i]
+        i += 1
+        j -= 1
+    end
 
     ndArray.ndim = ndim
     ndArray.Shape = shape
