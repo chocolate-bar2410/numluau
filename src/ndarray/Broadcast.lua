@@ -53,7 +53,7 @@ module.BroadcastTo = function(ndArray : types.ndArray,TargetShape)
     return ArrayView
 end
 
-module.CreateBroadcastArray = function<T>(A : types.ndArray,B : types.ndArray,Callback : (A : T,B : T) -> T)
+module.CreateBroadcastArray = function(A : types.ndArray,B : types.ndArray,Callback : (A : any,B : any) -> any)
     local Result = {}
 
     local OutShape = module.BroadcastShape(A.Shape,B.Shape)

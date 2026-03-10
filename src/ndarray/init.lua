@@ -1,14 +1,6 @@
 local schema = {}
 local meta = {}
 
---[[
-to do:
-    - broadcasting
-
-reference:
-    - https://www.youtube.com/watch?v=VXU4LSAQDSc
-]]
-
 local Package = script.Parent
 local utils = require(script.ndarray_utils)
 local types = require(Package.types)

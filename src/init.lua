@@ -1,12 +1,41 @@
 local ndArray = require("@self/ndarray")
 local ndArray_utils = require("@self/ndarray/ndarray_utils")
-local ndarray = require(script.ndarray)
+local mathutils = require(script.mathutils)
+local math_utils = require("@self/mathutils")
+
+--[[
+to do:
+    - math
+        > aggregations
+        > linear algebra
+    - arrays
+        > reshaping
+    - logical
+        > comparisons
+        > logical operations
+    
+
+reference:
+    - https://www.youtube.com/watch?v=VXU4LSAQDSc
+]]
 
 local types = require(script.types)
 
 export type ndArray = types.ndArray
 
-return {
+local Merge = function(... : {})
+    local Result = {}
+
+    for _,tab in {...} do
+        for i,v in tab do
+            Result[i] = v
+        end
+    end
+
+    return Result
+end
+
+local Base = {
     array = ndArray,
     arange = function(start : number,stop : number?)
         local result = {}
@@ -32,7 +61,7 @@ return {
         for i = 0,num do 
             table.insert(
             result,
-            math.floor((start + (1/num) * i * (stop - start)) * 100) / 100
+            math.floor(math.lerp(start,stop,(1/num) * i) * 100) / 100
         ) 
         end
         table.remove(result,#result)
@@ -53,7 +82,7 @@ return {
 
         for i = 1,size do table.insert(result,1) end
 
-        local Array : types.ndArray = ndarray(result)
+        local Array : types.ndArray = ndArray(result)
         Array.Shape = shape
         Array.Strides = ndArray_utils.ComputeStrides(shape)
         Array.ndim = #shape
@@ -72,12 +101,15 @@ return {
 
         for i = 1,size do table.insert(result,0) end
 
-        local Array : types.ndArray = ndarray(result)
+        local Array : types.ndArray = ndArray(result)
         Array.Shape = shape
         Array.Strides = ndArray_utils.ComputeStrides(shape)
         Array.ndim = #shape
 
         return Array
     end,
-    test = ndArray_utils.CanBroadcast
 }
+
+type out = typeof(Base) & typeof(math_utils)
+
+return Merge(Base,mathutils) :: out
