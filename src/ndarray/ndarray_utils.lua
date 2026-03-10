@@ -3,14 +3,12 @@ local package = script.Parent.Parent
 local types = require(package.types)
 
 function module.ReverseTable(tab)
-    local i,j = 1,#tab
-    while i > j do
-        tab[i], tab[j] = tab[j],tab[i]
-        i += 1
-        j -= 1
+    local result = {}
+    for i = #tab,1,-1 do
+        table.insert(result,tab[i])
     end
 
-    return tab
+    return result
 end
 
 function module.ComputeStrides(shape)
@@ -45,19 +43,19 @@ function module.GetElement(ndArray,indices)
     return ndArray.Buffer[Offset + 1]
 end
 
-function module.PrettyPrint(ndArray,ndim,indices : {})
-     if ndim > ndArray.ndim then
+function module.PrettyPrint(ndArray,dim,indices : {})
+     if dim > ndArray.ndim then
         return tostring(module.GetElement(ndArray, indices))
     end
 
     local parts = {}
 
-    for i = 1, ndArray.Shape[ndim] do
-        indices[ndim] = i
-        parts[#parts+1] = module.PrettyPrint(ndArray, ndim + 1, indices)
+    for i = 1, ndArray.Shape[dim] do
+        indices[dim] = i
+        parts[#parts+1] = module.PrettyPrint(ndArray, dim + 1, indices)
     end
 
-    if ndim == ndArray.ndim then
+    if dim == ndArray.ndim then
         return table.concat(parts, " ")
     else
         local inner = table.concat(parts, "\n")
@@ -79,15 +77,21 @@ function module.NewSlice(start,stop,step)
     }
 end
 
-function module.CanBroadcast(arrayA : types.ndArray,arrayB : types.ndArray)
-    
-    if arrayA.ndim == 0 or arrayB.ndim == 0 then return true end
-    if arrayA.ndim == arrayB.ndim then return true end
-    if arrayA.ndim == 1 then return true end
-    if arrayB.ndim == 1 then return true end
+function module.FlatIndex(self : types.ndArray,linearIndex)
+    local index = linearIndex
+    local offset = 0
 
+    for axis = #self.Shape, 1, -1 do
+        local dim = self.Shape[axis]
+        local stride = self.Strides[axis]
 
-    return false
+        local coord = index % dim
+        index = (index - coord) / dim
+
+        offset += coord * stride
+    end
+
+    return offset
 end
 
 return module

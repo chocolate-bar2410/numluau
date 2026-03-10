@@ -1,7 +1,6 @@
 local ndArray = require("@self/ndarray")
 local ndArray_utils = require("@self/ndarray/ndarray_utils")
 local ndarray = require(script.ndarray)
-local ndarray_utils = require(script.ndarray.ndarray_utils)
 
 local types = require(script.types)
 
@@ -56,7 +55,7 @@ return {
 
         local Array : types.ndArray = ndarray(result)
         Array.Shape = shape
-        Array.Strides = ndarray_utils.ComputeStrides(shape)
+        Array.Strides = ndArray_utils.ComputeStrides(shape)
         Array.ndim = #shape
 
         return Array
@@ -75,9 +74,10 @@ return {
 
         local Array : types.ndArray = ndarray(result)
         Array.Shape = shape
-        Array.Strides = ndarray_utils.ComputeStrides(shape)
+        Array.Strides = ndArray_utils.ComputeStrides(shape)
         Array.ndim = #shape
 
         return Array
-    end
+    end,
+    test = ndArray_utils.CanBroadcast
 }
