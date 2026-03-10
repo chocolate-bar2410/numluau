@@ -19,26 +19,26 @@ local function ProcessArray(array : {},prevndim : number?,prevshape : {}?)
     local isvalid = true
     local shape = prevshape or {#array}
 
-    if typeof(array) ~= "table" then return true,0,{} end
+    if typeof(array) ~= "table" then return true,0,{},typeof(array) end
 
     local SameSize = true
     local Size = nil 
-    local Recursive = false
+    local dtype = nil
 
     for i, v in array do
-        Recursive = Recursive or typeof(v) == "table"
+        dtype = typeof(v)
 
         if not Size then 
-            Size = Recursive and #v or 0
+            Size = dtype == "table" and #v or 0
             continue 
         end
 
-        if not Recursive then continue end
+        if dtype ~= "table" then continue end
 
         SameSize = #v == Size
     end
  
-    if not Recursive then return true,1,{#array} end
+    if dtype ~= "table" then return true,1,{#array},dtype end
 
     if not SameSize then 
         error("Malformed array: Array elements must be the same size")
@@ -49,7 +49,7 @@ local function ProcessArray(array : {},prevndim : number?,prevshape : {}?)
     local Dimension = nil
 
     for i, v in array do
-        local Valid,Newndim = ProcessArray(v,ndim,shape)
+        local Valid,Newndim,_,innerdtype = ProcessArray(v,ndim,shape)
 
         isvalid = isvalid and Valid
 
@@ -57,6 +57,8 @@ local function ProcessArray(array : {},prevndim : number?,prevshape : {}?)
             Dimension = Newndim
             continue 
         end
+
+        dtype = innerdtype
 
         SameDimension = Newndim == Dimension
     end
@@ -70,17 +72,18 @@ local function ProcessArray(array : {},prevndim : number?,prevshape : {}?)
         return false
     end
 
-    return isvalid,ndim,shape
+    return isvalid,ndim,shape,dtype
 end
 
-local function New_ndarray(data,Shape,Strides,Offset)
+local function New_ndarray(data,Shape,Strides,Offset,dtype : string)
     return setmetatable({
         Buffer = data,
         ndim = #Shape,
         Shape = Shape,
         Strides = Strides,
         Offset = Offset,
-        type = "ndArray"
+        type = "ndArray",
+        dtype = dtype
     },meta)
 end
 
@@ -102,7 +105,7 @@ local function index_ndarray(ndArray : types.ndArray,index : number)
         return ndArray.Buffer[NewOffset + 1]
     end
 
-    return New_ndarray(ndArray.Buffer,NewShape,NewStrides,NewOffset)
+    return New_ndarray(ndArray.Buffer,NewShape,NewStrides,NewOffset,ndArray.dtype)
 end
 
 local function set_ndarray(ndArray : types.ndArray,index : number,value : any)
@@ -120,7 +123,7 @@ local function set_ndarray(ndArray : types.ndArray,index : number,value : any)
         return value
     end
 
-    return New_ndarray(ndArray.Buffer,NewShape,NewStrides,NewOffset)
+    return New_ndarray(ndArray.Buffer,NewShape,NewStrides,NewOffset,ndArray.dtype)
 end
 
 local Slice = function(self : types.ndArray, Keys : {})
@@ -172,7 +175,7 @@ local Slice = function(self : types.ndArray, Keys : {})
         return self.Buffer[NewOffset + 1]
     end
 
-    return New_ndarray(self.Buffer, NewShape, NewStrides, NewOffset)
+    return New_ndarray(self.Buffer, NewShape, NewStrides, NewOffset,self.dtype)
 end
 
 meta.__index = function(self : types.ndArray,index)
@@ -233,76 +236,24 @@ meta.__add = function(self : types.ndArray,value : types.ndArray)
     return self
 end
 
-meta.__sub = function(self : types.ndArray,value : types.ndArray)
-    if typeof(value) ~= "table" then
-        local Result = self:copy()
-        for i = 1,#Result.Buffer do
-            Result.Buffer[i] -= value
-        end
-
-        return Result
-    end
-
-    return self
-end
-
-meta.__mul = function(self : types.ndArray,value : types.ndArray)
-    if typeof(value) ~= "table" then
-        print(self.copy)
-        local Result = self:copy()
-        for i = 1,#Result.Buffer do
-            Result.Buffer[i] *= value
-        end
-
-        return Result
-    end
-
-    return self
-end
-
-meta.__div = function(self : types.ndArray,value : types.ndArray)
-    if typeof(value) ~= "table" then
-        local Result = self:copy()
-        for i = 1,#Result.Buffer do
-            Result.Buffer[i] /= value
-        end
-
-        return Result
-    end
-
-    return self
-end
-
-meta.__idiv = function(self : types.ndArray,value : types.ndArray)
-    if typeof(value) ~= "table" then
-        local Result = self:copy()
-        for i = 1,#Result.Buffer do
-            Result.Buffer[i] //= value
-        end
-
-        return Result
-    end
-
-    return self
-end
 
 schema.copy = function(self : types.ndArray)
     local Data = table.clone(self.Buffer)
 
-    return New_ndarray(Data, self.Shape, self.Strides, self.Offset)
+    return New_ndarray(Data, self.Shape, self.Strides, self.Offset,self.dtype)
 end
 
 schema.view = function(self : types.ndArray)
-    return New_ndarray(self.Buffer, self.Shape, self.Strides, self.Offset)
+    return New_ndarray(self.Buffer, self.Shape, self.Strides, self.Offset,self.dtype)
 end
 
 return function(data : {})
-    local valid,_,shape = ProcessArray(data)
+    local valid,_,shape,dtype = ProcessArray(data)
 
     if valid ~= true then return end
     local Buffer = {}
     utils.ReverseTable(shape)
     utils.Flatten(data, Buffer)
 
-    return New_ndarray(Buffer,shape,utils.ComputeStrides(shape),0) :: types.ndArray
+    return New_ndarray(Buffer,shape,utils.ComputeStrides(shape),0,dtype) :: types.ndArray
 end

@@ -1,4 +1,6 @@
 local module = {}
+local package = script.Parent.Parent
+local types = require(package.types)
 
 function module.ReverseTable(tab)
     local i,j = 1,#tab
@@ -75,6 +77,17 @@ function module.NewSlice(start,stop,step)
         step = step or 1,
         __slice = true
     }
+end
+
+function module.CanBroadcast(arrayA : types.ndArray,arrayB : types.ndArray)
+    
+    if arrayA.ndim == 0 or arrayB.ndim == 0 then return true end
+    if arrayA.ndim == arrayB.ndim then return true end
+    if arrayA.ndim == 1 then return true end
+    if arrayB.ndim == 1 then return true end
+
+
+    return false
 end
 
 return module

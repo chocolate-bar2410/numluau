@@ -1,5 +1,6 @@
 export type ndArray = {
     type : "ndArray",
+    dtype : string,
     ndim : number,
     Offset : number,
     Buffer : {},
