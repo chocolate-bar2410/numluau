@@ -10,17 +10,9 @@ reference:
     - https://www.youtube.com/watch?v=VXU4LSAQDSc
 ]]
 
-local ndarray_utils = require(script.ndarray_utils)
-
-type ndArray = {
-    ndim : number,
-    Offset : number,
-    Buffer : {},
-    Shape : {number},
-    Strides : {number},
-} & typeof(schema)
-
-
+local Package = script.Parent
+local utils = require(script.ndarray_utils)
+local types = require(Package.types)
 
 local function ProcessArray(array : {},prevndim : number?,prevshape : {}?)
     local ndim = prevndim or 0
@@ -88,10 +80,11 @@ local function New_ndarray(data,Shape,Strides,Offset)
         Shape = Shape,
         Strides = Strides,
         Offset = Offset,
+        type = "ndArray"
     },meta)
 end
 
-local function index_ndarray(ndArray : ndArray,index : number)
+local function index_ndarray(ndArray : types.ndArray,index : number)
     if index < 0 then
         index = ndArray.Shape[1] + index + 1
     end
@@ -112,7 +105,7 @@ local function index_ndarray(ndArray : ndArray,index : number)
     return New_ndarray(ndArray.Buffer,NewShape,NewStrides,NewOffset)
 end
 
-local function set_ndarray(ndArray : ndArray,index : number,value : any)
+local function set_ndarray(ndArray : types.ndArray,index : number,value : any)
     if index < 1 or index > ndArray.Shape[1] then
         return
     end
@@ -130,7 +123,7 @@ local function set_ndarray(ndArray : ndArray,index : number,value : any)
     return New_ndarray(ndArray.Buffer,NewShape,NewStrides,NewOffset)
 end
 
-local Slice = function(self : ndArray, Keys : {})
+local Slice = function(self : types.ndArray, Keys : {})
     local NewShape = {}
     local NewStrides = {}
     local NewOffset = self.Offset
@@ -182,49 +175,36 @@ local Slice = function(self : ndArray, Keys : {})
     return New_ndarray(self.Buffer, NewShape, NewStrides, NewOffset)
 end
 
-
-local GetElement = function(self : ndArray,indices)
-    local Offset = self.Offset
-    for i = 1,#indices do
-        Offset += (indices[i] - 1) * self.Strides[i]
-    end
-
-    return self.Buffer[Offset + 1]
-end
-
-local function PrettyPrint(self : ndArray,ndim,indices : {})
-     if ndim > self.ndim then
-        return tostring(GetElement(self, indices))
-    end
-
-    local parts = {}
-
-    for i = 1, self.Shape[ndim] do
-        indices[ndim] = i
-        parts[#parts+1] = PrettyPrint(self, ndim + 1, indices)
-    end
-
-    if ndim == self.ndim then
-        return table.concat(parts, " ")
-    else
-        local inner = table.concat(parts, "\n")
-        return "[\n" .. inner:gsub("^", "  "):gsub("\n", "\n  ") .. "\n]"
-    end
-end
-
-meta.__index = function(self : ndArray,index)
+meta.__index = function(self : types.ndArray,index)
     if typeof(index) == "number" then
         return index_ndarray(self, index)
     end
-    
-    if typeof(index) == "table" then
-        return Slice(self,index)
+
+    if typeof(index) == "string" and index:sub(1,1):match("[^%a]") then
+        local Slices = {}
+
+        for section in index:gmatch("[^,]+") do
+            section = section:gsub("%s+","")
+            local start,stop,step = section:match("([^:]*):([^:]*):?([^:]*)")
+
+            if start then
+                start = tonumber(start)
+                stop = tonumber(stop)
+                step = tonumber(step) or 1
+
+                table.insert(Slices,utils.NewSlice(start, stop, step))
+            else
+                table.insert(Slices,tonumber(section))
+            end
+
+        end
+        return Slice(self, Slices)
     end
 
     return rawget(self, index) or schema[index]
 end
 
-meta.__newindex = function(self : ndArray,index,value)
+meta.__newindex = function(self : types.ndArray,index,value)
     if typeof(index) == "number" then
         return set_ndarray(self, index,value)
     end
@@ -232,21 +212,87 @@ meta.__newindex = function(self : ndArray,index,value)
     return rawset(self, index,value)
 end
 
-meta.__tostring = function(self : ndArray)
+meta.__tostring = function(self : types.ndArray)
     if self.ndim == 0 then
         return tostring(self.Buffer[self.Offset + 1])
     end
 
-    return PrettyPrint(self, 1, {})
+    return utils.PrettyPrint(self, 1, {})
 end
 
-schema.copy = function(self : ndArray)
+meta.__add = function(self : types.ndArray,value : types.ndArray)
+    if typeof(value) ~= "table" then
+        local Result = self:copy()
+        for i = 1,#Result.Buffer do
+            Result.Buffer[i] += value
+        end
+
+        return Result
+    end
+
+    return self
+end
+
+meta.__sub = function(self : types.ndArray,value : types.ndArray)
+    if typeof(value) ~= "table" then
+        local Result = self:copy()
+        for i = 1,#Result.Buffer do
+            Result.Buffer[i] -= value
+        end
+
+        return Result
+    end
+
+    return self
+end
+
+meta.__mul = function(self : types.ndArray,value : types.ndArray)
+    if typeof(value) ~= "table" then
+        print(self.copy)
+        local Result = self:copy()
+        for i = 1,#Result.Buffer do
+            Result.Buffer[i] *= value
+        end
+
+        return Result
+    end
+
+    return self
+end
+
+meta.__div = function(self : types.ndArray,value : types.ndArray)
+    if typeof(value) ~= "table" then
+        local Result = self:copy()
+        for i = 1,#Result.Buffer do
+            Result.Buffer[i] /= value
+        end
+
+        return Result
+    end
+
+    return self
+end
+
+meta.__idiv = function(self : types.ndArray,value : types.ndArray)
+    if typeof(value) ~= "table" then
+        local Result = self:copy()
+        for i = 1,#Result.Buffer do
+            Result.Buffer[i] //= value
+        end
+
+        return Result
+    end
+
+    return self
+end
+
+schema.copy = function(self : types.ndArray)
     local Data = table.clone(self.Buffer)
 
     return New_ndarray(Data, self.Shape, self.Strides, self.Offset)
 end
 
-schema.view = function(self : ndArray)
+schema.view = function(self : types.ndArray)
     return New_ndarray(self.Buffer, self.Shape, self.Strides, self.Offset)
 end
 
@@ -255,8 +301,8 @@ return function(data : {})
 
     if valid ~= true then return end
     local Buffer = {}
-    ndarray_utils.ReverseTable(shape)
-    ndarray_utils.Flatten(data, Buffer)
+    utils.ReverseTable(shape)
+    utils.Flatten(data, Buffer)
 
-    return New_ndarray(Buffer,shape,ndarray_utils.ComputeStrides(shape),0) :: ndArray
+    return New_ndarray(Buffer,shape,utils.ComputeStrides(shape),0) :: types.ndArray
 end

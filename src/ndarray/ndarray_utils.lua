@@ -34,4 +34,47 @@ function module.Flatten(data,buffer)
     end
 end
 
+function module.GetElement(ndArray,indices)
+    local Offset = ndArray.Offset
+    for i = 1,#indices do
+        Offset += (indices[i] - 1) * ndArray.Strides[i]
+    end
+
+    return ndArray.Buffer[Offset + 1]
+end
+
+function module.PrettyPrint(ndArray,ndim,indices : {})
+     if ndim > ndArray.ndim then
+        return tostring(module.GetElement(ndArray, indices))
+    end
+
+    local parts = {}
+
+    for i = 1, ndArray.Shape[ndim] do
+        indices[ndim] = i
+        parts[#parts+1] = module.PrettyPrint(ndArray, ndim + 1, indices)
+    end
+
+    if ndim == ndArray.ndim then
+        return table.concat(parts, " ")
+    else
+        local inner = table.concat(parts, "\n")
+        return "[\n" .. inner:gsub("^", "  "):gsub("\n", "\n  ") .. "\n]"
+    end
+end
+
+function module.NewSlice(start,stop,step)
+
+    if step < 0 then
+        start,stop = stop,start
+    end
+
+    return {
+        start = start,
+        stop = stop,
+        step = step or 1,
+        __slice = true
+    }
+end
+
 return module
