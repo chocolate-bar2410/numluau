@@ -53,4 +53,6 @@ return module :: {
     rad : (types.ndArray) -> types.ndArray,
     log10 : (types.ndArray) -> types.ndArray,
     sin : (types.ndArray) -> types.ndArray,
+
+    log2 : (types.ndArray) -> types.ndArray,
 }

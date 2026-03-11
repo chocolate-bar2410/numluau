@@ -6,6 +6,7 @@ local utils = require(script.ndarray_utils)
 local types = require(Package.types)
 
 local Broadcast = require(script.Broadcast)
+local Exceptions = require(Package.Exceptions)
 
 local function ProcessArray(array : {},prevndim : number?,prevshape : {}?)
     local ndim = prevndim or 0
@@ -35,8 +36,7 @@ local function ProcessArray(array : {},prevndim : number?,prevshape : {}?)
     if dtype ~= "table" then return true,1,{#array},dtype end
 
     if not SameSize then 
-        error("Malformed array: Array elements must be the same size")
-        return false 
+        return false, "Array elements must be the same size"
     end
 
     local SameDimension = true
@@ -62,8 +62,7 @@ local function ProcessArray(array : {},prevndim : number?,prevshape : {}?)
     shape[ndim] = Size
 
     if not SameDimension then 
-        error("Malformed array: Array elements must have the same dimensionality")
-        return false
+        return false,"Array elements must have the same dimensionality"
     end
 
     return isvalid,ndim,shape,dtype
@@ -87,6 +86,7 @@ local function index_ndarray(ndArray : types.ndArray,index : number)
     end
 
     if index < 0 or index > ndArray.Shape[1] then
+        Exceptions.Exception("Array", `index {index} is out of bounds`)
         return
     end
 
@@ -104,6 +104,7 @@ end
 
 local function set_ndarray(ndArray : types.ndArray,index : number,value : any)
     if index < 1 or index > ndArray.Shape[1] then
+        Exceptions.Exception("Array", `index {index} is out of bounds`)
         return
     end
 
@@ -368,9 +369,12 @@ schema.view = function(self : types.ndArray)
 end
 
 return function(data : {})
-    local valid,_,shape,dtype = ProcessArray(data)
+    local valid,Message,shape,dtype = ProcessArray(data)
 
-    if valid ~= true then return end
+    if valid ~= true then 
+        Exceptions.Exception("Malformed", Message)
+        return 
+    end
     local Buffer = {}
     
     if typeof(data) == "table" then

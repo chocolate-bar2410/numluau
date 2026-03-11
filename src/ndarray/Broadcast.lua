@@ -3,6 +3,7 @@ local module = {}
 local Package = script.Parent.Parent
 local utils = require(script.Parent.ndarray_utils)
 local types = require(Package.types)
+local exceptions = require(Package.Exceptions)
 
 module.BroadcastShape = function(ShapeA : {number},ShapeB : {number})
     local result = {}
@@ -15,7 +16,7 @@ module.BroadcastShape = function(ShapeA : {number},ShapeB : {number})
         local dimB = ShapeB[lenB - i] or 1
 
         if dimA ~= dimB and dimA ~= 1 and dimB ~= 1 then
-            error("Tried to broadcast incompatible arrays")
+            exceptions.Exception("Broadcasting","Tried to broadcast incompatible arrays")
         end
 
         result[OutRank - i] = math.max(dimA,dimB)
