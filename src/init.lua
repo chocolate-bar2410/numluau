@@ -2,6 +2,7 @@ local ndArray = require("@self/ndarray")
 local ndArray_utils = require("@self/ndarray/ndarray_utils")
 local math_utils = require("@self/math/math_utils")
 local aggregations = require("@self/math/aggregations")
+local Exceptions = require("@self/Exceptions")
 --[[
 to do:
     - math
@@ -105,6 +106,28 @@ local Base = {
 
         return Array
     end,
+    where = function(Mask : types.ndArray,Target : types.ndArray,FillValue : any)
+        if FillValue == nil then
+            Exceptions.FormatException("Array", "Fill Value must not be nil")
+            return
+        end
+
+        if #Mask.Buffer ~= #Target.Buffer then
+            Exceptions.FormatException("Array", "Mask array and Target array must be the same size")
+            return
+        end
+
+        local Result = {}
+        for i = 1,#Target.Buffer do
+            Result[#Result + 1] = Mask.Buffer[i] == false and FillValue or Target.Buffer[i]
+        end
+        Result = ndArray(Result)
+        Result.Shape = Target.Shape
+        Result.Strides = Target.Strides
+        Result.ndim = Target.ndim
+
+        return Result
+    end
 }
 
 type out = typeof(Base) & typeof(math_utils) & typeof(aggregations)

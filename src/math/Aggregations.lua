@@ -79,6 +79,12 @@ function module.sum(array,axis)
     end)
 end
 
+function module.prod(array,axis)
+    return Aggregate(array, axis, 1, function(A,B)  
+        return A * B
+    end)
+end
+
 function module.min(array,axis)
     return Aggregate(array, axis, math.huge, function(A,B)  
         return math.min(A,B)
@@ -130,6 +136,7 @@ end
 
 return module :: {
     sum : (Array : types.ndArray,Axis : number?) -> number | types.ndArray,
+    prod : (Array : types.ndArray,Axis : number?) -> number | types.ndArray,
     min : (Array : types.ndArray,Axis : number?) -> number | types.ndArray,
     max : (Array : types.ndArray,Axis : number?) -> number | types.ndArray,
 

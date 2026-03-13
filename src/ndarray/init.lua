@@ -178,6 +178,23 @@ meta.__index = function(self : types.ndArray,index)
         return index_ndarray(self, index)
     end
 
+    if typeof(index) == "table" and index.type and index.type == "ndArray" then
+        if #index.Buffer ~= #self.Buffer then
+            Exceptions.FormatException("Array", "Mask array and Target array must be the same size")
+            return
+        end
+
+        local result = {}
+
+        for i = 1,#self.Buffer do
+            if index.Buffer[i] == false then continue end
+            result[#result + 1] = self.Buffer[i]
+        end
+
+        return New_ndarray(result, {#result}, {1}, 0, self.dtype)
+    end
+
+
     if typeof(index) == "string" and index:sub(1,1):match("[^%a]") then
         local Slices = {}
 
