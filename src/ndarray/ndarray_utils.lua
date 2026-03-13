@@ -56,7 +56,7 @@ function module.PrettyPrint(ndArray,dim,indices : {})
     end
 
     if dim == ndArray.ndim then
-        return table.concat(parts, " ")
+        return "[" .. table.concat(parts, " ") .. "]"
     else
         local inner = table.concat(parts, "\n")
         return "[\n" .. inner:gsub("^", "  "):gsub("\n", "\n  ") .. "\n]"

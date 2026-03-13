@@ -358,6 +358,16 @@ meta.__mod = function(self : types.ndArray,value)
     return Result
 end
 
+meta.__unm = function(self : types.ndArray)
+    
+    local Result = self:copy()
+    for i = 1,#Result.Buffer do
+        Result.Buffer[i] *= -1
+    end
+
+    return Result
+end
+
 schema.copy = function(self : types.ndArray)
     local Data = table.clone(self.Buffer)
 
