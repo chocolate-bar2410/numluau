@@ -12,7 +12,7 @@ local function CollapseAll<T>(array : types.ndArray,initValue : number,callback 
         Accumulator = callback(Accumulator, array.Buffer[i])
     end
 
-    return ndArray(Accumulator)
+    return ndArray(Accumulator,{},{},0,typeof(Accumulator))
 end
 
 local function Aggregate<T>(array : types.ndArray,axis : number,initValue : number,callback : (T,T,number?) -> T)
@@ -65,12 +65,7 @@ local function Aggregate<T>(array : types.ndArray,axis : number,initValue : numb
 
     end
 
-    local Result : types.ndArray = ndArray(Data)
-    Result.Shape = OutputShape
-    Result.Strides = OutputStrides
-    Result.ndim = array.ndim - 1
-
-    return Result
+    return ndArray(Data,OutputShape,OutputStrides,0,typeof(initValue))
 end
 
 function module.sum(array,axis)

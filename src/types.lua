@@ -9,6 +9,8 @@ export type ndArray = {
 
     copy : (ndArray) -> ndArray,
     view : (ndArray) -> ndArray,
+    reshape : (ndArray,...number) -> ndArray,
+    flatten : (ndArray,...number) -> ndArray,
 }
 
 return nil

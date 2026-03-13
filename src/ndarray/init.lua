@@ -8,66 +8,6 @@ local types = require(Package.types)
 local Broadcast = require(script.Broadcast)
 local Exceptions = require(Package.Exceptions)
 
-local function ProcessArray(array : {},prevndim : number?,prevshape : {}?)
-    local ndim = prevndim or 0
-    local isvalid = true
-
-    if typeof(array) ~= "table" then return true,0,{},typeof(array) end
-
-    local shape = prevshape or {#array}
-
-    local SameSize = true
-    local Size = nil 
-    local dtype = nil
-
-    for i, v in array do
-        dtype = typeof(v)
-
-        if not Size then 
-            Size = dtype == "table" and #v or 0
-            continue 
-        end
-
-        if dtype ~= "table" then continue end
-
-        SameSize = #v == Size
-    end
- 
-    if dtype ~= "table" then return true,1,{#array},dtype end
-
-    if not SameSize then 
-        return false, "Array elements must be the same size"
-    end
-
-    local SameDimension = true
-    local Dimension = nil
-
-    for i, v in array do
-        local Valid,Newndim,_,innerdtype = ProcessArray(v,ndim,shape)
-
-        isvalid = isvalid and Valid
-
-        if not Dimension then 
-            Dimension = Newndim
-            continue 
-        end
-
-        dtype = innerdtype
-
-        SameDimension = Newndim == Dimension
-    end
-
-    ndim = Dimension + 1
-   
-    shape[ndim] = Size
-
-    if not SameDimension then 
-        return false,"Array elements must have the same dimensionality"
-    end
-
-    return isvalid,ndim,shape,dtype
-end
-
 local function New_ndarray(data,Shape,Strides,Offset,dtype : string)
     return setmetatable({
         Buffer = data,
@@ -395,20 +335,33 @@ schema.view = function(self : types.ndArray)
     return New_ndarray(self.Buffer, self.Shape, self.Strides, self.Offset,self.dtype)
 end
 
-return function(data : {})
-    local valid,Message,shape,dtype = ProcessArray(data)
+schema.reshape = function(self : types.ndArray,... : number)
+    local Shape = {...}
 
-    if valid ~= true then 
-        Exceptions.FormatException("Malformed", Message)
-        return 
-    end
-    local Buffer = {}
-    
-    if typeof(data) == "table" then
-        utils.Flatten(data, Buffer)
-    else
-        table.insert(Buffer,data)
+    local Size = 1
+    for i = 1,#Shape do
+        Size *= Shape[i]
     end
 
-    return New_ndarray(Buffer,shape,utils.ComputeStrides(shape),0,dtype) :: types.ndArray
+    if #self.Buffer ~= Size then
+        Exceptions.FormatException("Array",`Cannot reshape an array size {#self.Buffer} into shape ({table.concat(Shape,",")})`)
+    end
+
+    local result = self:view()
+    result.Shape = Shape
+    result.Strides = utils.ComputeStrides(Shape)
+    result.ndim = #Shape
+
+    return result
 end
+
+schema.flatten = function(self : types.ndArray)
+    local result = self:view()
+    result.Shape = {#self.Buffer}
+    result.Strides = {1}
+    result.ndim = 1
+
+    return result
+end
+
+return New_ndarray

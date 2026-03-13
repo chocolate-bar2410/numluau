@@ -1,4 +1,4 @@
-local ndArray = require("@self/ndarray")
+local ndArray = require("@self/ndarray/FromTable")
 local ndArray_utils = require("@self/ndarray/ndarray_utils")
 local math_utils = require("@self/math/math_utils")
 local aggregations = require("@self/math/aggregations")
@@ -127,6 +127,32 @@ local Base = {
         Result.ndim = Target.ndim
 
         return Result
+    end,
+    reshape = function(Target : types.ndArray,Shape : {number})
+
+        local Size = 1
+        for i = 1,#Shape do
+            Size *= Shape[i]
+        end
+
+        if #Target.Buffer ~= Size then
+            Exceptions.FormatException("Array",`Cannot reshape an array size {#Target.Buffer} into shape ({table.concat(Shape,",")})`)
+        end
+
+        local result = Target:copy()
+        result.Shape = Shape
+        result.Strides = ndArray_utils.ComputeStrides(Shape)
+        result.ndim = #Shape
+
+        return result
+    end,
+    flatten = function(Target)
+        local result = Target:copy()
+        result.Shape = {#Target.Buffer}
+        result.Strides = {1}
+        result.ndim = 1
+
+        return result
     end
 }
 
