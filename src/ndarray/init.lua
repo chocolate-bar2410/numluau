@@ -86,7 +86,7 @@ local function index_ndarray(ndArray : types.ndArray,index : number)
     end
 
     if index < 0 or index > ndArray.Shape[1] then
-        Exceptions.Exception("Array", `index {index} is out of bounds`)
+        Exceptions.FormatException("Array", `index {index} is out of bounds`)
         return
     end
 
@@ -104,7 +104,7 @@ end
 
 local function set_ndarray(ndArray : types.ndArray,index : number,value : any)
     if index < 1 or index > ndArray.Shape[1] then
-        Exceptions.Exception("Array", `index {index} is out of bounds`)
+        Exceptions.FormatException("Array", `index {index} is out of bounds`)
         return
     end
 
@@ -212,10 +212,10 @@ end
 
 meta.__tostring = function(self : types.ndArray)
     if self.ndim == 0 then
-        return tostring(self.Buffer[self.Offset + 1])
+        return `array({tostring(self.Buffer[self.Offset + 1])})`
     end
 
-    return utils.PrettyPrint(self, 1, {})
+    return `array({utils.PrettyPrint(self, 1, {})})`
 end
 
 meta.__add = function(self : types.ndArray,value)
@@ -372,7 +372,7 @@ return function(data : {})
     local valid,Message,shape,dtype = ProcessArray(data)
 
     if valid ~= true then 
-        Exceptions.Exception("Malformed", Message)
+        Exceptions.FormatException("Malformed", Message)
         return 
     end
     local Buffer = {}

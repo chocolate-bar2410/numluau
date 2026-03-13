@@ -1,8 +1,7 @@
 local ndArray = require("@self/ndarray")
 local ndArray_utils = require("@self/ndarray/ndarray_utils")
-local mathutils = require(script.mathutils)
-local math_utils = require("@self/mathutils")
-
+local math_utils = require("@self/math/math_utils")
+local aggregations = require("@self/math/aggregations")
 --[[
 to do:
     - math
@@ -72,15 +71,13 @@ local Base = {
     end,
     ones = function(...)
         local shape = {...}
-        local result = {}
-
         local size = 1
 
         for i = 1,#shape do
             size *= shape[i]
         end
 
-        for i = 1,size do table.insert(result,1) end
+        local result = table.create(size,1)
 
         local Array : types.ndArray = ndArray(result)
         Array.Shape = shape
@@ -110,6 +107,6 @@ local Base = {
     end,
 }
 
-type out = typeof(Base) & typeof(math_utils)
+type out = typeof(Base) & typeof(math_utils) & typeof(aggregations)
 
-return Merge(Base,mathutils) :: out
+return Merge(Base,math_utils,aggregations) :: out

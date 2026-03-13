@@ -1,5 +1,5 @@
 local module = {}
-local Package = script.Parent
+local Package = script.Parent.Parent
 
 local types = require(Package.types)
 

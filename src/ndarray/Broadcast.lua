@@ -16,7 +16,7 @@ module.BroadcastShape = function(ShapeA : {number},ShapeB : {number})
         local dimB = ShapeB[lenB - i] or 1
 
         if dimA ~= dimB and dimA ~= 1 and dimB ~= 1 then
-            exceptions.Exception("Broadcasting","Tried to broadcast incompatible arrays")
+            exceptions.FormatException("Broadcasting","Tried to broadcast incompatible arrays")
         end
 
         result[OutRank - i] = math.max(dimA,dimB)
