@@ -5,7 +5,7 @@ local types = require(Package.types)
 local ndArray_utils = require(Package.ndarray.ndarray_utils)
 local ndArray = require(Package.ndarray)
 
-local function CollapseAll<T>(array : types.ndArray,initValue : number,callback : (T,T) -> T)
+local function CollapseAll<T>(array : types.ndArray<any>,initValue : number,callback : (T,T) -> T)
     local Accumulator = initValue
 
     for i = 1, #array.Buffer do
@@ -15,7 +15,7 @@ local function CollapseAll<T>(array : types.ndArray,initValue : number,callback 
     return ndArray(Accumulator,{},{},0,typeof(Accumulator))
 end
 
-local function Aggregate<T>(array : types.ndArray,axis : number,initValue : number,callback : (T,T,number?) -> T)
+local function Aggregate<T>(array : types.ndArray<any>,axis : number,initValue : number,callback : (T,T,number?) -> T)
     if axis == nil then return CollapseAll(array, initValue, callback) end
 
     axis = array.ndim - axis
@@ -130,12 +130,12 @@ end
 
 
 return module :: {
-    sum : (Array : types.ndArray,Axis : number?) -> number | types.ndArray,
-    prod : (Array : types.ndArray,Axis : number?) -> number | types.ndArray,
-    min : (Array : types.ndArray,Axis : number?) -> number | types.ndArray,
-    max : (Array : types.ndArray,Axis : number?) -> number | types.ndArray,
+    sum : (Array : types.ndArray<any>,Axis : number?) -> types.ndArray<any>,
+    prod : (Array : types.ndArray<any>,Axis : number?) -> types.ndArray<any>,
+    min : (Array : types.ndArray<any>,Axis : number?) -> types.ndArray<any>,
+    max : (Array : types.ndArray<any>,Axis : number?) -> types.ndArray<any>,
 
-    mean : (Array : types.ndArray,Axis : number?) -> number | types.ndArray,
-    var : (Array : types.ndArray,Axis : number?) -> number | types.ndArray,
-    std : (Array : types.ndArray,Axis : number?) -> number | types.ndArray,
+    mean : (Array : types.ndArray<any>,Axis : number?) -> types.ndArray<any>,
+    var : (Array : types.ndArray<any>,Axis : number?) -> types.ndArray<any>,
+    std : (Array : types.ndArray<any>,Axis : number?) -> types.ndArray<any>,
 }

@@ -3,13 +3,13 @@ local ndArray_utils = require("@self/ndarray/ndarray_utils")
 local math_utils = require("@self/math/math_utils")
 local aggregations = require("@self/math/aggregations")
 local Exceptions = require("@self/Exceptions")
+
+local comparison = require("@self/logical/comparison")
+
 --[[
 to do:
     - math
-        > aggregations
         > linear algebra
-    - arrays
-        > reshaping
     - logical
         > comparisons
         > logical operations
@@ -21,7 +21,7 @@ reference:
 
 local types = require(script.types)
 
-export type ndArray = types.ndArray
+export type ndArray<T> = types.ndArray<T>
 
 local Merge = function(... : {})
     local Result = {}
@@ -80,7 +80,7 @@ local Base = {
 
         local result = table.create(size,1)
 
-        local Array : types.ndArray = ndArray(result)
+        local Array : types.ndArray<any> = ndArray(result)
         Array.Shape = shape
         Array.Strides = ndArray_utils.ComputeStrides(shape)
         Array.ndim = #shape
@@ -99,14 +99,14 @@ local Base = {
 
         for i = 1,size do table.insert(result,0) end
 
-        local Array : types.ndArray = ndArray(result)
+        local Array : types.ndArray<any> = ndArray(result)
         Array.Shape = shape
         Array.Strides = ndArray_utils.ComputeStrides(shape)
         Array.ndim = #shape
 
         return Array
     end,
-    where = function(Mask : types.ndArray,Target : types.ndArray,FillValue : any)
+    where = function(Mask : types.ndArray<any>,Target : types.ndArray<any>,FillValue : any)
         if FillValue == nil then
             Exceptions.FormatException("Array", "Fill Value must not be nil")
             return
@@ -128,7 +128,7 @@ local Base = {
 
         return Result
     end,
-    reshape = function(Target : types.ndArray,Shape : {number})
+    reshape = function(Target : types.ndArray<any>,Shape : {number})
 
         local Size = 1
         for i = 1,#Shape do
@@ -156,6 +156,6 @@ local Base = {
     end
 }
 
-type out = typeof(Base) & typeof(math_utils) & typeof(aggregations)
+type out = typeof(Base) & typeof(math_utils) & typeof(aggregations) & typeof(comparison)
 
-return Merge(Base,math_utils,aggregations) :: out
+return Merge(Base,math_utils,aggregations,comparison) :: out

@@ -8,7 +8,7 @@ local Exclude = {"random","lerp","map",
 "noise","randomseed","isinf",
 "isnan","atan2","isfinite","ldexp","frexp","fmod","pow"
 }
-local Map = function(ndArray : types.ndArray,callback,...)
+local Map = function(ndArray : types.ndArray<number>,callback,...)
     local copy = ndArray:copy()
 
     for i = 1,#copy.Buffer do
@@ -21,38 +21,38 @@ end
 for i,v in math do
     if typeof(v) ~= "function" then continue end
     if table.find(Exclude, i) then continue end
-    module[i] = function(ndArray : types.ndArray)
+    module[i] = function(ndArray : types.ndArray<number>)
         return Map(ndArray,v)
     end
 end
 
-function module.log2(ndArray : types.ndArray)
+function module.log2(ndArray : types.ndArray<number>)
     return Map(ndArray,math.log,2)
 end
 
 
 return module :: {
-    log : (types.ndArray) -> types.ndArray,
-    deg : (types.ndArray) -> types.ndArray,
-    cosh : (types.ndArray) -> types.ndArray,
-    round : (types.ndArray) -> types.ndArray,
-    tanh : (types.ndArray) -> types.ndArray,
-    floor : (types.ndArray) -> types.ndArray,
-    sqrt : (types.ndArray) -> types.ndArray,
-    modf : (types.ndArray) -> types.ndArray,
-    acos : (types.ndArray) -> types.ndArray,
-    tan : (types.ndArray) -> types.ndArray,
-    cos : (types.ndArray) -> types.ndArray,
-    atan : (types.ndArray) -> types.ndArray,
-    sign : (types.ndArray) -> types.ndArray,
-    ceil : (types.ndArray) -> types.ndArray,
-    abs : (types.ndArray) -> types.ndArray,
-    exp : (types.ndArray) -> types.ndArray,
-    sinh : (types.ndArray) -> types.ndArray,
-    asin : (types.ndArray) -> types.ndArray,
-    rad : (types.ndArray) -> types.ndArray,
-    log10 : (types.ndArray) -> types.ndArray,
-    sin : (types.ndArray) -> types.ndArray,
+    log : (types.ndArray<number>) -> types.ndArray<number>,
+    deg : (types.ndArray<number>) -> types.ndArray<number>,
+    cosh : (types.ndArray<number>) -> types.ndArray<number>,
+    round : (types.ndArray<number>) -> types.ndArray<number>,
+    tanh : (types.ndArray<number>) -> types.ndArray<number>,
+    floor : (types.ndArray<number>) -> types.ndArray<number>,
+    sqrt : (types.ndArray<number>) -> types.ndArray<number>,
+    modf : (types.ndArray<number>) -> types.ndArray<number>,
+    acos : (types.ndArray<number>) -> types.ndArray<number>,
+    tan : (types.ndArray<number>) -> types.ndArray<number>,
+    cos : (types.ndArray<number>) -> types.ndArray<number>,
+    atan : (types.ndArray<number>) -> types.ndArray<number>,
+    sign : (types.ndArray<number>) -> types.ndArray<number>,
+    ceil : (types.ndArray<number>) -> types.ndArray<number>,
+    abs : (types.ndArray<number>) -> types.ndArray<number>,
+    exp : (types.ndArray<number>) -> types.ndArray<number>,
+    sinh : (types.ndArray<number>) -> types.ndArray<number>,
+    asin : (types.ndArray<number>) -> types.ndArray<number>,
+    rad : (types.ndArray<number>) -> types.ndArray<number>,
+    log10 : (types.ndArray<number>) -> types.ndArray<number>,
+    sin : (types.ndArray<number>) -> types.ndArray<number>,
 
-    log2 : (types.ndArray) -> types.ndArray,
+    log2 : (types.ndArray<number>) -> types.ndArray<number>,
 }

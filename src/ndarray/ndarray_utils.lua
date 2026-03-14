@@ -77,7 +77,7 @@ function module.NewSlice(start,stop,step)
     }
 end
 
-function module.FlatIndex(self : types.ndArray,linearIndex)
+function module.FlatIndex(self : types.ndArray<any>,linearIndex)
     local index = linearIndex
     local offset = 0
 

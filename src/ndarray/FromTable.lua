@@ -1,4 +1,3 @@
-
 local Package = script.Parent.Parent
 local utils = require(Package.ndarray.ndarray_utils)
 local types = require(Package.types)
@@ -81,5 +80,5 @@ return function(data : {})
         table.insert(Buffer,data)
     end
 
-    return ndArray(Buffer,shape,utils.ComputeStrides(shape),0,dtype) :: types.ndArray
+    return ndArray(Buffer,shape,utils.ComputeStrides(shape),0,dtype) :: types.ndArray<any>
 end

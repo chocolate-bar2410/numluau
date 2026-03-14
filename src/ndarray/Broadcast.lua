@@ -45,7 +45,7 @@ module.ComputeBroadcastStrides = function(Shape, Strides, TargetShape)
     return result
 end
 
-module.BroadcastTo = function(ndArray : types.ndArray,TargetShape)
+module.BroadcastTo = function(ndArray : types.ndArray<any>,TargetShape)
     local NewStrides = module.ComputeBroadcastStrides(ndArray.Shape,ndArray.Strides,TargetShape)
     local ArrayView = ndArray:view()
     ArrayView.Strides = NewStrides
@@ -54,7 +54,21 @@ module.BroadcastTo = function(ndArray : types.ndArray,TargetShape)
     return ArrayView
 end
 
-module.CreateBroadcastArray = function(A : types.ndArray,B : types.ndArray,Callback : (A : any,B : any) -> any)
+module.BroadcastScalar = function(A : types.ndArray<any> | any,B : types.ndArray<any> | any,Callback : (A : any,B : any) -> any)
+    local nottab : any = typeof(A) ~= "table" and A or B
+    local tab : types.ndArray<any> = typeof(A) == "table" and A or B
+
+    local result = {}
+    for i = 1,#tab.Buffer do
+        result[#result + 1] = Callback(nottab,tab.Buffer[i])
+    end
+
+    return result,tab.Shape
+end
+
+module.CreateBroadcastArray = function(A : types.ndArray<any>,B : types.ndArray<any>,Callback : (A : any,B : any) -> any)
+    if typeof(A) ~= "table" or typeof(B) ~= "table" then return module.BroadcastScalar(A, B, Callback) end
+
     local Result = {}
 
     local OutShape = module.BroadcastShape(A.Shape,B.Shape)

@@ -20,7 +20,7 @@ local function New_ndarray(data,Shape,Strides,Offset,dtype : string)
     },meta)
 end
 
-local function index_ndarray(ndArray : types.ndArray,index : number)
+local function index_ndarray(ndArray : types.ndArray<any>,index : number)
     if index < 0 then
         index = ndArray.Shape[1] + index + 1
     end
@@ -42,7 +42,7 @@ local function index_ndarray(ndArray : types.ndArray,index : number)
     return New_ndarray(ndArray.Buffer,NewShape,NewStrides,NewOffset,ndArray.dtype)
 end
 
-local function set_ndarray(ndArray : types.ndArray,index : number,value : any)
+local function set_ndarray(ndArray : types.ndArray<any>,index : number,value : any)
     if index < 1 or index > ndArray.Shape[1] then
         Exceptions.FormatException("Array", `index {index} is out of bounds`)
         return
@@ -61,7 +61,7 @@ local function set_ndarray(ndArray : types.ndArray,index : number,value : any)
     return New_ndarray(ndArray.Buffer,NewShape,NewStrides,NewOffset,ndArray.dtype)
 end
 
-local Slice = function(self : types.ndArray, Keys : {})
+local Slice = function(self : types.ndArray<any>, Keys : {})
     local NewShape = {}
     local NewStrides = {}
     local NewOffset = self.Offset
@@ -113,7 +113,7 @@ local Slice = function(self : types.ndArray, Keys : {})
     return New_ndarray(self.Buffer, NewShape, NewStrides, NewOffset,self.dtype)
 end
 
-meta.__index = function(self : types.ndArray,index)
+meta.__index = function(self : types.ndArray<any>,index)
     if typeof(index) == "number" then
         return index_ndarray(self, index)
     end
@@ -159,7 +159,7 @@ meta.__index = function(self : types.ndArray,index)
     return rawget(self, index) or schema[index]
 end
 
-meta.__newindex = function(self : types.ndArray,index,value)
+meta.__newindex = function(self : types.ndArray<any>,index,value)
     if typeof(index) == "number" then
         return set_ndarray(self, index,value)
     end
@@ -167,7 +167,7 @@ meta.__newindex = function(self : types.ndArray,index,value)
     return rawset(self, index,value)
 end
 
-meta.__tostring = function(self : types.ndArray)
+meta.__tostring = function(self : types.ndArray<any>)
     if self.ndim == 0 then
         return `array({tostring(self.Buffer[self.Offset + 1])})`
     end
@@ -175,147 +175,56 @@ meta.__tostring = function(self : types.ndArray)
     return `array({utils.PrettyPrint(self, 1, {})})`
 end
 
-meta.__add = function(self : types.ndArray,value)
-    if typeof(value) ~= "table" then
-        local Result = self:copy()
-        for i = 1,#Result.Buffer do
-            Result.Buffer[i] += value
-        end
-
-        return Result
-    end
-
-    if not value.type or value.type ~= "ndArray" then return end
-    if value.ndim == 0 then return self + value.Buffer[1] end
-
+meta.__add = function(self : types.ndArray<any>,value)
     local Result,OutShape = Broadcast.CreateBroadcastArray(self,value,function(a,b) return a + b end)
-
     Result = New_ndarray(Result,OutShape,utils.ComputeStrides(OutShape),0,self.dtype)
 
     return Result
 end
 
-meta.__sub = function(self : types.ndArray,value)
-    if typeof(value) ~= "table" then
-        local Result = self:copy()
-        for i = 1,#Result.Buffer do
-            Result.Buffer[i] -= value
-        end
-
-        return Result
-    end
-
-    if not value.type or value.type ~= "ndArray" then return end
-    if value.ndim == 0 then return self - value.Buffer[1] end
-
+meta.__sub = function(self : types.ndArray<any>,value)
     local Result,OutShape = Broadcast.CreateBroadcastArray(self,value,function(a,b) return a - b end)
-
     Result = New_ndarray(Result,OutShape,utils.ComputeStrides(OutShape),0,self.dtype)
 
     return Result
 end
 
-meta.__mul = function(self : types.ndArray,value)
-    if typeof(value) ~= "table" then
-        local Result = self:copy()
-        for i = 1,#Result.Buffer do
-            Result.Buffer[i] *= value
-        end
-
-        return Result
-    end
-
-    if not value.type or value.type ~= "ndArray" then return end
-    if value.ndim == 0 then return self * value.Buffer[1] end
-
+meta.__mul = function(self : types.ndArray<any>,value)
     local Result,OutShape = Broadcast.CreateBroadcastArray(self,value,function(a,b) return a * b end)
-
     Result = New_ndarray(Result,OutShape,utils.ComputeStrides(OutShape),0,self.dtype)
 
     return Result
 end
 
-meta.__div = function(self : types.ndArray,value)
-    if typeof(value) ~= "table" then
-        local Result = self:copy()
-        for i = 1,#Result.Buffer do
-            Result.Buffer[i] /= value
-        end
-
-        return Result
-    end
-
-    if not value.type or value.type ~= "ndArray" then return end
-    if value.ndim == 0 then return self / value.Buffer[1] end
-
+meta.__div = function(self : types.ndArray<any>,value)
     local Result,OutShape = Broadcast.CreateBroadcastArray(self,value,function(a,b) return a / b end)
-
     Result = New_ndarray(Result,OutShape,utils.ComputeStrides(OutShape),0,self.dtype)
 
     return Result
 end
 
-meta.__idiv = function(self : types.ndArray,value)
-    if typeof(value) ~= "table" then
-        local Result = self:copy()
-        for i = 1,#Result.Buffer do
-            Result.Buffer[i] //= value
-        end
-
-        return Result
-    end
-
-    if not value.type or value.type ~= "ndArray" then return end
-    if value.ndim == 0 then return self // value.Buffer[1] end
-
+meta.__idiv = function(self : types.ndArray<any>,value)
     local Result,OutShape = Broadcast.CreateBroadcastArray(self,value,function(a,b) return a // b end)
-
     Result = New_ndarray(Result,OutShape,utils.ComputeStrides(OutShape),0,self.dtype)
 
     return Result
 end
 
-meta.__pow = function(self : types.ndArray,value)
-    if typeof(value) ~= "table" then
-        local Result = self:copy()
-        for i = 1,#Result.Buffer do
-            Result.Buffer[i] ^= value
-        end
-
-        return Result
-    end
-
-    if not value.type or value.type ~= "ndArray" then return end
-    if value.ndim == 0 then return self ^ value.Buffer[1] end
-
+meta.__pow = function(self : types.ndArray<any>,value)
     local Result,OutShape = Broadcast.CreateBroadcastArray(self,value,function(a,b) return a ^ b end)
-
     Result = New_ndarray(Result,OutShape,utils.ComputeStrides(OutShape),0,self.dtype)
 
     return Result
 end
 
-meta.__mod = function(self : types.ndArray,value)
-    if typeof(value) ~= "table" then
-        local Result = self:copy()
-        for i = 1,#Result.Buffer do
-            Result.Buffer[i] %= value
-        end
-
-        return Result
-    end
-
-    if not value.type or value.type ~= "ndArray" then return end
-    if value.ndim == 0 then return self % value.Buffer[1] end
-
+meta.__mod = function(self : types.ndArray<any>,value)
     local Result,OutShape = Broadcast.CreateBroadcastArray(self,value,function(a,b) return a % b end)
-
     Result = New_ndarray(Result,OutShape,utils.ComputeStrides(OutShape),0,self.dtype)
 
     return Result
 end
 
-meta.__unm = function(self : types.ndArray)
+meta.__unm = function(self : types.ndArray<any>)
     
     local Result = self:copy()
     for i = 1,#Result.Buffer do
@@ -325,17 +234,17 @@ meta.__unm = function(self : types.ndArray)
     return Result
 end
 
-schema.copy = function(self : types.ndArray)
+schema.copy = function(self : types.ndArray<any>)
     local Data = table.clone(self.Buffer)
 
     return New_ndarray(Data, self.Shape, self.Strides, self.Offset,self.dtype)
 end
 
-schema.view = function(self : types.ndArray)
+schema.view = function(self : types.ndArray<any>)
     return New_ndarray(self.Buffer, self.Shape, self.Strides, self.Offset,self.dtype)
 end
 
-schema.reshape = function(self : types.ndArray,... : number)
+schema.reshape = function(self : types.ndArray<any>,... : number)
     local Shape = {...}
 
     local Size = 1
@@ -355,7 +264,7 @@ schema.reshape = function(self : types.ndArray,... : number)
     return result
 end
 
-schema.flatten = function(self : types.ndArray)
+schema.flatten = function(self : types.ndArray<any>)
     local result = self:view()
     result.Shape = {#self.Buffer}
     result.Strides = {1}
