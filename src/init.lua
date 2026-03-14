@@ -5,16 +5,13 @@ local aggregations = require("@self/math/aggregations")
 local Exceptions = require("@self/Exceptions")
 
 local comparison = require("@self/logical/comparison")
-
+local logical = require("@self/logical/logical")
 --[[
 to do:
-    - math
-        > linear algebra
-    - logical
-        > comparisons
-        > logical operations
+    - linear algebra
+    - polynomial
+    - random
     
-
 reference:
     - https://www.youtube.com/watch?v=VXU4LSAQDSc
 ]]
@@ -156,6 +153,6 @@ local Base = {
     end
 }
 
-type out = typeof(Base) & typeof(math_utils) & typeof(aggregations) & typeof(comparison)
+type out = typeof(Base) & typeof(math_utils) & typeof(aggregations) & typeof(comparison) & typeof(logical)
 
-return Merge(Base,math_utils,aggregations,comparison) :: out
+return Merge(Base,math_utils,aggregations,comparison,logical) :: out
