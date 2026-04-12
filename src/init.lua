@@ -6,6 +6,7 @@ local Exceptions = require("@self/Exceptions")
 
 local comparison = require("@self/logical/comparison")
 local logical = require("@self/logical/logical")
+local lin_algebra = require("@self/math/lin_algebra")
 --[[
 to do:
     - linear algebra
@@ -19,7 +20,7 @@ to do:
     - polynomial
     - calculus
         > gradient (derivative)
-        > integral (cummulative sum)
+        > cummulative sum (integral)
     - random
     
 reference:
@@ -164,6 +165,6 @@ local Base = {
     end
 }
 
-type out = typeof(Base) & typeof(math_utils) & typeof(aggregations) & typeof(comparison) & typeof(logical)
+type out = typeof(Base) & typeof(math_utils) & typeof(aggregations) & typeof(comparison) & typeof(logical) & typeof(lin_algebra)
 
-return Merge(Base,math_utils,aggregations,comparison,logical) :: out
+return Merge(Base,math_utils,aggregations,comparison,logical,lin_algebra) :: out
