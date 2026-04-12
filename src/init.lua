@@ -9,11 +9,22 @@ local logical = require("@self/logical/logical")
 --[[
 to do:
     - linear algebra
+        > matrix multiplication
+        > determinant
+        > dot/cross product
+        > transpose
+        > eigen values
+        > solve systems of equations
+         
     - polynomial
+    - calculus
+        > gradient (derivative)
+        > integral (cummulative sum)
     - random
     
 reference:
     - https://www.youtube.com/watch?v=VXU4LSAQDSc
+    - https://www.youtube.com/watch?v=DcfYgePyedM
 ]]
 
 local types = require(script.types)

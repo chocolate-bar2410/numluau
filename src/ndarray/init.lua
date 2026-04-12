@@ -1,3 +1,4 @@
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local schema = {}
 local meta = {}
 
@@ -8,7 +9,20 @@ local types = require(Package.types)
 local Broadcast = require(script.Broadcast)
 local Exceptions = require(Package.Exceptions)
 
+local function isValid<T>(data : {T},dtype : string) : boolean | string
+    for i = 1,#data do
+        if typeof(data[i]) ~= dtype then return "ndArray elements must have the same type" end
+    end
+
+    return true
+end
+
 local function New_ndarray(data,Shape,Strides,Offset,dtype : string)
+    if typeof(data) ~= "table" then data = {data} end
+
+    const validation = isValid(data, dtype)
+    if validation ~= true then Exceptions.FormatException("Malformed",validation) end
+
     return setmetatable({
         Buffer = data,
         ndim = #Shape,
