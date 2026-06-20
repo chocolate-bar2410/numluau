@@ -24,7 +24,7 @@ module.BroadcastShape = function(ShapeA : {number},ShapeB : {number})
     return result
 end
 
-module.ComputeBroadcastStrides = function(Shape, Strides, TargetShape)
+module.ComputeBroadcastStrides = function(Shape : {number}, Strides : {number}, TargetShape : {number})
     local result = {}
     local OriginalRank = #Shape
     local TargetRank = #TargetShape
@@ -44,7 +44,7 @@ module.ComputeBroadcastStrides = function(Shape, Strides, TargetShape)
     return result
 end
 
-module.BroadcastTo = function(ndArray : types.ndArray<any>,TargetShape)
+module.BroadcastTo = function(ndArray : types.ndArray<any>,TargetShape : {number})
     local NewStrides = module.ComputeBroadcastStrides(ndArray.Shape,ndArray.Strides,TargetShape)
     local ArrayView = ndArray:view()
     ArrayView.Strides = NewStrides

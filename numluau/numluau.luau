@@ -9,8 +9,6 @@ local logical = require("./logical/logical")
 local lin_algebra = require("./math/lin_algebra")
 --[[
 to do:
-    - standalone luau
-        > convert require paths to relative paths
     - linear algebra
         > matrix multiplication
         > determinant
@@ -48,7 +46,7 @@ end
 
 local Base = {
     array = ndArray,
-    arange = function(start : number,stop : number?)
+    arange = function(start : number,stop : number?) : ndArray<number>
         local result = {}
 
         if stop == nil then
@@ -60,7 +58,7 @@ local Base = {
 
         return ndArray(result)
     end,
-    linspace = function(start,stop,num)
+    linspace = function(start,stop,num) : ndArray<number>
         local result = {}
         num = (num or 50) - 1
 
@@ -81,7 +79,7 @@ local Base = {
         return ndArray(result)
 
     end,
-    ones = function(...)
+    ones = function(... : number) : ndArray<number>
         local shape = {...}
         local size = 1
 
@@ -98,7 +96,7 @@ local Base = {
 
         return Array
     end,
-    zeros = function(...)
+    zeros = function(... : number) : ndArray<number>
         local shape = {...}
         local result = {}
 
@@ -117,7 +115,7 @@ local Base = {
 
         return Array
     end,
-    where = function(Mask : types.ndArray<any>,Target : types.ndArray<any>,FillValue : any)
+    where = function(Mask : types.ndArray<boolean>,Target : types.ndArray<any>,FillValue : any) : types.ndArray<any>
         if FillValue == nil then
             Exceptions.FormatException("Array", "Fill Value must not be nil")
             return
@@ -139,7 +137,7 @@ local Base = {
 
         return Result
     end,
-    reshape = function(Target : types.ndArray<any>,Shape : {number})
+    reshape = function(Target : types.ndArray<any>,Shape : {number}) : types.ndArray<any>
 
         local Size = 1
         for i = 1,#Shape do
@@ -157,7 +155,7 @@ local Base = {
 
         return result
     end,
-    flatten = function(Target)
+    flatten = function(Target) : types.ndArray<any>
         local result = Target:copy()
         result.Shape = {#Target.Buffer}
         result.Strides = {1}
@@ -167,6 +165,6 @@ local Base = {
     end
 }
 
-type out = typeof(Base) --& typeof(math_utils) & typeof(aggregations) & typeof(comparison) & typeof(logical) & typeof(lin_algebra)
+type out = typeof(Base) & typeof(math_utils) & typeof(aggregations) & typeof(comparison) & typeof(logical) & typeof(lin_algebra)
 
 return Merge(Base,math_utils,aggregations,comparison,logical,lin_algebra) :: out

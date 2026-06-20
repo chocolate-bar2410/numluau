@@ -64,7 +64,7 @@ local function ProcessArray(array : {},prevndim : number?,prevshape : {}?)
     return isvalid,ndim,shape,dtype
 end
 
-return function(data : {})
+return function(data : {}) : types.ndArray<any>
     local valid,Message,shape,dtype = ProcessArray(data)
 
     if valid ~= true then 
@@ -79,5 +79,5 @@ return function(data : {})
         table.insert(Buffer,data)
     end
 
-    return ndArray(Buffer,shape,utils.ComputeStrides(shape),0,dtype) :: types.ndArray<any>
+    return ndArray(Buffer,shape,utils.ComputeStrides(shape),0,dtype) 
 end

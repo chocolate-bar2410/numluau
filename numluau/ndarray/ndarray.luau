@@ -15,11 +15,11 @@ local function isValid<T>(data : {T},dtype : string) : boolean | string
     return true
 end
 
-local function New_ndarray(data,Shape,Strides,Offset,dtype : string)
+local function New_ndarray<T>(data : {T},Shape : {number},Strides : {number},Offset : number,dtype : string)
     if typeof(data) ~= "table" then data = {data} end
 
     local validation = isValid(data, dtype)
-    if validation ~= true then Exceptions.FormatException("Malformed",validation) end
+    if type(validation) == "string" then Exceptions.FormatException("Malformed",validation) end
 
     return setmetatable({
         Buffer = data,
