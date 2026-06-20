@@ -303,15 +303,22 @@ schema.eye = function<T>(self : types.ndArray<T>)
         data[index] = 1
     end
 
-    return New_ndarray(data, {self.Strides[1],self.Strides[1]}, {self.Strides[1],self.Strides[2]}, self.Offset, self.dtype)
+    return New_ndarray(data, {self.Strides[1],self.Strides[1]}, {self.Strides[1],self.Strides[2]}, 0, self.dtype)
 end
 
 schema.transpose = function<T>(self : types.ndArray<T>)
     if self.ndim < 2 then
-        Exceptions.FormatException("Array", "transposing only works for ndim >= 2")
+        return self
     end
 
+    local new_shape = utils.ReverseTable(self.Shape)
+    local new_strides = utils.ReverseTable(self.Strides)
 
+    local transposed = self:view()
+    transposed.Shape = new_shape
+    transposed.Strides = new_strides
+
+    return transposed
 end
 
 return New_ndarray
