@@ -14,30 +14,28 @@ module.matmul = function(A : types.ndArray<number>,B : types.ndArray<number>)
     if A.ndim ~= 2 or B.ndim ~= 2 then return end
 
     local width = A.Shape[1]
-    local n = A.Shape[1]
+    local n = A.Shape[2]
 
-    local height = A.Shape[1]
-    local n2 = A.Shape[1]
+    local height = B.Shape[1]
+    local n2 = B.Shape[2]
 
     if n ~= n2 then return end
 
     local result = {}
 
-    local Shape = {height,width}
+    local Shape = {width,height}
     local Strides = ndArray_utils.ComputeStrides(Shape)
 
-    for i = 1, width do
-        for j = 1, height do
+    for i = 1, height do
+        for j = 1, width do
             local sum = 0
             for k = 1, n do
-                local a = A.Buffer[ndArray_utils.GetElement(A, {i, k})]
-                local b = B.Buffer[ndArray_utils.GetElement(B, {k, j})]
+                local a = ndArray_utils.GetElement(A, {i,k})
+                local b = ndArray_utils.GetElement(B, {k,j})
                 sum = sum + a * b
             end
 
             local offset = (i - 1) * Strides[1] + (j - 1) * Strides[2]
-            result[offset + 1] = sum
-
             result[offset + 1] = sum
         end
     end
