@@ -1,9 +1,8 @@
-local Package = script.Parent.Parent
-local utils = require(Package.ndarray.ndarray_utils)
-local types = require(Package.types)
+local utils = require("./ndarray_utils")
+local types = require("../types")
 
-local ndArray = require(Package.ndarray)
-local Exceptions = require(Package.Exceptions)
+local ndArray = require("./ndarray")
+local Exceptions = require("../Exceptions")
 
 local function ProcessArray(array : {},prevndim : number?,prevshape : {}?)
     local ndim = prevndim or 0

@@ -1,14 +1,16 @@
-local ndArray = require("@self/ndarray/FromTable")
-local ndArray_utils = require("@self/ndarray/ndarray_utils")
-local math_utils = require("@self/math/math_utils")
-local aggregations = require("@self/math/aggregations")
-local Exceptions = require("@self/Exceptions")
+local ndArray = require("./ndarray/FromTable")
+local ndArray_utils = require("./ndarray/ndarray_utils")
+local math_utils = require("./math/math_utils")
+local aggregations = require("./math/aggregations")
+local Exceptions = require("./Exceptions")
 
-local comparison = require("@self/logical/comparison")
-local logical = require("@self/logical/logical")
-local lin_algebra = require("@self/math/lin_algebra")
+local comparison = require("./logical/comparison")
+local logical = require("./logical/logical")
+local lin_algebra = require("./math/lin_algebra")
 --[[
 to do:
+    - standalone luau
+        > convert require paths to relative paths
     - linear algebra
         > matrix multiplication
         > determinant
@@ -28,7 +30,7 @@ reference:
     - https://www.youtube.com/watch?v=DcfYgePyedM
 ]]
 
-local types = require(script.types)
+local types = require("./types")
 
 export type ndArray<T> = types.ndArray<T>
 
@@ -165,6 +167,6 @@ local Base = {
     end
 }
 
-type out = typeof(Base) & typeof(math_utils) & typeof(aggregations) & typeof(comparison) & typeof(logical) & typeof(lin_algebra)
+type out = typeof(Base) --& typeof(math_utils) & typeof(aggregations) & typeof(comparison) & typeof(logical) & typeof(lin_algebra)
 
 return Merge(Base,math_utils,aggregations,comparison,logical,lin_algebra) :: out

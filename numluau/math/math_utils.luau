@@ -1,7 +1,6 @@
 local module = {}
-local Package = script.Parent.Parent
 
-local types = require(Package.types)
+local types = require("../types")
 
 local Exclude = {"random","lerp","map",
 "max","min","clamp",

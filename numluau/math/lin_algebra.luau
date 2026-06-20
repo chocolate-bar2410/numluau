@@ -1,9 +1,8 @@
 local module = {}
-local package = script.Parent.Parent
-local types = require(package.types)
-local ndArray = require(package.ndarray)
+local types = require("../types")
+local ndArray = require("../ndarray/ndarray")
 
-local ndArray_utils = require(package.ndarray.ndarray_utils)
+local ndArray_utils = require("../ndarray/ndarray_utils")
 
 export type interface = {
     matmul : (A : types.ndArray<number>,B : types.ndArray<number>) -> types.ndArray<number>,
@@ -45,10 +44,10 @@ end
 
 module.dot = function(A : types.ndArray<number>,B : types.ndArray<number>)
     if A.ndim == 2 and B.ndim == 2 then
-        warn("for 2d ndArrays, its better to use numluau.matmul instead of numluau.dot")
+        print("for 2d ndArrays, its better to use numluau.matmul instead of numluau.dot")
         return module.matmul(A, B)
     elseif A.ndim == 0 and B.ndim == 0 then
-        warn("for 0d ndArrays, its better to use the * operator instead of numluau.dot")
+        print("for 0d ndArrays, its better to use the * operator instead of numluau.dot")
         return A * B
     end
 

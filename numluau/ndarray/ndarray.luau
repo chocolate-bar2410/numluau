@@ -1,13 +1,11 @@
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local schema = {}
 local meta = {}
 
-local Package = script.Parent
-local utils = require(script.ndarray_utils)
-local types = require(Package.types)
+local utils = require("./ndarray_utils")
+local types = require("../types")
 
-local Broadcast = require(script.Broadcast)
-local Exceptions = require(Package.Exceptions)
+local Broadcast = require("./Broadcast")
+local Exceptions = require("../Exceptions")
 
 local function isValid<T>(data : {T},dtype : string) : boolean | string
     for i = 1,#data do
@@ -20,7 +18,7 @@ end
 local function New_ndarray(data,Shape,Strides,Offset,dtype : string)
     if typeof(data) ~= "table" then data = {data} end
 
-    const validation = isValid(data, dtype)
+    local validation = isValid(data, dtype)
     if validation ~= true then Exceptions.FormatException("Malformed",validation) end
 
     return setmetatable({

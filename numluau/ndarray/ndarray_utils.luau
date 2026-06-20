@@ -1,6 +1,5 @@
 local module = {}
-local package = script.Parent.Parent
-local types = require(package.types)
+local types = require("../types")
 
 function module.ReverseTable(tab)
     local result = {}

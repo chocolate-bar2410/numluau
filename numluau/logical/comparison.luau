@@ -1,9 +1,8 @@
 local module = {}
-local Package = script.Parent.Parent
-local types = require(Package.types)
-local Broadcast = require(Package.ndarray.Broadcast)
-local ndArray_utils = require(Package.ndarray.ndarray_utils)
-local ndArray = require(Package.ndarray)
+local types = require("../types")
+local Broadcast = require("../ndarray/Broadcast")
+local ndArray_utils = require("../ndarray/ndarray_utils")
+local ndArray = require("../ndarray/ndarray")
 
 function module.greater(x1 : types.ndArray<any>,x2 : types.ndArray<any>)
     local Result,OutShape = Broadcast.CreateBroadcastArray(x1,x2,function(a,b) return a > b end)

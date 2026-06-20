@@ -1,9 +1,8 @@
 local module = {}
 
-local Package = script.Parent.Parent
-local utils = require(script.Parent.ndarray_utils)
-local types = require(Package.types)
-local exceptions = require(Package.Exceptions)
+local utils = require("./ndarray_utils")
+local types = require("../types")
+local exceptions = require("../Exceptions")
 
 module.BroadcastShape = function(ShapeA : {number},ShapeB : {number})
     local result = {}

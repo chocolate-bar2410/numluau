@@ -1,9 +1,7 @@
 local module = {}
-local Package = script.Parent.Parent
-local types = require(Package.types)
-
-local ndArray_utils = require(Package.ndarray.ndarray_utils)
-local ndArray = require(Package.ndarray)
+local ndArray_utils = require("../ndarray/ndarray_utils")
+local types = require("../types")
+local ndArray = require("../ndarray/ndarray")
 
 local function CollapseAll<T>(array : types.ndArray<any>,initValue : number,callback : (T,T) -> T)
     local Accumulator = initValue
