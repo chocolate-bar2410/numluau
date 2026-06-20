@@ -4,9 +4,12 @@ local ndArray = require("../ndarray/ndarray")
 
 local ndArray_utils = require("../ndarray/ndarray_utils")
 
+local exceptions = require("../Exceptions")
+
 export type interface = {
     matmul : (A : types.ndArray<number>,B : types.ndArray<number>) -> types.ndArray<number>,
     dot : (A : types.ndArray<number>,B : types.ndArray<number>) -> types.ndArray<number>,
+    det : (A : types.ndArray<number>) -> number
 }
 
 module.matmul = function(A : types.ndArray<number>,B : types.ndArray<number>)
@@ -40,6 +43,36 @@ module.matmul = function(A : types.ndArray<number>,B : types.ndArray<number>)
     end
 
     return ndArray(result, Shape, Strides, 0, A.dtype)
+end
+
+module.det = function(matrix : types.ndArray<number>)
+    if matrix.ndim ~= 2 then
+        exceptions.FormatException("LinAlg", "determinant is only support for ndim = 2")
+        return
+    end
+
+    if matrix.Shape[1] ~= matrix.Shape[2] then
+         exceptions.FormatException("LinAlg", "determinant only works for square matrices")
+        return
+    end
+
+    if matrix.Shape[1] == 2 then
+        return matrix[1][1] * matrix[2][2] - matrix[1][2] * matrix[2][1]
+    end
+
+    if matrix.Shape[1] == 3 then
+        -- optimisation using sarrus's rule
+        local aei = matrix[1][1] * matrix[2][2] * matrix[3][3]
+        local bfg = matrix[2][1] * matrix[3][2] * matrix[1][3]
+        local cdh = matrix[3][1] * matrix[1][2] * matrix[2][3]
+
+        local gec = matrix[1][3] * matrix[2][2] * matrix[3][1]
+        local hfa = matrix[2][3] * matrix[3][2] * matrix[1][1]
+        local idb = matrix[3][3] * matrix[1][2] * matrix[2][1]
+
+        return (aei + bfg + cdh) - (gec + hfa + idb)
+    end
+
 end
 
 module.dot = function(A : types.ndArray<number>,B : types.ndArray<number>)
