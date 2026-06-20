@@ -1,4 +1,4 @@
-export type ndArray<T> = {
+export type ndArray<T> = setmetatable<{
     type : "ndArray",
     dtype : string,
     ndim : number,
@@ -11,8 +11,7 @@ export type ndArray<T> = {
     view : (ndArray<T>) -> ndArray<T>,
     reshape : (ndArray<T>,...number) -> ndArray<T>,
     flatten : (ndArray<T>,...number) -> ndArray<T>,
-
-    
+},{
     __index : (ndArray<T>,index : number | ndArray<boolean> | string) -> (),
     __newindex : () -> (),
     __tostring : (ndArray<T>) -> string,
@@ -25,4 +24,5 @@ export type ndArray<T> = {
     __mod : (ndArray<T>,valu : number | ndArray<T>) -> ndArray<T>,
     __unm : (ndArray<T>,value : number | ndArray<T>) -> ndArray<T>,
 }
+>
 return nil
