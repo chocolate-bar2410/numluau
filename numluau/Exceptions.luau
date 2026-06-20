@@ -6,6 +6,7 @@ local ExceptionTypes = {
     ["Malformed"] = "Malformed Array: %s",
 
     ["Axis"] = "Axis supplied was invalid",
+    ["LinAlg"] = "Error with linear algebra: %s"
 }
 
 module.FormatException = function(ExceptionType : string,Message : string)
