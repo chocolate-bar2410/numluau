@@ -7,4 +7,6 @@
 
 rokit.toml
 sourcemap.json
+
+#folder for experiments
 sandbox
