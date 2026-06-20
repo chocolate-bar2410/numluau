@@ -10,8 +10,9 @@ local ndarray = require("../ndarray/ndarray")
 export type interface = {
     matmul : (A : types.ndArray<number>,B : types.ndArray<number>) -> types.ndArray<number>,
     dot : (A : types.ndArray<number>,B : types.ndArray<number>) -> types.ndArray<number>,
-    det : (A : types.ndArray<number>) -> types.ndArray<number>,
+    det : (matrix : types.ndArray<number>) -> types.ndArray<number>,
     cross : (A : types.ndArray<number>,B : types.ndArray<number>) -> types.ndArray<number>,
+    eigenval : (matrix : types.ndArray<number>) -> types.ndArray<number>,
 }
 
 module.matmul = function(A : types.ndArray<number>,B : types.ndArray<number>)
@@ -23,11 +24,11 @@ module.matmul = function(A : types.ndArray<number>,B : types.ndArray<number>)
     local height = B.Shape[1]
     local n2 = B.Shape[2]
 
-    if n ~= n2 then return end
+    if n ~= height then return end
 
     local result = {}
 
-    local Shape = {width,height}
+    local Shape = {width,n2}
     local Strides = ndArray_utils.ComputeStrides(Shape)
 
     for i = 1, height do
@@ -50,12 +51,10 @@ end
 module.det = function(matrix : types.ndArray<number>)
     if matrix.ndim ~= 2 then
         exceptions.FormatException("LinAlg", "determinant is only support for ndim = 2")
-        return
     end
 
     if matrix.Shape[1] ~= matrix.Shape[2] then
          exceptions.FormatException("LinAlg", "determinant only works for square matrices")
-        return
     end
 
     if matrix.Shape[1] == 2 then
@@ -75,6 +74,7 @@ module.det = function(matrix : types.ndArray<number>)
         return ndarray({(aei + bfg + cdh) - (gec + hfa + idb)},{},{},0,matrix.dtype)
     end
 
+    -- LU decomposition
     local n = matrix.Shape[1]
     local result_mat = matrix:copy()
     local swaps = 0
@@ -120,10 +120,10 @@ end
 
 module.dot = function(A : types.ndArray<number>,B : types.ndArray<number>)
     if A.ndim == 2 and B.ndim == 2 then
-        print("for 2d ndArrays, its better to use numluau.matmul instead of numluau.dot")
+        print("for 2d ndArrays, its better to use numluau.linalg.matmul instead of numluau.linalg.dot")
         return module.matmul(A, B)
     elseif A.ndim == 0 and B.ndim == 0 then
-        print("for 0d ndArrays, its better to use the * operator instead of numluau.dot")
+        print("for 0d ndArrays, its better to use the * operator instead of numluau.linalg.dot")
         return A * B
     end
 
@@ -132,8 +132,8 @@ module.dot = function(A : types.ndArray<number>,B : types.ndArray<number>)
     if #A.Buffer ~= #B.Buffer then return end 
 
     local result = 0
-    for i = 1,#A.Buffer do
-        result += A.Buffer[i] * B.Buffer[i]
+    for i = 1,A.Shape[1] do
+        result += A[i] * B[i]
     end
 
     return ndArray(result, {}, {}, 0, A.dtype)
@@ -156,6 +156,106 @@ module.cross = function(A : types.ndArray<number>,B : types.ndArray<number>)
         A[3]*B[1] - A[1]*B[3],
         A[1]*B[2] - A[2]*B[1]
     }, {3}, {1}, 0, A.dtype)
+end
+
+local function safe_col_dot(matrix, col_idx, start_row)
+    local sum = 0
+    local n = matrix.Shape[1]
+
+    for i = start_row, n do
+        local val = matrix[i][col_idx] 
+        sum += val * val
+    end
+    
+    return sum
+end
+
+local QR_decomposition = function(matrix : types.ndArray<number>)
+    local n : number = matrix.Shape[1]
+    local Q : types.ndArray<number> = matrix:eye()
+    local R : types.ndArray<number> = matrix:copy()
+
+    for k = 1,n - 1 do
+        local dot_xx = safe_col_dot(R,k,k)
+        local alpha = math.sqrt(dot_xx)
+
+        if R[k][k] < 0 then alpha *= -1 end
+
+        local v = {}
+        local v_len = n - k + 1
+
+        v[1] = R[k][k] - alpha
+        for i = 2, v_len do
+            v[i] = R[k + i - 1][k]
+        end
+
+        local dot_vv = 0
+        for i = 1, v_len do
+            dot_vv += v[i] * v[i]
+        end
+        local v_norm = math.sqrt(dot_vv)
+
+        if v_norm ~= 0 then
+            for i = 1, v_len do
+                v[i] /= v_norm
+            end
+        end
+
+        local H = matrix:eye()
+        for i = k, n do
+            for j = k, n do
+                local vi = v[i - k + 1]
+                local vj = v[j - k + 1]
+                local init_val = (i == j) and 1 or 0
+                H[i][j] = init_val - 2 * vi * vj
+            end
+        end
+
+        R = module.matmul(H, R)
+        Q = module.matmul(Q, H)
+    
+    end
+
+    return Q,R
+end
+module.eigenval = function(matrix : types.ndArray<number>)
+    if matrix.ndim ~= 2 then
+        exceptions.FormatException("LinAlg", "eigenval is only support for ndim = 2")
+    end
+
+    if matrix.Shape[1] ~= matrix.Shape[2] then
+        exceptions.FormatException("LinAlg", "non square matrices dont have eigenvalues")
+    end
+
+    if matrix.Shape[1] == 2 then
+        local mean = (matrix[1][1] + matrix[2][2]) / 2
+        local determinant = matrix[1][1] * matrix[2][2] - matrix[1][2] * matrix[2][1]
+
+        local v1 = mean + math.sqrt(mean * mean - determinant)
+        local v2 = mean - math.sqrt(mean * mean - determinant)
+
+        return ndArray({v1,v2}, {2}, {1}, 0, matrix.dtype)
+    end
+
+    -- QR decomposition
+    local n : number = matrix.Shape[1]
+    local Ak = matrix:copy()
+    local Q : types.ndArray<number>
+    local R : types.ndArray<number>
+
+    local iterations = 50
+
+    for i = 1,iterations do
+        Q,R = QR_decomposition(Ak)
+        Ak = module.matmul(R, Q)
+    end
+
+    local result = {}
+    for i = 1,n do
+        table.insert(result,Ak[i][i])
+    end
+
+    return ndArray(result, {n}, {1}, 0, matrix.dtype)
 end
 
 return module :: interface
