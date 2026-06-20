@@ -6,21 +6,20 @@ local Exceptions = require("./Exceptions")
 
 local comparison = require("./logical/comparison")
 local logical = require("./logical/logical")
-local lin_algebra = require("./math/lin_algebra")
 --[[
 to do:
     - linear algebra
-        > matrix multiplication
-        > determinant
-        > dot/cross product
-        > transpose
+        > matrix multiplication --[done]
+        > determinant --[done]
+        > dot/cross product --[done]
+        > transpose --[done]
         > eigen values
         > solve systems of equations
-         
-    - polynomial
     - calculus
         > gradient (derivative)
         > cummulative sum (integral)
+        > cummulative product
+    - polynomial
     - random
     
 reference:
@@ -162,9 +161,11 @@ local Base = {
         result.ndim = 1
 
         return result
-    end
+    end,
+
+    linalg = require("./math/lin_algebra")
 }
 
-type out = typeof(Base) & typeof(math_utils) & typeof(aggregations) & typeof(comparison) & typeof(logical) & typeof(lin_algebra)
+type out = typeof(Base) & typeof(math_utils) & typeof(aggregations) & typeof(comparison) & typeof(logical)
 
-return Merge(Base,math_utils,aggregations,comparison,logical,lin_algebra) :: out
+return Merge(Base,math_utils,aggregations,comparison,logical) :: out
