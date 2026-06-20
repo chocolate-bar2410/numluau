@@ -146,7 +146,6 @@ meta.__index = function(self : types.ndArray<any>,index)
         return New_ndarray(result, {#result}, {1}, 0, self.dtype)
     end
 
-
     if typeof(index) == "string" and index:sub(1,1):match("[^%a]") then
         local Slices = {}
 
@@ -246,17 +245,17 @@ meta.__unm = function(self : types.ndArray<any>)
     return Result
 end
 
-schema.copy = function(self : types.ndArray<any>)
+schema.copy = function<T>(self : types.ndArray<T>)
     local Data = table.clone(self.Buffer)
 
     return New_ndarray(Data, self.Shape, self.Strides, self.Offset,self.dtype)
 end
 
-schema.view = function(self : types.ndArray<any>)
+schema.view = function<T>(self : types.ndArray<T>)
     return New_ndarray(self.Buffer, self.Shape, self.Strides, self.Offset,self.dtype)
 end
 
-schema.reshape = function(self : types.ndArray<any>,... : number)
+schema.reshape = function<T>(self : types.ndArray<T>,... : number)
     local Shape = {...}
 
     local Size = 1
@@ -276,13 +275,43 @@ schema.reshape = function(self : types.ndArray<any>,... : number)
     return result
 end
 
-schema.flatten = function(self : types.ndArray<any>)
+schema.flatten = function<T>(self : types.ndArray<T>)
     local result = self:view()
     result.Shape = {#self.Buffer}
     result.Strides = {1}
     result.ndim = 1
 
     return result
+end
+
+schema.eye = function<T>(self : types.ndArray<T>)
+    if self.ndim ~= 2 then
+        Exceptions.FormatException("LinAlg", ("tried to find identity from a ndarray with ndim: %d"):format(self.ndim))
+        return
+    end
+    if self.Shape[1] ~= self.Shape[2] then
+        Exceptions.FormatException("LinAlg", "cannot find identity matrix of non square matrix")
+        return
+    end
+
+    local size = self.Strides[1] * self.Strides[1]
+
+    local data = table.create(size,0)
+
+    for i = 1,self.Strides[1] do
+        local index = (i - 1) * self.Strides[1] + i
+        data[index] = 1
+    end
+
+    return New_ndarray(data, {self.Strides[1],self.Strides[1]}, {self.Strides[1],self.Strides[2]}, self.Offset, self.dtype)
+end
+
+schema.transpose = function<T>(self : types.ndArray<T>)
+    if self.ndim < 2 then
+        Exceptions.FormatException("Array", "transposing only works for ndim >= 2")
+    end
+
+
 end
 
 return New_ndarray

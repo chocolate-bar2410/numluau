@@ -11,6 +11,7 @@ export type ndArray<T> = setmetatable<{
     view : (ndArray<T>) -> ndArray<T>,
     reshape : (ndArray<T>,...number) -> ndArray<T>,
     flatten : (ndArray<T>,...number) -> ndArray<T>,
+    eye : (ndArray<T>) -> ndArray<number>,
 },{
     __index : (ndArray<T>,index : number | ndArray<boolean> | string) -> (),
     __newindex : () -> (),
