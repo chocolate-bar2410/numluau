@@ -1,4 +1,3 @@
---!strict
 -- a small framework for our unit tests inspired by junit
 local module = {}
 
@@ -15,6 +14,16 @@ local table_equals = function<T>(A : {T},B : {T})
 
     for i = 1,#A do
         if A[i] ~= B[i] then return false end
+    end
+
+    return true
+end
+
+local table_aprox_equals = function(A : {number},B : {number})
+    if #A ~= #B then return false end
+
+    for i = 1,#A do
+        if math.abs(A[i] - B[i]) > 1e-9 then return false end
     end
 
     return true
@@ -68,6 +77,18 @@ module.AssertEquals = function(A,B)
         error(("%s and %s aren't equal"):format(tab_string(A),tab_string(B)))
     else
         if A == B then return end
+
+        error(("%s and %s aren't equal"):format(tostring(A),tostring(B)))
+    end    
+end
+
+module.AssertAproxEquals = function(A,B)
+    if type(A) == "table" and type(A) == type(B) then
+        if table_aprox_equals(A,B) then return end
+
+        error(("%s and %s aren't equal"):format(tab_string(A),tab_string(B)))
+    else
+        if math.abs(A - B) < 1e-9 then return end
 
         error(("%s and %s aren't equal"):format(tostring(A),tostring(B)))
     end    

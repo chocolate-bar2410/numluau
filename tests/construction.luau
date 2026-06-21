@@ -86,5 +86,22 @@ unit_tests.Test("ndarray reshaping",function()
     unit_tests.AssertFalse(result)
 end)
 
+unit_tests.Test("meshgrid generation", function()
+    local X = numluau.array({1,2,3})
+    local Y = numluau.array({4,5})
+
+    local XV,YV = numluau.meshgrid(X,Y)
+
+    unit_tests.AssertEquals(XV.Shape, {2,3})
+    unit_tests.AssertEquals(YV.Shape, {2,3})
+
+    unit_tests.AssertEquals(XV.Buffer, {1,2,3,1,2,3})
+    unit_tests.AssertEquals(YV.Buffer, {4,4,4,5,5,5})
+
+    local grid = numluau.reshape(X, {3,1})
+    local result = pcall(numluau.meshgrid,grid, Y)
+    unit_tests.AssertFalse(result)
+end)
+
 
 unit_tests.PrintResults()
