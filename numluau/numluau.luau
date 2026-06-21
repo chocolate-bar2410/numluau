@@ -13,8 +13,8 @@ to do:
         > determinant --[done]
         > dot/cross product --[done]
         > transpose --[done]
-        > eigen values
-        > solve systems of equations
+        > eigen values --[done]
+        > solve systems of equations --[done]
     - calculus
         > gradient (derivative)
         > cummulative sum (integral)
@@ -67,10 +67,7 @@ local Base = {
         end
 
         for i = 0,num do 
-            table.insert(
-            result,
-            math.floor(math.lerp(start,stop,(1/num) * i) * 100) / 100
-        ) 
+            table.insert(result,math.lerp(start,stop,(1/num) * i)) 
         end
         table.remove(result,#result)
         table.insert(result,stop)
@@ -162,9 +159,23 @@ local Base = {
 
         return result
     end,
-
     linalg = require("./math/lin_algebra")
 }
+
+Base.meshgrid = function<T>(X : types.ndArray<T>,Y : types.ndArray<T>)
+    if X.ndim ~= 1 or Y.ndim ~= 1 then
+        Exceptions.Exception("Array","meshgrid inputs must have ndim = 1")
+    end
+
+    local x_row = X:reshape(1,X.Shape[1])
+    local y_col = Y:reshape(Y.Shape[1],1)
+
+    local x_ones = Base.ones(Y.Shape[1],1)
+    local y_ones = Base.ones(1,X.Shape[1])
+
+    return x_row * x_ones, y_col * y_ones
+end
+
 
 type out = typeof(Base) & typeof(math_utils) & typeof(aggregations) & typeof(comparison) & typeof(logical)
 
