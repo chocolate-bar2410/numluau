@@ -1,7 +1,5 @@
 local module = {}
 local types = require("../types")
-local ndArray = require("../ndarray/ndarray")
-
 local ndArray_utils = require("../ndarray/ndarray_utils")
 
 local exceptions = require("../Exceptions")
@@ -15,6 +13,7 @@ export type interface = {
     eigenval : (matrix : types.ndArray<number>) -> types.ndArray<number>,
     eig : (matrix : types.ndArray<number>) -> (types.ndArray<number>, types.ndArray<number>),
     qr : (matrix : types.ndArray<number>) -> types.ndArray<number>,
+    lu : (matrix : types.ndArray<number>) -> (types.ndArray<number>,types.ndArray<number>,number)
 }
 
 module.matmul = function(A : types.ndArray<number>,B : types.ndArray<number>)
@@ -47,7 +46,56 @@ module.matmul = function(A : types.ndArray<number>,B : types.ndArray<number>)
         end
     end
 
-    return ndArray(result, Shape, Strides, 0, A.dtype)
+    return ndarray(result, Shape, Strides, 0, A.dtype)
+end
+
+module.lu = function(matrix : types.ndArray<number>)
+    local n = matrix.Shape[1]
+    local U = matrix:copy()
+    
+    local L_data = ndArray_utils.IdentityBuffer(n)
+    local L = ndarray(L_data, {n,n}, {n,1}, 0, matrix.dtype)
+
+    local swaps = 0
+
+    for k = 1,n do
+        local pivot_row = k
+        local max_value = math.abs(U[k][k])
+        for i = k + 1, n do
+            local value = math.abs(U[i][k])
+            if value <= max_value then continue end
+            max_value = value
+            pivot_row = i
+        end
+
+        if max_value < 1e-9 then 
+            return nil,nil,swaps 
+        end
+        
+        if pivot_row ~= k then
+            for j = 1, n do
+                U[k][j], U[pivot_row][j] = U[pivot_row][j],U[k][j]
+            end
+
+            for j = 1, k - 1 do
+                L[k][j], L[pivot_row][j] = L[pivot_row][j], L[k][j]
+            end
+
+            swaps += 1
+        end
+
+        local pivot = U[k][k]
+        for i = k + 1, n do
+            local factor = U[i][k] / pivot
+            L[i][k] = factor
+
+            for j = k, n do
+                U[i][j] = U[i][j] - factor * U[k][j]
+            end
+        end
+    end
+
+    return L,U,swaps
 end
 
 module.det = function(matrix : types.ndArray<number>)
@@ -78,43 +126,15 @@ module.det = function(matrix : types.ndArray<number>)
 
     -- LU decomposition
     local n = matrix.Shape[1]
-    local result_mat = matrix:copy()
-    local swaps = 0
 
-    for k = 1,n do
-        local pivot_row = k
-        local max_value = math.abs(result_mat[k][k])
-        for i = k + 1, n do
-            local value = math.abs(result_mat[i][k])
-            if value <= max_value then continue end
-            max_value = value
-            pivot_row = i
-        end
+    local _,U,swaps = module.lu(matrix)
 
-        if max_value == 0 then return ndarray({0},{},{},0,matrix.dtype) end
-        
-        if pivot_row ~= k then
-            for j = 1, n do
-                result_mat[k][j], result_mat[pivot_row][j] = result_mat[pivot_row][j],result_mat[k][j]
-            end
-
-            swaps += 1
-        end
-
-        local pivot = result_mat[k][k]
-        for i = k + 1, n do
-            local factor = result_mat[i][k] / pivot
-            result_mat[i][k] = factor
-
-            for j = k + 1, n do
-                result_mat[i][j] = result_mat[i][j] - factor * result_mat[k][j]
-            end
-        end
-    end
+    if not U then return ndarray({0},{},{},0,matrix.dtype) end
 
     local result = swaps % 2 == 0 and 1 or -1
+
     for i = 1,n do
-        result *= result_mat[i][i]
+        result *= U[i][i]
     end
 
     return ndarray({result},{},{},0,matrix.dtype)
@@ -138,7 +158,7 @@ module.dot = function(A : types.ndArray<number>,B : types.ndArray<number>)
         result += A[i] * B[i]
     end
 
-    return ndArray(result, {}, {}, 0, A.dtype)
+    return ndarray(result, {}, {}, 0, A.dtype)
 end
 
 module.cross = function(A : types.ndArray<number>,B : types.ndArray<number>)
@@ -153,7 +173,7 @@ module.cross = function(A : types.ndArray<number>,B : types.ndArray<number>)
         exceptions.FormatException("LinAlg","cross product only available between 3d vectors")
     end
 
-    return ndArray({
+    return ndarray({
         A[2]*B[3] - A[3]*B[2],
         A[3]*B[1] - A[1]*B[3],
         A[1]*B[2] - A[2]*B[1]
@@ -236,7 +256,7 @@ module.eigenval = function(matrix : types.ndArray<number>)
         local v1 = mean + math.sqrt(mean * mean - determinant)
         local v2 = mean - math.sqrt(mean * mean - determinant)
 
-        return ndArray({v1,v2}, {2}, {1}, 0, matrix.dtype)
+        return ndarray({v1,v2}, {2}, {1}, 0, matrix.dtype)
     end
 
     -- QR decomposition
@@ -257,7 +277,7 @@ module.eigenval = function(matrix : types.ndArray<number>)
         table.insert(result,Ak[i][i])
     end
 
-    return ndArray(result, {n}, {1}, 0, matrix.dtype)
+    return ndarray(result, {n}, {1}, 0, matrix.dtype)
 end
 
 module.eig = function(matrix : types.ndArray<number>)
@@ -317,7 +337,7 @@ module.eig = function(matrix : types.ndArray<number>)
             end
         end
         
-        return ndArray({v1,v2}, {2}, {1}, 0, matrix.dtype), ndarray({ev1_x,ev2_x,ev1_y,ev2_y}, {2,2}, {2,1}, 0, matrix.dtype)
+        return ndarray({v1,v2}, {2}, {1}, 0, matrix.dtype), ndarray({ev1_x,ev2_x,ev1_y,ev2_y}, {2,2}, {2,1}, 0, matrix.dtype)
     end
 
     -- QR decomposition
@@ -346,7 +366,11 @@ module.eig = function(matrix : types.ndArray<number>)
         table.insert(result,Ak[i][i])
     end
 
-    return ndArray(result, {n}, {1}, 0, matrix.dtype),eigen_vectors
+    return ndarray(result, {n}, {1}, 0, matrix.dtype),eigen_vectors
+end
+
+module.solve = function(A : types.ndArray<number>,C : types.ndArray<number>)
+    
 end
 
 return module :: interface
