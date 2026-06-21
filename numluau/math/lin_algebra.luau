@@ -13,6 +13,8 @@ export type interface = {
     det : (matrix : types.ndArray<number>) -> types.ndArray<number>,
     cross : (A : types.ndArray<number>,B : types.ndArray<number>) -> types.ndArray<number>,
     eigenval : (matrix : types.ndArray<number>) -> types.ndArray<number>,
+    eig : (matrix : types.ndArray<number>) -> (types.ndArray<number>, types.ndArray<number>),
+    qr : (matrix : types.ndArray<number>) -> types.ndArray<number>,
 }
 
 module.matmul = function(A : types.ndArray<number>,B : types.ndArray<number>)
@@ -170,7 +172,7 @@ local function safe_col_dot(matrix, col_idx, start_row)
     return sum
 end
 
-local QR_decomposition = function(matrix : types.ndArray<number>)
+module.qr = function(matrix : types.ndArray<number>)
     local n : number = matrix.Shape[1]
     local Q : types.ndArray<number> = matrix:eye()
     local R : types.ndArray<number> = matrix:copy()
@@ -246,7 +248,7 @@ module.eigenval = function(matrix : types.ndArray<number>)
     local iterations = 50
 
     for i = 1,iterations do
-        Q,R = QR_decomposition(Ak)
+        Q,R = module.qr(Ak)
         Ak = module.matmul(R, Q)
     end
 
@@ -256,6 +258,95 @@ module.eigenval = function(matrix : types.ndArray<number>)
     end
 
     return ndArray(result, {n}, {1}, 0, matrix.dtype)
+end
+
+module.eig = function(matrix : types.ndArray<number>)
+    if matrix.ndim ~= 2 then
+        exceptions.FormatException("LinAlg", "eigenval is only support for ndim = 2")
+    end
+
+    if matrix.Shape[1] ~= matrix.Shape[2] then
+        exceptions.FormatException("LinAlg", "non square matrices dont have eigenvalues")
+    end
+
+    if matrix.Shape[1] == 2 then
+        local mean = (matrix[1][1] + matrix[2][2]) / 2
+        local determinant = matrix[1][1] * matrix[2][2] - matrix[1][2] * matrix[2][1]
+
+        local v1 = mean + math.sqrt(mean * mean - determinant)
+        local v2 = mean - math.sqrt(mean * mean - determinant)
+
+        local ev1_x
+        local ev1_y
+        local ev2_x
+        local ev2_y
+
+        local fuzzy_factor = 1e-9 -- to account for floating point percission
+
+        if math.abs(v1 - v2) < fuzzy_factor then
+
+            if math.abs(matrix[1][2]) < fuzzy_factor and math.abs(matrix[2][1]) < fuzzy_factor then
+                ev1_x,ev1_y = 1,0
+                ev2_x,ev2_y = 0,1
+            else
+                if math.abs(matrix[2][1]) > fuzzy_factor then
+                    ev1_y = 1
+                    ev1_x = -(matrix[2][2] - v1) / matrix[2][1]
+                else
+                    ev1_x = 1
+                    ev1_y = -(matrix[1][1] - v1) / matrix[1][2]
+                end
+
+                local norm = math.sqrt(ev1_x*ev1_x + ev1_y*ev1_y)
+                ev1_x, ev1_y = ev1_x / norm, ev1_y / norm
+
+                ev2_x, ev2_y = ev1_x, ev1_y
+            end
+
+            
+        else
+            ev1_x = math.sqrt(math.abs((v1 - matrix[2][2])/(v1 - v2)))
+            ev1_y = math.sqrt(math.abs((v1 - matrix[1][1])/(v1 - v2)))
+
+            ev2_x = math.sqrt(math.abs((v2 - matrix[2][2])/(v2 - v1)))
+            ev2_y = math.sqrt(math.abs((v2 - matrix[1][1])/(v2 - v1)))
+
+            if matrix[1][2] < fuzzy_factor then
+                ev1_y = -ev1_y
+                ev2_y = -ev2_y
+            end
+        end
+        
+        return ndArray({v1,v2}, {2}, {1}, 0, matrix.dtype), ndarray({ev1_x,ev2_x,ev1_y,ev2_y}, {2,2}, {2,1}, 0, matrix.dtype)
+    end
+
+    -- QR decomposition
+    local n : number = matrix.Shape[1]
+    local Ak = matrix:copy()
+    local Q : types.ndArray<number>
+    local R : types.ndArray<number>
+
+    local eigen_vectors
+    local iterations = 50
+
+    for i = 1,iterations do
+        Q,R = module.qr(Ak)
+        Ak = module.matmul(R, Q)
+
+        if i == 1 then
+            eigen_vectors = Q
+        else
+            eigen_vectors = module.matmul(Q, eigen_vectors)
+        end
+
+    end
+
+    local result = {}
+    for i = 1,n do
+        table.insert(result,Ak[i][i])
+    end
+
+    return ndArray(result, {n}, {1}, 0, matrix.dtype),eigen_vectors
 end
 
 return module :: interface
