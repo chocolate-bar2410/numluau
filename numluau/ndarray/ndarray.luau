@@ -277,7 +277,7 @@ schema.reshape = function<T>(self : types.ndArray<T>,... : number)
     end
 
     if #self.Buffer ~= Size then
-        Exceptions.FormatException("Array",`Cannot reshape an array size {#self.Buffer} into shape ({table.concat(Shape,",")})`)
+        Exceptions.FormatException("Array",`Cannot reshape an array with size {#self.Buffer} into shape ({table.concat(Shape,",")})`)
     end
 
     local result = self:view()
