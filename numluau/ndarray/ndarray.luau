@@ -289,21 +289,22 @@ schema.eye = function<T>(self : types.ndArray<T>)
         Exceptions.FormatException("LinAlg", ("tried to find identity from a ndarray with ndim: %d"):format(self.ndim))
         return
     end
-    if self.Shape[1] ~= self.Shape[2] then
-        Exceptions.FormatException("LinAlg", "cannot find identity matrix of non square matrix")
-        return
-    end
 
-    local size = self.Strides[1] * self.Strides[1]
+    local rows = self.Shape[1]
+    local cols = self.Shape[2]
+
+    local size = rows * cols
 
     local data = table.create(size,0)
 
-    for i = 1,self.Strides[1] do
-        local index = (i - 1) * self.Strides[1] + i
+    local min_dimension = math.min(rows,cols)
+
+    for i = 1,min_dimension do
+        local index = (i - 1) * cols + i
         data[index] = 1
     end
 
-    return New_ndarray(data, {self.Strides[1],self.Strides[1]}, {self.Strides[1],self.Strides[2]}, 0, self.dtype)
+    return New_ndarray(data, {rows,cols}, {cols,1}, 0, self.dtype)
 end
 
 schema.transpose = function<T>(self : types.ndArray<T>)
