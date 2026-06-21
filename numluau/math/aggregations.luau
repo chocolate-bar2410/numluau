@@ -18,8 +18,8 @@ local function Aggregate<T>(array : types.ndArray<any>,axis : number,initValue :
 
     axis = array.ndim - axis
     initValue = initValue ~= nil and initValue or 0
-    local AxisSize = array.Shape[axis]
-    local AxisStride = array.Strides[axis]
+    local axis_size = array.Shape[axis]
+    local axis_stride = array.Strides[axis]
 
     local OutputShape = table.clone(array.Shape)
     table.remove(OutputShape,axis)
@@ -35,9 +35,9 @@ local function Aggregate<T>(array : types.ndArray<any>,axis : number,initValue :
         local Acculmulator = initValue
         local AxisOffset = Offset
         
-        for a = 0,AxisSize - 1 do
+        for a = 0,axis_size - 1 do
             Acculmulator = callback(Acculmulator,array.Buffer[AxisOffset + 1],OutIndex)
-            AxisOffset += AxisStride
+            AxisOffset += axis_stride
         end
 
         Data[OutIndex] = Acculmulator
