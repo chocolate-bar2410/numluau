@@ -13,7 +13,8 @@ export type interface = {
     eigenval : (matrix : types.ndArray<number>) -> types.ndArray<number>,
     eig : (matrix : types.ndArray<number>) -> (types.ndArray<number>, types.ndArray<number>),
     qr : (matrix : types.ndArray<number>) -> types.ndArray<number>,
-    lu : (matrix : types.ndArray<number>) -> (types.ndArray<number>,types.ndArray<number>,number)
+    lu : (matrix : types.ndArray<number>) -> (types.ndArray<number>,types.ndArray<number>,{number},number),
+    solve : (A : types.ndArray<number>,B: types.ndArray<number>) -> types.ndArray<number>
 }
 
 module.matmul = function(A : types.ndArray<number>,B : types.ndArray<number>)
@@ -56,6 +57,9 @@ module.lu = function(matrix : types.ndArray<number>)
     local L_data = ndArray_utils.IdentityBuffer(n)
     local L = ndarray(L_data, {n,n}, {n,1}, 0, matrix.dtype)
 
+    local P = {}
+    for i = 1,n do P[i] = i end
+
     local swaps = 0
 
     for k = 1,n do
@@ -81,6 +85,8 @@ module.lu = function(matrix : types.ndArray<number>)
                 L[k][j], L[pivot_row][j] = L[pivot_row][j], L[k][j]
             end
 
+            P[k],P[pivot_row] = P[pivot_row],P[k]
+
             swaps += 1
         end
 
@@ -95,7 +101,7 @@ module.lu = function(matrix : types.ndArray<number>)
         end
     end
 
-    return L,U,swaps
+    return L,U,P,swaps
 end
 
 module.det = function(matrix : types.ndArray<number>)
@@ -127,7 +133,7 @@ module.det = function(matrix : types.ndArray<number>)
     -- LU decomposition
     local n = matrix.Shape[1]
 
-    local _,U,swaps = module.lu(matrix)
+    local _,U,_,swaps = module.lu(matrix)
 
     if not U then return ndarray({0},{},{},0,matrix.dtype) end
 
@@ -369,8 +375,55 @@ module.eig = function(matrix : types.ndArray<number>)
     return ndarray(result, {n}, {1}, 0, matrix.dtype),eigen_vectors
 end
 
-module.solve = function(A : types.ndArray<number>,C : types.ndArray<number>)
-    
+module.solve = function(A : types.ndArray<number>,B: types.ndArray<number>)
+    if A.ndim ~= 2 then
+        exceptions.FormatException("LinAlg", "coefficient matrix must be ndim = 2")
+    end
+
+    if B.ndim ~= 1 then
+        exceptions.FormatException("LinAlg", "ordinate ndarray must be ndim = 1")
+    end
+
+    if A.Shape[1] ~= A.Shape[2] then
+        exceptions.FormatException("LinAlg", "coefficient matrix must be a square matrix")
+    end
+
+    -- solving the equation Ax = B
+    -- where A = LU
+    local L,U,P = module.lu(A)
+    local n = A.Shape[1]
+    if not L then
+        exceptions.FormatException("LinAlg", "A has no inverse")
+    end
+
+    local Y = table.create(n,0)
+    local X_data = table.create(n,0)
+
+    -- forwards sub to solve LY = B
+    for i = 1,n do
+        local permuted_row = P[i]
+        local b_value = B[permuted_row]
+        local sum = 0
+
+        for j = 1,i - 1 do
+            sum += L[i][j] * Y[j]
+        end
+
+        Y[i] = b_value - sum
+    end
+
+    -- backwards sub to solve UX = Y
+    for i = n,1,-1 do
+        local sum = 0
+        for j = i + 1,n do
+            sum += U[i][j] * X_data[j]
+        end
+
+        X_data[i] = (Y[i] - sum) / U[i][i]
+    end
+
+
+    return ndarray(X_data, {n}, {1}, 0, A.dtype)
 end
 
 return module :: interface
