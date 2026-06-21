@@ -293,17 +293,7 @@ schema.eye = function<T>(self : types.ndArray<T>)
     local rows = self.Shape[1]
     local cols = self.Shape[2]
 
-    local size = rows * cols
-
-    local data = table.create(size,0)
-
-    local min_dimension = math.min(rows,cols)
-
-    for i = 1,min_dimension do
-        local index = (i - 1) * cols + i
-        data[index] = 1
-    end
-
+    local data = utils.IdentityBuffer(rows, cols)
     return New_ndarray(data, {rows,cols}, {cols,1}, 0, self.dtype)
 end
 
