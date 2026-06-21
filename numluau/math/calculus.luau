@@ -142,7 +142,7 @@ module.cumprod = function<T>(array : types.ndArray<T>,axis : number)
     axis = axis or 0
 
     return ApplyAcrossAxis(array, axis, function(track_offsets, output_buffer)
-        local total = 0
+        local total = 1
         for i = 1,#track_offsets do
             local index = track_offsets[i]
             total *= array.Buffer[index]
