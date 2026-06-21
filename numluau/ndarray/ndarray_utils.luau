@@ -93,4 +93,22 @@ function module.FlatIndex(self : types.ndArray<any>,linearIndex)
     return offset
 end
 
+function module.IdentityBuffer(rows : number, cols : number)
+
+    cols = cols or rows
+
+    local size = rows * cols
+
+    local data = table.create(size,0)
+
+    local min_dimension = math.min(rows,cols)
+
+    for i = 1,min_dimension do
+        local index = (i - 1) * cols + i
+        data[index] = 1
+    end
+
+    return data
+end
+
 return module
