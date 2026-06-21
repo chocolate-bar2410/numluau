@@ -6,6 +6,8 @@ local Exceptions = require("./Exceptions")
 
 local comparison = require("./logical/comparison")
 local logical = require("./logical/logical")
+
+local calculus = require("./math/calculus")
 --[[
 to do:
     - linear algebra
@@ -16,9 +18,9 @@ to do:
         > eigen values --[done]
         > solve systems of equations --[done]
     - calculus
-        > gradient (derivative)
-        > cummulative sum (integral)
-        > cummulative product
+        > gradient (derivative) --[done]
+        > cummulative sum (integral) --[done]
+        > cummulative product --[done]
     - polynomial
     - random
     
@@ -203,6 +205,6 @@ local Base = {
 
 
 
-type out = typeof(Base) & typeof(math_utils) & typeof(aggregations) & typeof(comparison) & typeof(logical)
+type out = typeof(Base) & typeof(math_utils) & typeof(aggregations) & typeof(comparison) & typeof(logical) & typeof(calculus)
 
-return Merge(Base,math_utils,aggregations,comparison,logical) :: out
+return Merge(Base,math_utils,aggregations,comparison,logical,calculus) :: out
