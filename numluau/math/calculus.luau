@@ -73,7 +73,7 @@ module.diff = function<T>(array : types.ndArray<T>,axis : number)
             local current_index = axis_offset + 1
             local next_index = current_index + axis_stride
 
-            data[out_index] = current_index + axis_stride
+            data[out_index] = array.Buffer[next_index] - array.Buffer[current_index]
             out_index += 1
             axis_offset += axis_stride
         end
