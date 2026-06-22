@@ -54,6 +54,11 @@ function module.PrettyPrint(ndArray,dim,indices : {})
         parts[#parts+1] = module.PrettyPrint(ndArray, dim + 1, indices)
     end
 
+    for i,v in parts do
+        if not tonumber(v) then continue end
+        parts[i] = string.format("%.8g",v)
+    end
+
     if dim == ndArray.ndim then
         return "[" .. table.concat(parts, " ") .. "]"
     else
