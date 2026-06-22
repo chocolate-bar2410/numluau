@@ -21,8 +21,8 @@ to do:
         > gradient (derivative) --[done]
         > cummulative sum (integral) --[done]
         > cummulative product --[done]
-    - polynomial
-    - random
+    - polynomial --[incomplete]
+    - random --[incomplete]
     
 reference:
     - https://www.youtube.com/watch?v=VXU4LSAQDSc
