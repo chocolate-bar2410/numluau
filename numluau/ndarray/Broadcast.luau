@@ -54,15 +54,28 @@ module.BroadcastTo = function(ndArray : types.ndArray<any>,TargetShape : {number
 end
 
 module.BroadcastScalar = function(A : types.ndArray<any> | any,B : types.ndArray<any> | any,Callback : (A : any,B : any) -> any)
-    local nottab : any = typeof(A) ~= "table" and A or B
-    local tab : types.ndArray<any> = typeof(A) == "table" and A or B
+    if typeof(A) ~= "table" then
+        
+        local nottab : any = A
+        local tab : types.ndArray<any> = B
 
-    local result = {}
-    for i = 1,#tab.Buffer do
-        result[#result + 1] = Callback(nottab,tab.Buffer[i])
+        local result = {}
+        for i = 1,#tab.Buffer do
+            result[#result + 1] = Callback(nottab,tab.Buffer[i])
+        end
+
+        return result,tab.Shape
+    else
+        local nottab : any = B
+        local tab : types.ndArray<any> = A
+
+        local result = {}
+        for i = 1,#tab.Buffer do
+            result[#result + 1] = Callback(tab.Buffer[i],nottab)
+        end
+
+        return result,tab.Shape
     end
-
-    return result,tab.Shape
 end
 
 module.CreateBroadcastArray = function(A : types.ndArray<any>,B : types.ndArray<any>,Callback : (A : any,B : any) -> any)
