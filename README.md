@@ -29,7 +29,8 @@ require it from your packages
 ```lua
 local numluau = require("path.to.library")
 ```
-handling ndarrays
+the main feature of numluau are its N-Dimensional arrays  
+the code below provides a example of how you could create and handle these arrays
 ```lua
 -- create a ndarray using a table
 local array1 : numluau.ndArray<number> = numluau.array({1,2,3,4,5})
@@ -44,7 +45,7 @@ print(array1 * 20)     -- [20 40 60 80 100]
 print(array1[1])       -- 1
 print(array1["1:3"])   -- [1 2 3]
 
--- numluau allows you to convert nested tables
+-- numluau allows you to also convert nested tables
 local array3 : numluau.ndArray<number> = numluau.array({{2,4},{6,8},{10,12}})
 print(array3[1][1])          -- 2
 print(array3[":,2"])         -- [4 8 12]
@@ -58,14 +59,15 @@ print(numluau.sum(array3,1)) -- [(2 + 6 + 10) (4 + 8 + 12)] -> [18 24]
 circuit voltage problem
 ```lua
 --[[
-After examining a circuit full of resistors, you find that the voltage at 4 specified points is given by
-(3 * v1) + (2 * v2) + (3 * v3) + (10 * v4) = 4
-(2 * v1) - (2 * v2) + (5 * v3) + (8  * v4) = 1
-(3 * v1) + (3 * v2) + (4 * v3) + (9  * v4) = 3
-(3 * v1) + (4 * v2) - (3 * v3) - (7  * v4) = 2
+After examining a circuit full of resistors, you find that the voltage at 4 specified points is given by:
 
-where v1 - v4 are voltages
-find v1,v2,v3,v4
+3v₁ + 2v₂ + 3v₃ + 10v₄ = 4
+2v₁ - 2v₂ + 5v₃ + 8v₄  = 1
+3v₁ + 3v₂ + 4v₃ + 9v₄  = 3
+3v₁ + 4v₂ - 3v₃ - 7v₄  = 2
+
+where v₁ - v₄ are voltages
+find v₁,v₂,v₃,v₄
 ]]
 local numluau = require("../numluau/numluau")
 local A : numluau.ndArray<number> = numluau.array({
@@ -78,13 +80,13 @@ local A : numluau.ndArray<number> = numluau.array({
 local C : numluau.ndArray<number> = numluau.array({4,1,3,2})
 local voltages = numluau.linalg.solve(A, C)
 
-print(string.format("voltage results: \nv1 : %g \nv2 : %g \nv3 : %g  \nv4 : %g",voltages[1],voltages[2],voltages[3],voltages[4]))
+print(string.format("voltage results: \nv₁ : %g \nv₂ : %g \nv₃ : %g  \nv₄ : %g",voltages[1],voltages[2],voltages[3],voltages[4]))
 --[[
 voltage results:
-v1 : 0.783784
-v2 : 0.036036
-v3 : -0.675676 
-v4 : 0.36036
+v₁ : 0.783784
+v₂ : 0.036036
+v₃ : -0.675676 
+v₄ : 0.36036
 ]]
 ```
 
