@@ -325,4 +325,22 @@ schema.transpose = function<T>(self : types.ndArray<T>)
     return transposed
 end
 
+schema.item = function<T>(self : types.ndArray<T>,... : number)
+    if self.ndim == 0 then
+        return self.Buffer[1]
+    end
+    local args = {...}
+
+    for i,v in args do
+        args[i] = v * self.Strides[i] - 1
+    end
+
+    local index = 0
+    for i,v in args do
+        index += v
+    end
+
+    return self.Buffer[index]
+end
+
 return New_ndarray
