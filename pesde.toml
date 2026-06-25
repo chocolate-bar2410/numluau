@@ -20,4 +20,7 @@ lib = "numluau/numluau.luau"
 pesde = "^0.7.1"
 lune = "^0.10.4"
 
+[indices]
+default = "https://github.com/pesde-pkg/index"
+
 [dependencies]
