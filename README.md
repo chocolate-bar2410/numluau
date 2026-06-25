@@ -1,5 +1,5 @@
 # numLuau
-numluau (numerical luau) is a math library for luau
+numluau (numerical luau) is a math library for luau.
 
 features:
 - a N dimensional array object
