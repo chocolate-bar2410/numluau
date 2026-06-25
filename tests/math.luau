@@ -1,6 +1,6 @@
 --!strict
 local unit_tests = require("./unit_test")
-local numluau = require("@numluau")
+local numluau = require("../numluau/numluau")
 
 unit_tests.Test("operations on floats",function()
     local input = numluau.array({-2.7, -0.5, 0, 1.2, 3.9})
