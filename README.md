@@ -1,21 +1,12 @@
 # numLuau
-numluau (numerical luau) is a math library for luau.
+numluau (numerical luau) is a scientific computing library designed to bring vectorised operations, matrix utilities and scientific computing in general to luau programmers.
 
-features:
-- a N dimensional array object
-    - broadcasting
-    - sophisicated slice indexing
-    - element wise operations
+create N-dimensional arrays & compute operations, aggregations, linear equations and so much more.
 
-- linear algebra
-    - linear equation solvers
-    - eigen value/vectors
-    - QR and LU decompositions
-    - determinants
-    - dot/cross products
-    - matrix multiplications
-
-and alot more
+features
+- N-Dimensional array objects
+- Linear algebra capabilities
+- Sophisticated broadcasting functions
 
 # installation
 
