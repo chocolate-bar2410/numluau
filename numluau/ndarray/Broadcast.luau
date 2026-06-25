@@ -4,7 +4,7 @@ local utils = require("./ndarray_utils")
 local types = require("../types")
 local exceptions = require("../Exceptions")
 
-module.BroadcastShape = function(ShapeA : {number},ShapeB : {number})
+module.BroadcastShape = function<T>(ShapeA : {number},ShapeB : {number})
     local result = {}
     local lenA = #ShapeA
     local lenB = #ShapeB
@@ -24,7 +24,7 @@ module.BroadcastShape = function(ShapeA : {number},ShapeB : {number})
     return result
 end
 
-module.ComputeBroadcastStrides = function(Shape : {number}, Strides : {number}, TargetShape : {number})
+module.ComputeBroadcastStrides = function<T>(Shape : {number}, Strides : {number}, TargetShape : {number})
     local result = {}
     local OriginalRank = #Shape
     local TargetRank = #TargetShape
@@ -44,7 +44,7 @@ module.ComputeBroadcastStrides = function(Shape : {number}, Strides : {number}, 
     return result
 end
 
-module.BroadcastTo = function(ndArray : types.ndArray<any>,TargetShape : {number})
+module.BroadcastTo = function<T>(ndArray : types.ndArray<T>,TargetShape : {number})
     local NewStrides = module.ComputeBroadcastStrides(ndArray.Shape,ndArray.Strides,TargetShape)
     local ArrayView = ndArray:view()
     ArrayView.Strides = NewStrides
@@ -53,32 +53,24 @@ module.BroadcastTo = function(ndArray : types.ndArray<any>,TargetShape : {number
     return ArrayView
 end
 
-module.BroadcastScalar = function(A : types.ndArray<any> | any,B : types.ndArray<any> | any,Callback : (A : any,B : any) -> any)
-    if typeof(A) ~= "table" then
-        
-        local nottab : any = A
-        local tab : types.ndArray<any> = B
+module.BroadcastScalar = function<T>(A : types.ndArray<T> | T,B : types.ndArray<T> | T,Callback : (A : T,B : T) -> T)
+    local not_ndarray : T = type(A) ~= "table" and A or B
+    local _ndarray : types.ndArray<T> = type(A) == "table" and A or B
+    
+    local result = {}
 
-        local result = {}
-        for i = 1,#tab.Buffer do
-            result[#result + 1] = Callback(nottab,tab.Buffer[i])
-        end
-
-        return result,tab.Shape
-    else
-        local nottab : any = B
-        local tab : types.ndArray<any> = A
-
-        local result = {}
-        for i = 1,#tab.Buffer do
-            result[#result + 1] = Callback(tab.Buffer[i],nottab)
-        end
-
-        return result,tab.Shape
+    for i = 1,#_ndarray.Buffer do
+        if typeof(A) ~= "table" then
+            result[#result + 1] = Callback(not_ndarray,_ndarray.Buffer[i])
+        else
+            result[#result + 1] = Callback(_ndarray.Buffer[i],not_ndarray)
+        end            
     end
+
+    return result,_ndarray.Shape
 end
 
-module.CreateBroadcastArray = function(A : types.ndArray<any>,B : types.ndArray<any>,Callback : (A : any,B : any) -> any)
+module.CreateBroadcastArray = function<T>(A : types.ndArray<T>,B : types.ndArray<T>,Callback : (A : T,B : T) -> T)
     if typeof(A) ~= "table" or typeof(B) ~= "table" then return module.BroadcastScalar(A, B, Callback) end
 
     local Result = {}
