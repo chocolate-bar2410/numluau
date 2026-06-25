@@ -1,5 +1,5 @@
 name = "chocolate_bar2410/numluau"
-version = "1.0.0"
+version = "1.0.1"
 description = "numluau (numerical luau), a scientific computing library for luau. Handle N-Dimensional arrays and compute linear algebra easily."
 repository = "https://github.com/chocolate-bar2410/numluau"
 authors = ["chocolate_bar2410 <https://github.com/chocolate-bar2410>"]
