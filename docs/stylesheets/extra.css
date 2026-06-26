@@ -1,0 +1,22 @@
+/* top bar */
+.md-header {
+    padding: 0 2rem;
+}
+
+.md-tabs {
+    padding: 0 2rem;
+}
+
+/* navigation */
+
+.md-grid {
+    max-width: initial;
+}
+
+.md-content {
+    padding: 0 5rem;
+}
+
+.md-nav__link svg {
+    display: none;
+}
