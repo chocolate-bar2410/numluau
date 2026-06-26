@@ -10,3 +10,8 @@ sourcemap.json
 
 #folder for experiments
 sandbox
+
+#docs
+.cache/
+site/
+.venv/
