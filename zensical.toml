@@ -54,7 +54,9 @@ nav = [
     "tutorials/index.md",
     "tutorials/install_guide.md",
     { "fundementals" = [
-      "tutorials/fundementals/ndarrays.md"
+      "tutorials/fundementals/ndarrays.md",
+      "tutorials/fundementals/index_slicing.md",
+      "tutorials/fundementals/arithmetic.md"
     ]}
   ]}
 ]

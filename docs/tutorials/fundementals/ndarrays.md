@@ -5,7 +5,7 @@ description: the basics of ndArrays
 ---
 In numluau, most of your math is going to be done using N-Dimensional Arrays (ndArrays).
 
-### creating N-Dimensional arrays
+## creating N-Dimensional arrays
 to create a ndArray, the easiest way is to instanciate it using a table.
 
 ```luau hl_lines="1"
@@ -25,7 +25,7 @@ for i = 1,5 do
     c[i] = a[i] + b[i]
 end
 
-print(c) -- 11 22 33 44 55
+print(c) -- array([11 22 33 44 55])
 ```
 
 using ndArrays
@@ -34,7 +34,7 @@ local a = numluau.array({1,2,3,4,5})
 local b = numluau.array({10,20,30,40,50})
 
 local c = a + b
-print(c) -- 11 22 33 44 55
+print(c) -- array([11 22 33 44 55])
 ```
 
 ndArrays can also take in nested tables, to represent higher dimensional arrays
@@ -46,7 +46,7 @@ local a = numluau.array({
 })
 ```
 
-### restrictions to ndArray
+## restrictions to ndArray
 there are restrictions when making a ndArray
 
 1. all items must have the same data type  
@@ -83,3 +83,12 @@ there are restrictions when making a ndArray
     local c = numluau.array({1,2,3,4,5})
     c[5] = 6
     ```
+
+## properties of ndArrays
+
+- dtype - the data type of the items of the ndArray
+- ndim - the dimension of the ndArray
+- shape - a table that determins the dimensions of the array
+- strides - a table that describes how to index the array
+- buffer - the raw table that holds the data
+- offset - determines the first item of the array
