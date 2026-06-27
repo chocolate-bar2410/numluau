@@ -102,15 +102,6 @@ nav = [
       "api-reference/math/cumsum.md",
       "api-reference/math/cumprod.md",
     ]},
-    {"Calculus" = [
-      "api-reference/math/sum.md",
-      "api-reference/math/prod.md",
-      "api-reference/math/min.md",
-      "api-reference/math/max.md",
-      "api-reference/math/mean.md",
-      "api-reference/math/var.md",
-      "api-reference/math/std.md",
-    ]},
     {"LinAlg" = [
       "api-reference/linear_algebra/matmul.md",
       "api-reference/linear_algebra/dot.md",
