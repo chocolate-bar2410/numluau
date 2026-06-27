@@ -14,3 +14,11 @@ It is reccomended to use numluau with a runtime like lune or lute for proper com
 pesde add chocolate_bar2410/numluau
 ```
 this should import the library into your package folder
+
+!!! info
+    its best practice to add a `numluau` alias to your luaurc file
+    ```json
+        "aliases": {
+            "numluau" = "path.to.library"
+        }
+    ```
