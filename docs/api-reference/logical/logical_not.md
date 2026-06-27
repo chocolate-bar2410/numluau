@@ -1,5 +1,5 @@
 ---
-title: logical_xor
+title: logical_not
 ---
 
 ```luau
