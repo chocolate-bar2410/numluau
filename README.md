@@ -8,6 +8,9 @@ features
 - Linear algebra capabilities
 - Sophisticated broadcasting functions
 
+documentation: https://chocolate-bar2410.github.io/numluau/
+tutorials: https://chocolate-bar2410.github.io/numluau/tutorials/
+
 # installation
 
 its reccomended to install using pesde
@@ -15,106 +18,13 @@ its reccomended to install using pesde
 pesde add chocolate_bar2410/numluau
 ```
 
-# quick start
-require it from your packages
+# example
+
 ```lua
-local numluau = require("path.to.library")
-```
-the main feature of numluau are its N-Dimensional arrays  
-the code below provides a example of how you could create and handle these arrays
-```lua
+local numluau = require("path.to.numluau")
+
 -- create a ndarray using a table
-local array1 : numluau.ndArray<number> = numluau.array({1,2,3,4,5})
-local array2 : numluau.ndArray<number> = numluau.array({5,4,3,2,1})
+local a : numluau.ndArray<number> = numluau.array({1,2,3,4,5})
 
-print(array1 + array2) -- [6 6 6 6 6]
-print(array1 * array2) -- [5 8 9 8 5]
-print(array1 / array2) -- [0.2 0.5 1 2 5]
-print(array1 % array2) -- [1 2 0 0 0]
-print(array1 * 20)     -- [20 40 60 80 100]
-
-print(array1[1])       -- 1
-print(array1["1:3"])   -- [1 2 3]
-
--- numluau allows you to also convert nested tables
-local array3 : numluau.ndArray<number> = numluau.array({{2,4},{6,8},{10,12}})
-print(array3[1][1])          -- 2
-print(array3[":,2"])         -- [4 8 12]
-
-print(array3:reshape(2,3))   -- [[2  4  6] [8 10 12]]
-print(numluau.sum(array3))   -- [42]
-print(numluau.sum(array3,1)) -- [(2 + 6 + 10) (4 + 8 + 12)] -> [18 24]
-```
-
-# example code
-circuit voltage problem
-```lua
---[[
-After examining a circuit full of resistors, you find that the voltage at 4 specified points is given by:
-
-3v₁ + 2v₂ + 3v₃ + 10v₄ = 4
-2v₁ - 2v₂ + 5v₃ + 8v₄  = 1
-3v₁ + 3v₂ + 4v₃ + 9v₄  = 3
-3v₁ + 4v₂ - 3v₃ - 7v₄  = 2
-
-where v₁ - v₄ are voltages
-find v₁,v₂,v₃,v₄
-]]
-local numluau = require("../numluau/numluau")
-local A : numluau.ndArray<number> = numluau.array({
-    {3, 2, 3, 10},
-    {2,-2, 5,  8},
-    {3, 3, 4,  9},
-    {3, 4,-3, -7},
-})
-
-local C : numluau.ndArray<number> = numluau.array({4,1,3,2})
-local voltages = numluau.linalg.solve(A, C)
-
-print(string.format("voltage results: \nv₁ : %g \nv₂ : %g \nv₃ : %g  \nv₄ : %g",voltages[1],voltages[2],voltages[3],voltages[4]))
---[[
-voltage results:
-v₁ : 0.783784
-v₂ : 0.036036
-v₃ : -0.675676 
-v₄ : 0.36036
-]]
-```
-
-integration problem
-```lua
---[[
-let f(x,y) = exp(-(x² + y²)) ∙ sin(x) for -2 ≤ x ≤ 2 and -2 ≤ y ≤ 2
-
-find:
-1. Find the volume |f(x,y)| in the specified x and y range
-2. Find the volume |f(x,y)| only in the region where √(x² + y^²) > 0.5
-]]
-local numluau = require("../numluau/numluau")
-
-local grid_x,grid_y = 1000,1000
-
-local x = numluau.linspace(-2, 2, grid_x)
-local y = numluau.linspace(-2, 2, grid_y)
-
-local xv,yv = numluau.meshgrid(x,y)
-
-local Z = numluau.exp(-(xv^2 + yv^2)) * numluau.sin(xv)
-
-local dx = numluau.diff(x)[1]
-local dy = numluau.diff(y)[1]
-
-local volume = numluau.sum(numluau.abs(Z:flatten())) * dx * dy
-
-local f = Z[numluau.greater(xv^2 + yv^2,0.5 ^ 2)]
-local volume_contained = numluau.sum(numluau.abs(f:flatten())) * dx * dy
-print("volume of |f(x,y)|:\n" .. volume:item() .. "\n")
-print("volume of |f(x,y)| inside √(x² + y^²) > 0.5:\n" .. volume_contained:item())
---[[
-volume of f(x,y):
-1.4861858145125453
-
-volume of f(x,y) inside √(x² + y^²) > 0.5:
-1.344765293020408
-]]
+print(a + 5) -- array([6 7 8 9 10])
 ```
