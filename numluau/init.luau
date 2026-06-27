@@ -1,13 +1,13 @@
-local ndArray = require("./ndarray/FromTable")
-local ndArray_utils = require("./ndarray/ndarray_utils")
-local math_utils = require("./math/math_utils")
-local aggregations = require("./math/aggregations")
-local Exceptions = require("./Exceptions")
+local ndArray = require("@self/ndarray/FromTable")
+local ndArray_utils = require("@self/ndarray/ndarray_utils")
+local math_utils = require("@self/math/math_utils")
+local aggregations = require("@self/math/aggregations")
+local Exceptions = require("@self/Exceptions")
 
-local comparison = require("./logical/comparison")
-local logical = require("./logical/logical")
+local comparison = require("@self/logical/comparison")
+local logical = require("@self/logical/logical")
 
-local calculus = require("./math/calculus")
+local calculus = require("@self/math/calculus")
 --[[
 to do:
     - linear algebra
@@ -29,7 +29,7 @@ reference:
     - https://www.youtube.com/watch?v=DcfYgePyedM
 ]]
 
-local types = require("./types")
+local types = require("@self/types")
 
 export type ndArray<T> = types.ndArray<T>
 
@@ -200,7 +200,7 @@ local Base = {
 
         return x_grid,y_grid
     end,
-    linalg = require("./math/lin_algebra")
+    linalg = require("@self/math/lin_algebra")
 }
 
 

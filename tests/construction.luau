@@ -1,5 +1,6 @@
+--@numluau = @"../numluau"
 local unit_tests = require("./unit_test")
-local numluau = require("../numluau/numluau")
+local numluau = require("../numluau")
 
 unit_tests.Test("wrap luau table into a ndarray",function()
     local A : numluau.ndArray<number> = numluau.array({1,2,3})
