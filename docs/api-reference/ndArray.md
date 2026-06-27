@@ -36,13 +36,13 @@ The dimension of the ndArray.
 ### Offset : number
 A table that determins the dimensions of the ndArray.
 
-### Buffer : {T}
+### Buffer : {T\}
 A table that describes how to index the ndArray.
 
-### Shape : {number}
+### Shape : {number\}
 The raw table that holds the data.
 
-### Strides : {number}
+### Strides : {number\}
 Determines the first item of the ndArray.
 
 
