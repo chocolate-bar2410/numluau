@@ -62,10 +62,10 @@ nav = [
       "tutorials/fundementals/arithmetic.md",
       "tutorials/fundementals/filtering.md"
     ]},
-    { "examples" = [
-      "examples/integration.md",
-      "examples/voltage.md",
-    ]}
+  ]},
+  { "examples" = [
+    "examples/integration.md",
+    "examples/voltage.md",
   ]}
 ]
 
