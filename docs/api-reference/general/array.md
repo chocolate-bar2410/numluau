@@ -12,7 +12,7 @@ if data is not a table, return a 0d ndArray.
 
 # Parameters
 
-### data : {T}
+### data : {T\}
 the table thats used to initalise a new `ndArray`
 
 # Returns -> `ndArray<T>`

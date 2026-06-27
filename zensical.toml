@@ -82,18 +82,34 @@ nav = [
       "api-reference/general/meshgrid.md",
       "api-reference/general/_version.md",
     ]},
-    { "Logical" = [
+    { "Comparisons" = [
       "api-reference/logical/greater.md",
       "api-reference/logical/greater_equal.md",
       "api-reference/logical/less.md",
       "api-reference/logical/less_equal.md",
       "api-reference/logical/equal.md",
       "api-reference/logical/not_equal.md",
-
+    ]},
+    {"Logical" = [
       "api-reference/logical/logical_and.md",
       "api-reference/logical/logical_or.md",
       "api-reference/logical/logical_xor.md",
       "api-reference/logical/logical_not.md",
+    ]},
+    {"Calculus" = [
+      "api-reference/math/diff.md",
+      "api-reference/math/gradient.md",
+      "api-reference/math/cumsum.md",
+      "api-reference/math/cumprod.md",
+    ]},
+    {"Calculus" = [
+      "api-reference/math/sum.md",
+      "api-reference/math/prod.md",
+      "api-reference/math/min.md",
+      "api-reference/math/max.md",
+      "api-reference/math/mean.md",
+      "api-reference/math/var.md",
+      "api-reference/math/std.md",
     ]}
   ]}
 ]
