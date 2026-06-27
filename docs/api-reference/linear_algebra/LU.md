@@ -1,9 +1,9 @@
 ---
-title: qr
+title: lu
 ---
 
 ```luau
-function numluau.linalg.qr<T>(
+function numluau.linalg.lu<T>(
     A : numluau.ndArray<T>,
 ): (numluau.ndArray<T>,numluau.ndArray<T>,{number},number)
 ```
@@ -21,8 +21,8 @@ where A = LU
 The target ndArray.
 
 # Returns -> `(numluau.ndArray<T>, numluau.ndArray<T>, {number}, number)`
-- lower triangular ndArray (R).
-- upper triangular ndArray (R).
+- lower triangular ndArray (L).
+- upper triangular ndArray (U).
 - permutation table.
 - swap count.
 
