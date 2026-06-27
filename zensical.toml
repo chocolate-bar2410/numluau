@@ -83,12 +83,17 @@ nav = [
       "api-reference/general/_version.md",
     ]},
     { "Logical" = [
-      "api-reference/greater.md",
-      "api-reference/greater_equal.md",
-      "api-reference/less.md",
-      "api-reference/less_equal.md",
-      "api-reference/equal.md",
-      "api-reference/not_equal.md",
+      "api-reference/logical/greater.md",
+      "api-reference/logical/greater_equal.md",
+      "api-reference/logical/less.md",
+      "api-reference/logical/less_equal.md",
+      "api-reference/logical/equal.md",
+      "api-reference/logical/not_equal.md",
+
+      "api-reference/logical/logical_and.md",
+      "api-reference/logical/logical_or.md",
+      "api-reference/logical/logical_xor.md",
+      "api-reference/logical/logical_not.md",
     ]}
   ]}
 ]
