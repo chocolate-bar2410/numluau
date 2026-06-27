@@ -13,5 +13,4 @@ sandbox
 
 #docs
 .cache/
-site/
 .venv/
