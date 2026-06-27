@@ -59,7 +59,7 @@ local Base = {
 
         return ndArray(result)
     end,
-    linspace = function(start,stop,num) : ndArray<number>
+    linspace = function(start : number,stop : number?,num : number?) : ndArray<number>
         local result = {}
         num = (num or 50)
 
@@ -201,7 +201,7 @@ local Base = {
         return x_grid,y_grid
     end,
     linalg = require("@self/math/lin_algebra"),
-    version = {major = 1, minor = 0}
+    version = {major = 1, minor = 0} :: types.Version
 }
 
 type out = typeof(Base) & typeof(math_utils) & typeof(aggregations) & typeof(comparison) & typeof(logical) & typeof(calculus)

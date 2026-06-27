@@ -28,4 +28,10 @@ export type ndArray<T> = setmetatable<{
     __unm : (ndArray<T>,value : number | ndArray<T>) -> ndArray<T>,
 }
 >
+
+export type Version = {
+    major : number, 
+    minor : number
+}
+
 return nil

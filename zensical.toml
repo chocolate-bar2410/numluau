@@ -67,6 +67,21 @@ nav = [
     "examples/index.md",
     "examples/integration.md",
     "examples/voltage.md",
+  ]},
+  { "API reference" = [
+    "api-reference/index.md",
+    { "General" = [
+      "api-reference/general/array.md",
+      "api-reference/general/arange.md",
+      "api-reference/general/linspace.md",
+      "api-reference/general/ones.md",
+      "api-reference/general/zeros.md",
+      "api-reference/general/where.md",
+      "api-reference/general/reshape.md",
+      "api-reference/general/flatten.md",
+      "api-reference/general/meshgrid.md",
+      "api-reference/general/_version.md",
+    ]}
   ]}
 ]
 
