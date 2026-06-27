@@ -1,14 +1,14 @@
 ---
 icon: lucide/rocket
 title: Indexing and slicing
-description: the basics of ndArrays
+description: Indexing and slicing arrays
 ---
-numluau allows you to index the ndArray in many ways.
+numluau allows you to index arrays in many ways.
 
 ## indexing
 
-indexing works similarly to how you'd index tables.
-ndArrays are 1-indexed, meaning arrays start from 1.
+Indexing works similarly to how you'd index tables.
+Arrays are 1-indexed, meaning arrays start from 1.
 
 === "1d array"
     ```luau
@@ -26,7 +26,7 @@ ndArrays are 1-indexed, meaning arrays start from 1.
     print(a[2][3]) -- 6
     ```
 
-we can use a negative index to index from the back of the ndArray instead of the front
+We can use a negative index to index from the back of the array instead of the front
 ```luau
 local a = numluau.array({1,2,3,4,5})
 
@@ -34,9 +34,9 @@ print(a[-1]) -- 5
 print(a[-2]) -- 4
 ```
 
-ndArrays can also be indexed using strings, allowing you to index is other ways.
+Arrays can also be indexed using strings, allowing you to index is other ways.
 
-if we wanted to index a 2d array, we could use regular table syntax.
+If we wanted to index a 2d array, we could use regular table syntax.
 Or we can use the index `col, row` to also get that item.
 
 ```luau hl_lines="6 7"
@@ -95,7 +95,7 @@ print(a[":3"])
 
 ### 2d+ arrays
 
-we can also apply this notion to higher dimensional arrays
+We can also apply this notion to higher dimensional arrays
 
 ```luau
 local a = numluau.array({
@@ -114,7 +114,7 @@ print(a[":,2"])
 > array([2 6])
 ```
 
-we can expand this to multiple dimensions by combining `first:last:step` and `col, row`
+We can expand this to multiple dimensions by combining `first:last:step` and `col, row`.
 ```luau
 local a = numluau.array({
     {1,2,3,4},

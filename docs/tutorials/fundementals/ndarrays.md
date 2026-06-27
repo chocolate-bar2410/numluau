@@ -1,22 +1,21 @@
 ---
 icon: lucide/rocket
 title: N-Dimensional arrays
-description: the basics of ndArrays
+description: Basics of N-Dimensional arrays
 ---
-In numluau, most of your math is going to be done using N-Dimensional Arrays (ndArrays).
+In numluau, most of your math is going to be done using N-Dimensional Arrays.
 
 ## creating N-Dimensional arrays
-to create a ndArray, the easiest way is to instanciate it using a table.
+the easiest way is to create a `array` it using a table.
 
 ```luau hl_lines="1"
 local a = numluau.array({1,2,3,4,5})
 ```
 
-ndArrays simplify operations that would be otherwise tedious using regular tables.
-removing the need for long for loops and table allocations
+Arrays simplify operations that would be otherwise tedious using regular tables.
+Removing the need for long for loops and table allocations.
 
-using regular tables
-```luau hl_lines="5-7"
+```luau title="using regular tables" hl_lines="5-7"
 local a = {1,2,3,4,5}
 local b = {10,20,30,40,50}
 
@@ -28,8 +27,7 @@ end
 print(c) -- array([11 22 33 44 55])
 ```
 
-using ndArrays
-```luau hl_lines="5"
+```luau title="using arrays" hl_lines="5"
 local a = numluau.array({1,2,3,4,5})
 local b = numluau.array({10,20,30,40,50})
 
@@ -37,7 +35,7 @@ local c = a + b
 print(c) -- array([11 22 33 44 55])
 ```
 
-ndArrays can also take in nested tables, to represent higher dimensional arrays
+Arrays can also take in nested tables, to represent higher dimensional arrays
 
 ```luau
 local a = numluau.array({
@@ -46,8 +44,8 @@ local a = numluau.array({
 })
 ```
 
-## restrictions to ndArray
-there are restrictions when making a ndArray
+## restrictions to arrays
+there are restrictions when making a array
 
 1. all items must have the same data type  
 1. the shape of the array must be retangular not jagged  
@@ -84,11 +82,27 @@ there are restrictions when making a ndArray
     c[5] = 6
     ```
 
-## properties of ndArrays
+### 0d arrays
+While you can make arrays 2d, 3d, 4d etc. you can also create 0d arrays.
+These arrays represent a single value.
 
-- dtype - the data type of the items of the ndArray
-- ndim - the dimension of the ndArray
-- shape - a table that determins the dimensions of the array
-- strides - a table that describes how to index the array
-- buffer - the raw table that holds the data
-- offset - determines the first item of the array
+```luau
+local a = numluau.array(15)
+a += 2
+print(a) -- array(17)
+```
+
+To retrieve the value from this array you can use `:Item()`.
+```lua hl_lines="2"
+local a = numluau.array(255)
+print(a:item())
+```
+
+## properties of Arrays
+
+- dtype - The data type of the items of the array.
+- ndim - The dimension of the array.
+- shape - A table that determins the dimensions of the array.
+- strides - A table that describes how to index the array.
+- buffer - The raw table that holds the data.
+- offset - Determines the first item of the array.

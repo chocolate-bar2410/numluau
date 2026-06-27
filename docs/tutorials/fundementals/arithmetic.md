@@ -1,10 +1,10 @@
 ---
 icon: lucide/rocket
 title: Arithmetic
-description: doing arithmetic on ndArrays
+description: doing arithmetic on N-Dimensional arrays
 ---
 ## basic operations
-Shown [previously](./ndarrays) ndArrays can do operations between eachother.
+Shown [previously](./ndarrays) arrays can do operations between eachother.
 allowing for basic operations like addition, subtraction, multiplication etc.
 ```luau
 local a = numluau.array({1,2,3,4})
@@ -47,10 +47,10 @@ print(volumes) -- array([6 785 432 31416])
 ```
 
 ## broadcasting
-Numluau allows you to perform operations between ndArrays by virtually expanding dimensions, so that they match in shape.
+Numluau allows you to perform operations between arrays by virtually expanding dimensions, so that they match in shape.
 This process is called **broadcasting**.
 
-broadcasting can only be applied either if:
+Broadcasting can only be applied either if:
 1. The dimensions are the same size.
 2. Atleast one dimension is equal to one.
 
@@ -77,7 +77,7 @@ print(a + b)
 ```
 
 !!! danger
-    doing a operation between ndArrays that dont follow these rules will produce a broadcasting error.
+    Doing a operation between arrays that dont follow these rules will produce a broadcasting error.
 
 ```luau
 local a = numluau.array({
@@ -97,7 +97,7 @@ print(a + b)
 Error with broadcasting: Tried to broadcast incompatible arrays
 ```
 
-If the two ndArrays have different dimensions, the missing dimensions are filled in with ones.
+If the two arrays have different dimensions, the missing dimensions are filled in with ones.
 
 ```luau
 local a = numluau.array({2,5})
@@ -125,7 +125,7 @@ print(a * b)
 ])
 ```
 
-In some cases, both ndArrays will be expanded during broadcasting.
+In some cases, both arrays will be expanded during broadcasting.
 ```luau
 local a = numluau.array({1,2,3,4,5})
 local b = numluau.array({
@@ -148,3 +148,35 @@ print(a * b)
 ])
 ```
 
+
+## aggregations
+When working with data it is useful to reduce a collection of values into a single value.
+This is where aggregation functions come in.
+
+```luau
+local a = numluau.array({1,2,3,4,5})
+
+print(numluau.sum(a)) -- array(15)
+
+print(numluau.mean(a)) -- array(3)
+```
+
+With higher dimensional arrays, you can also specify a axis to aggregate across.
+!!! info
+    Unlike indexing, Axes are 0 indexed. Meaning the 0th axis is the first axis.
+
+```luau
+local a = numluau.array({
+    {1,2,3,4,5},
+    {10,9,8,7,6}
+})
+
+print(numluau.sum(a))  
+print(numluau.sum(a,0))
+print(numluau.sum(a,1))
+```
+``` title="output"
+> array(55)
+> array([15 40])
+> array([11 11 11 11 11])
+```

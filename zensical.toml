@@ -60,7 +60,8 @@ nav = [
     { "fundementals" = [
       "tutorials/fundementals/ndarrays.md",
       "tutorials/fundementals/index_slicing.md",
-      "tutorials/fundementals/arithmetic.md"
+      "tutorials/fundementals/arithmetic.md",
+      "tutorials/fundementals/filtering.md"
     ]}
   ]}
 ]
