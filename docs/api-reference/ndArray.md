@@ -1,5 +1,6 @@
 ---
-title: NdArray
+title: ndArray
+description: ndArray API document.
 ---
 
 ```luau
