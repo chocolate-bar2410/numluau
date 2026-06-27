@@ -292,8 +292,8 @@ repo = "fontawesome/brands/github"
 # a monospaced font used in code blocks.
 # ----------------------------------------------------------------------------
 [project.theme.font]
-text = "Inter"
-code = "Jetbrains Mono"
+text = "Plus Jakarta Sans"
+code = "JetBrains Mono"
 
 # ----------------------------------------------------------------------------
 # In the "palette" subsection you can configure options for the color scheme.
