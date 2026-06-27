@@ -3,7 +3,7 @@ title: NdArray
 ---
 
 ```luau
-export type ndArray<T> = {
+export type ndArray<T>{
     type : "ndArray",
     dtype : string,
     ndim : number,
