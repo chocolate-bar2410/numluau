@@ -70,6 +70,7 @@ nav = [
   ]},
   { "API reference" = [
     "api-reference/index.md",
+    "api-reference/ndArray.md",
     { "General" = [
       "api-reference/general/array.md",
       "api-reference/general/arange.md",
