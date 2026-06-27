@@ -81,6 +81,14 @@ nav = [
       "api-reference/general/flatten.md",
       "api-reference/general/meshgrid.md",
       "api-reference/general/_version.md",
+    ]},
+    { "Logical" = [
+      "api-reference/greater.md",
+      "api-reference/greater_equal.md",
+      "api-reference/less.md",
+      "api-reference/less_equal.md",
+      "api-reference/equal.md",
+      "api-reference/not_equal.md",
     ]}
   ]}
 ]
