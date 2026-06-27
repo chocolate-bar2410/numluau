@@ -4,17 +4,17 @@ title: not_equal
 
 ```luau
 function numluau.not_equal<T>(
-    x1 : types.ndArray<T> | T,
-    x2 : types.ndArray<T> | T
+    x1 : numluau.ndArray<T> | T,
+    x2 : numluau.ndArray<T> | T
 ): numluau.ndArray<boolean>
 ```
 given 2 values, will produce a boolean mask from the condition x1 ≠ x2
 # Parameters
 
-## x1 : types.ndArray<T/> | T
+## x1 : numluau.ndArray<T\> | T
 the first value.
 
-## x2 : types.ndArray<T/> | T
+## x2 : numluau.ndArray<T\> | T
 the second value.
 
 # Returns -> `ndArray<boolean>`

@@ -110,6 +110,17 @@ nav = [
       "api-reference/math/mean.md",
       "api-reference/math/var.md",
       "api-reference/math/std.md",
+    ]},
+    {"LinAlg" = [
+      "api-reference/linear_algebra/matmul.md",
+      "api-reference/linear_algebra/dot.md",
+      "api-reference/linear_algebra/det.md",
+      "api-reference/linear_algebra/cross.md",
+      "api-reference/linear_algebra/eigenval.md",
+      "api-reference/linear_algebra/eig.md",
+      "api-reference/linear_algebra/QR.md",
+      "api-reference/linear_algebra/LU.md",
+      "api-reference/linear_algebra/solve.md",
     ]}
   ]}
 ]
