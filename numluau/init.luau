@@ -200,10 +200,9 @@ local Base = {
 
         return x_grid,y_grid
     end,
-    linalg = require("@self/math/lin_algebra")
+    linalg = require("@self/math/lin_algebra"),
+    version = {major = 1, minor = 0}
 }
-
-
 
 type out = typeof(Base) & typeof(math_utils) & typeof(aggregations) & typeof(comparison) & typeof(logical) & typeof(calculus)
 
