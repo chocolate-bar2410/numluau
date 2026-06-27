@@ -3,12 +3,12 @@ numluau (numerical luau) is a scientific computing library designed to bring vec
 
 create N-dimensional arrays & compute operations, aggregations, linear equations and so much more.
 
-features
+features:
 - N-Dimensional array objects
 - Linear algebra capabilities
 - Sophisticated broadcasting functions
 
-documentation: https://chocolate-bar2410.github.io/numluau/
+documentation: https://chocolate-bar2410.github.io/numluau/  
 tutorials: https://chocolate-bar2410.github.io/numluau/tutorials/
 
 # installation
