@@ -169,17 +169,20 @@ local Base = {
             Exceptions.Exception("Array","meshgrid inputs must have ndim = 1")
         end
         
-        local nx = #X.Buffer
-        local ny = #Y.Buffer
+        local x_data = X:toflatlist()
+        local y_data = Y:toflatlist()
+
+        local nx = #x_data
+        local ny = #y_data
 
         local buffer_x = table.create(nx * ny)
         local buffer_y = table.create(nx * ny)
 
         local index = 1
         for r = 1, ny do
-            local y_val = Y.Buffer[r]
+            local y_val = y_data[r]
             for c = 1, nx do
-                buffer_x[index] = X.Buffer[c]
+                buffer_x[index] = x_data[c]
                 buffer_y[index] = y_val
                 index += 1
             end
