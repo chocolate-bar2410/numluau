@@ -257,8 +257,6 @@ meta.__unm = function<T>(self : types.ndArray<T>)
 end
 
 meta.__iter = function<T>(self : types.ndArray<T>)
-    local dimensions = table.create(#self.Shape,0)
-
     local size = 1
     for _,v in self.Shape do
         size *= v
@@ -266,28 +264,39 @@ meta.__iter = function<T>(self : types.ndArray<T>)
 
     if size == 0 then return function() end end
 
+    local dimensions = table.create(self.ndim,0)
+
+    local yielded = 0
+
     return function()
-        local index = 0
+        if yielded >= size then return end
+
+        local index = self.Offset
         
         for i = 1,#dimensions do
             index += dimensions[i] * self.Strides[i]
         end
+        
+        for i = self.ndim,1,-1 do
+            dimensions[i] += 1
+            if dimensions[i] < self.Shape[i] then break end
 
-        dimensions[#dimensions] += 1
-
-        for i = #dimensions,1,-1 do
-            if dimensions[i] <= self.Shape[i] then continue end
             dimensions[i] = 0
-
-            if i == 1 then return end
-
-            dimensions[i - 1] += 1
         end
 
-        if index + 1 > size then return end
+        yielded += 1
 
-        return index + 1 + self.Offset,self.Buffer[index + 1 + self.Offset]
+        return index + 1,self.Buffer[index + 1]
     end
+end
+
+meta.__len = function<T>(self : types.ndArray<T>) : number
+    local size = 1
+    for i = 1,#self.Shape do
+        size *= self.Shape[i]
+    end
+
+    return size
 end
 
 schema.copy = function<T>(self : types.ndArray<T>)
