@@ -42,15 +42,18 @@ local function Aggregate<T>(array : types.ndArray<any>,axis : number,initValue :
 		local dim = array.ndim
 
 		while dim >= 1 do
-			if dim ~= axis then
-				index[dim] += 1
-                Offset += array.Strides[dim]
+            if dim == axis then
+                dim -= 1
+                continue
+            end
 
-				if index[dim] < array.Shape[dim] then break end
+            index[dim] += 1
+            Offset += array.Strides[dim]
 
-				index[dim] = 0
-                Offset -= array.Shape[dim] * array.Strides[dim]
-			end
+            if index[dim] < array.Shape[dim] then break end
+
+            index[dim] = 0
+            Offset -= array.Shape[dim] * array.Strides[dim]
 
 			dim -= 1
 		end

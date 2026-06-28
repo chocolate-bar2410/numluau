@@ -14,28 +14,28 @@ local function ApplyAcrossAxis<T>(array : types.ndArray<T>,axis : number,callbac
     -- Output matches input shape
     local data = table.create(#array.Buffer, 0)
     local index = table.create(array.ndim, 0)
-    local Offset = 0
+    local offset = 0
 
     while true do
-        local TrackOffsets = table.create(axis_size)
-        local AxisOffset = Offset
+        local track_offsets = table.create(axis_size)
+        local axis_offset = offset
         for a = 1, axis_size do
-            TrackOffsets[a] = AxisOffset + 1
-            AxisOffset += axis_stride
+            track_offsets[a] = axis_offset + 1
+            axis_offset += axis_stride
         end
 
-        callback(TrackOffsets,data)
+        callback(track_offsets,data)
 
         local dim = array.ndim
         while dim >= 1 do
             if dim ~= axis then
                 index[dim] += 1
-                Offset += array.Strides[dim]
+                offset += array.Strides[dim]
 
                 if index[dim] < array.Shape[dim] then break end
 
                 index[dim] = 0
-                Offset -= array.Shape[dim] * array.Strides[dim]
+                offset -= array.Shape[dim] * array.Strides[dim]
             end
             dim -= 1
         end
@@ -54,10 +54,6 @@ module.diff = function<T>(array : types.ndArray<T>,axis : number)
     if axis_size <= 1 then
         exceptions.FormatException("Array", "Cannot take diff along an axis of size <= 1")
     end
-
-    local OutputShape = table.clone(array.Shape)
-    OutputShape[target_axis] -= 1
-    local output_strides = utils.ComputeStrides(OutputShape)
     
     local data = {}
     local index = table.create(array.ndim, 0)
@@ -99,6 +95,10 @@ module.diff = function<T>(array : types.ndArray<T>,axis : number)
 
         if dim < 1 then break end
     end
+
+    local OutputShape = table.clone(array.Shape)
+    OutputShape[target_axis] -= 1
+    local output_strides = utils.ComputeStrides(OutputShape)
 
     return ndArray(data, OutputShape, output_strides, 0, array.dtype)
 end
