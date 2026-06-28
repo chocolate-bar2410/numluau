@@ -122,13 +122,13 @@ local Base = {
             return
         end
 
-        if #Mask.Buffer ~= #Target.Buffer then
+        if #Mask ~= #Target then
             Exceptions.FormatException("Array", "Mask array and Target array must be the same size")
             return
         end
 
         local Result = {}
-        for i = 1,#Target.Buffer do
+        for i,v in Target do
             Result[#Result + 1] = Mask.Buffer[i] == false and FillValue or Target.Buffer[i]
         end
         Result = ndArray(Result)
