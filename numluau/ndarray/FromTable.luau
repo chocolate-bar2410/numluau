@@ -28,7 +28,7 @@ local function ProcessArray(array : {},prevndim : number?,prevshape : {}?)
 
         SameSize = #v == Size
     end
- 
+
     if dtype ~= "table" then return true,1,{#array},dtype end
 
     if not SameSize then 
@@ -42,13 +42,12 @@ local function ProcessArray(array : {},prevndim : number?,prevshape : {}?)
         local Valid,Newndim,_,innerdtype = ProcessArray(v,ndim,shape)
 
         isvalid = isvalid and Valid
+        dtype = innerdtype
 
         if not Dimension then 
             Dimension = Newndim
             continue 
         end
-
-        dtype = innerdtype
 
         SameDimension = Newndim == Dimension
     end
