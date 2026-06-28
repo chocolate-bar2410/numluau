@@ -5,6 +5,8 @@ local ndArray_utils = require("../ndarray/ndarray_utils")
 local exceptions = require("../Exceptions")
 local ndarray = require("../ndarray/ndarray")
 
+local aggregations = require("./aggregations")
+
 export type interface = {
     matmul : (A : types.ndArray<number>,B : types.ndArray<number>) -> types.ndArray<number>,
     dot : (A : types.ndArray<number>,B : types.ndArray<number>) -> types.ndArray<number>,
@@ -155,16 +157,13 @@ module.dot = function(A : types.ndArray<number>,B : types.ndArray<number>)
         return A * B
     end
 
-
     if A.ndim ~= 1 or B.ndim ~= 1 then return end
-    if #A.Buffer ~= #B.Buffer then return end 
+    if #A ~= #B then return end 
 
-    local result = 0
-    for i = 1,A.Shape[1] do
-        result += A[i] * B[i]
-    end
+    local product = A * B
+    local result = aggregations.sum(product)
 
-    return ndarray(result, {}, {}, 0, A.dtype)
+    return result
 end
 
 module.cross = function(A : types.ndArray<number>,B : types.ndArray<number>)
@@ -174,8 +173,8 @@ module.cross = function(A : types.ndArray<number>,B : types.ndArray<number>)
         exceptions.FormatException("LinAlg","cross product undefined for 0d ndArrays")
     end
 
-    if #A.Buffer ~= #B.Buffer then return end 
-    if #A.Buffer ~= 3 then
+    if #A ~= #B then return end 
+    if #A ~= 3 then
         exceptions.FormatException("LinAlg","cross product only available between 3d vectors")
     end
 
