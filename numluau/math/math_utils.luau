@@ -10,7 +10,7 @@ local Exclude = {"random","lerp","map",
 local Map = function(ndArray : types.ndArray<number>,callback,...)
     local copy = ndArray:copy()
 
-    for i = 1,#copy.Buffer do
+    for i,v in copy do
         copy.Buffer[i] = callback(copy.Buffer[i],...)
     end
 
