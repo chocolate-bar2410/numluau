@@ -26,8 +26,8 @@ export type ndArray<T> = setmetatable<{
     __pow : (ndArray<T>,value : number | ndArray<T>) -> ndArray<T>,
     __mod : (ndArray<T>,valu : number | ndArray<T>) -> ndArray<T>,
     __unm : (ndArray<T>,value : number | ndArray<T>) -> ndArray<T>,
-}
->
+    __iter : (self : ndArray<T>) -> () -> (number,T)
+}>
 
 export type Version = {
     major : number, 
