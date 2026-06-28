@@ -7,13 +7,14 @@ export type ndArray<T> = setmetatable<{
     Shape : {number},
     Strides : {number},
 
-    copy : (ndArray<T>) -> ndArray<T>,
-    view : (ndArray<T>) -> ndArray<T>,
-    reshape : (ndArray<T>,...number) -> ndArray<T>,
-    flatten : (ndArray<T>,...number) -> ndArray<T>,
-    eye : (ndArray<T>) -> ndArray<number>,
-    transpose : (ndArray<T>) -> ndArray<T>,
-    item : (ndArray<T>,...number) -> T
+    copy : (self : ndArray<T>) -> ndArray<T>,
+    view : (self : ndArray<T>) -> ndArray<T>,
+    reshape : (self : ndArray<T>,...number) -> ndArray<T>,
+    flatten : (self : ndArray<T>,...number) -> ndArray<T>,
+    eye : (self : ndArray<T>) -> ndArray<number>,
+    transpose : (self : ndArray<T>) -> ndArray<T>,
+    item : (self : ndArray<T>,...number) -> T,
+    toflatlist : (self : ndArray<T>) -> {T},
 },{
     __index : (ndArray<T>,index : number | ndArray<boolean> | string) -> (),
     __newindex : () -> (),

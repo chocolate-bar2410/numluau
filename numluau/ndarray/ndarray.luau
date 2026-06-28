@@ -267,8 +267,8 @@ meta.__iter = function<T>(self : types.ndArray<T>)
     if size == 0 then return function() end end
 
     return function()
-        local index = self.Offset
-
+        local index = 0
+        
         for i = 1,#dimensions do
             index += dimensions[i] * self.Strides[i]
         end
@@ -286,10 +286,9 @@ meta.__iter = function<T>(self : types.ndArray<T>)
 
         if index + 1 > size then return end
 
-        return index + 1,self.Buffer[index + 1]
+        return index + 1 + self.Offset,self.Buffer[index + 1 + self.Offset]
     end
 end
-
 
 schema.copy = function<T>(self : types.ndArray<T>)
     local Data = table.clone(self.Buffer)
@@ -374,6 +373,16 @@ schema.item = function<T>(self : types.ndArray<T>,... : number)
     end
 
     return self.Buffer[index]
+end
+
+schema.toflatlist = function<T>(self : types.ndArray<T>) : {T}
+    local data = {}
+
+    for _,v in self do
+        table.insert(data,v)
+    end
+
+    return data
 end
 
 return New_ndarray
