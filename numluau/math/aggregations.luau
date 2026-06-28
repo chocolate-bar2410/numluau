@@ -6,7 +6,7 @@ local ndArray = require("../ndarray/ndarray")
 local function CollapseAll<T>(array : types.ndArray<any>,initValue : number,callback : (T,T) -> T)
     local Accumulator = initValue
 
-    for i = 1, #array.Buffer do
+    for i,v in array do
         Accumulator = callback(Accumulator, array.Buffer[i])
     end
 
@@ -21,13 +21,9 @@ local function Aggregate<T>(array : types.ndArray<any>,axis : number,initValue :
     local axis_size = array.Shape[axis]
     local axis_stride = array.Strides[axis]
 
-    local OutputShape = table.clone(array.Shape)
-    table.remove(OutputShape,axis)
-
-    local OutputStrides = ndArray_utils.ComputeStrides(OutputShape)
-    local Data = {}
+    local data = {}
     local index = table.create(array.ndim,0)
-    local OutIndex = 1
+    local out_index = 1
 
     local Offset = 0
 
@@ -36,12 +32,12 @@ local function Aggregate<T>(array : types.ndArray<any>,axis : number,initValue :
         local AxisOffset = Offset
         
         for a = 0,axis_size - 1 do
-            Acculmulator = callback(Acculmulator,array.Buffer[AxisOffset + 1],OutIndex)
+            Acculmulator = callback(Acculmulator,array.Buffer[AxisOffset + 1],out_index)
             AxisOffset += axis_stride
         end
 
-        Data[OutIndex] = Acculmulator
-		OutIndex += 1
+        data[out_index] = Acculmulator
+		out_index += 1
 
 		local dim = array.ndim
 
@@ -63,7 +59,12 @@ local function Aggregate<T>(array : types.ndArray<any>,axis : number,initValue :
 
     end
 
-    return ndArray(Data,OutputShape,OutputStrides,0,typeof(initValue))
+    local OutputShape = table.clone(array.Shape)
+    table.remove(OutputShape,axis)
+
+    local OutputStrides = ndArray_utils.ComputeStrides(OutputShape)
+
+    return ndArray(data,OutputShape,OutputStrides,0,typeof(initValue))
 end
 
 function module.sum(array,axis)
