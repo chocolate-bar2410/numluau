@@ -39,9 +39,18 @@ end
 
 function module.logical_not(x1 : types.ndArray<boolean>)
     local Result = x1:copy()
+    Result.dtype = "boolean"
 
-    for i = 1,#Result.Buffer do
-        Result[#Result + 1] = Result.Buffer[i] == 0 or Result.Buffer[i] == false
+    for i,v in x1 do
+        local value = v
+
+        if v == 0 then value = false end
+        if v == 1 then value = true end
+
+        if type(value) == "boolean" then
+            Result.Buffer[i] = not value
+            continue
+        end
     end
 
     return Result
@@ -52,5 +61,5 @@ return module :: {
     logical_and : (x1 : types.ndArray<any>,x2 : types.ndArray<any>) -> types.ndArray<boolean>,
     logical_or : (x1 : types.ndArray<any>,x2 : types.ndArray<any>) -> types.ndArray<boolean>,
     logical_xor : (x1 : types.ndArray<any>,x2 : types.ndArray<any>) -> types.ndArray<boolean>,
-    logical_not : (x1 : types.ndArray<any>,x2 : types.ndArray<any>) -> types.ndArray<boolean>,
+    logical_not : (x1 : types.ndArray<any>) -> types.ndArray<boolean>,
 }
