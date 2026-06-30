@@ -1,8 +1,9 @@
 --!strict
 local module = {}
 local GOLD = 0x9E3779B9
+local SILVER = 0xBB67AE85
 
--- utility function to start up xoshiro128**
+-- utility function to start up xoshiro128** and SFC32
 local splitmix32 = function(seed : number)
     local result = seed + GOLD
     result = bit32.bxor(result,bit32.rshift(result, 16)) * 0x85EBCA6B
@@ -35,7 +36,27 @@ module.XOSHIRO128 = function(seed : number)
     end
 end
 
-module.Philox = function(seed : number)
+-- fast and small
+module.SFC32 = function(seed : number)
+    local a = splitmix32(seed)
+    local b = splitmix32(seed + GOLD)
+    local c = splitmix32(seed + SILVER)
+
+    local counter = 1
+
+    return function()
+        local result = bit32.band(a + b + counter,0xFFFFFFFF)
+        counter = bit32.band(counter + 1,0xFFFFFFFF)
+
+        a = bit32.bxor(b, bit32.rshift(b, 9))
+        b = bit32.band(c + bit32.rshift(b, 3),0xFFFFFFFF)
+        c = bit32.band(bit32.lrotate(c, 21) + result ,0xFFFFFFFF)
+
+        return result
+    end
+end
+
+module.Philox =function()
     
 end
 
