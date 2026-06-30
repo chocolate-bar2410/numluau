@@ -3,7 +3,7 @@ local module = {}
 local GOLD = 0x9E3779B9
 local SILVER = 0xBB67AE85
 
--- utility function to start up xoshiro128** and SFC32
+-- utility function to start up seeds
 local splitmix32 = function(seed : number)
     local result = seed + GOLD
     result = bit32.bxor(result,bit32.rshift(result, 16)) * 0x85EBCA6B
@@ -13,7 +13,8 @@ local splitmix32 = function(seed : number)
 end
 
 -- this uses xoshiro128**
-module.XOSHIRO128 = function(seed : number)
+module.XOSHIRO128 = function(seed : number) : () -> number
+    seed = seed or 1
     local s1 = seed
     local s2 = splitmix32(seed)
     local s3 = splitmix32(seed + GOLD)
@@ -37,7 +38,8 @@ module.XOSHIRO128 = function(seed : number)
 end
 
 -- fast and small
-module.SFC32 = function(seed : number)
+module.SFC32 = function(seed : number) : () -> number
+    seed = seed or 1
     local a = splitmix32(seed)
     local b = splitmix32(seed + GOLD)
     local c = splitmix32(seed + SILVER)
@@ -56,12 +58,74 @@ module.SFC32 = function(seed : number)
     end
 end
 
-module.Philox =function()
+-- philox 2x32 implementation
+module.Philox = function(seed : number) : () -> number
+    seed = seed or 1
+    local key = seed
+    local counter = 0
+    local _buffer = 0
+    local has_buffer = false
+
+    return function()
+        if has_buffer then 
+            has_buffer = false
+            return _buffer 
+        end
+
+        local c0 = counter
+        local c1 = 0
+        counter = bit32.band(counter + 1, 0xFFFFFFFF)
+
+        local k = key
+        for i = 1,10 do
+            local prod = c0 * 0xED5AD4BB
+            local low = bit32.band(prod,0xFFFFFFFF)
+            local high = (prod // 0x100000000) % 0x100000000
+
+            c0 = bit32.bxor(bit32.bxor(high, c1), k)
+            c1 = low
+            k = bit32.band(k + GOLD,0xFFFFFFFF)
+        end
+
+        _buffer = c1
+        has_buffer = true
+
+        return c0
+    end
+end
+
+-- use if you like having no bad seeds
+module.JSF32 = function(seed : number) : () -> number
+    seed = seed or 1
     
+    local a = 0xf1ea5eed
+    local b = splitmix32(seed)
+    local c = splitmix32(seed + GOLD)
+    local d = splitmix32(seed + SILVER)
+
+    -- to wash out the initial seeding
+    for i = 1,20 do
+        local e = bit32.band(a - bit32.lrotate(b, 27),0xFFFFFFFF)
+        a = bit32.bxor(b, bit32.lrotate(c, 17))
+        b = bit32.band(c + d,0xFFFFFFFF)
+        c = bit32.band(d + e,0xFFFFFFFF)
+        d = bit32.band(e + a,0xFFFFFFFF)
+    end
+
+    return function()
+        local e = bit32.band(a - bit32.lrotate(b, 27),0xFFFFFFFF)
+        a = bit32.bxor(b, bit32.lrotate(c, 17))
+        b = bit32.band(c + d,0xFFFFFFFF)
+        c = bit32.band(d + e,0xFFFFFFFF)
+        d = bit32.band(e + a,0xFFFFFFFF)
+
+        return d
+    end
 end
 
 -- 32bit version of PCG64DXSM since 64 bit ints are apparently a roblox only feature
 module.PCGXSH = function(seed : number) : () -> number
+    seed = seed or 1
     local state = 0
 
     --PCG32 constants
@@ -84,7 +148,5 @@ module.PCGXSH = function(seed : number) : () -> number
         return result
     end
 end
-
-
 
 return module
