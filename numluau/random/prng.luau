@@ -14,7 +14,7 @@ end
 
 -- this uses xoshiro128**
 module.XOSHIRO128 = function(seed : number) : () -> number
-    seed = seed or 1
+    seed = seed or math.round(os.clock())
     local s1 = seed
     local s2 = splitmix32(seed)
     local s3 = splitmix32(seed + GOLD)
@@ -39,7 +39,7 @@ end
 
 -- fast and small
 module.SFC32 = function(seed : number) : () -> number
-    seed = seed or 1
+    seed = seed or math.round(os.clock())
     local a = splitmix32(seed)
     local b = splitmix32(seed + GOLD)
     local c = splitmix32(seed + SILVER)
@@ -60,7 +60,7 @@ end
 
 -- philox 2x32 implementation
 module.Philox = function(seed : number) : () -> number
-    seed = seed or 1
+    seed = seed or math.round(os.clock())
     local key = seed
     local counter = 0
     local _buffer = 0
@@ -96,7 +96,7 @@ end
 
 -- use if you like having no bad seeds
 module.JSF32 = function(seed : number) : () -> number
-    seed = seed or 1
+    seed = seed or math.round(os.clock())
     
     local a = 0xf1ea5eed
     local b = splitmix32(seed)
@@ -125,7 +125,7 @@ end
 
 -- 32bit version of PCG64DXSM since 64 bit ints are apparently a roblox only feature
 module.PCGXSH = function(seed : number) : () -> number
-    seed = seed or 1
+    seed = seed or math.round(os.clock())
     local state = 0
 
     --PCG32 constants
