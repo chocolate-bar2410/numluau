@@ -1,8 +1,7 @@
-local Exceptions = require("@numluau/Exceptions")
 local types = require("../types")
 local ndArray = require("../ndarray/ndarray")
 
-local exceptions = require("../Exceptions")
+local exceptions = require("../exceptions")
 local ndarray_utils = require("../ndarray/ndarray_utils")
 
 local zig_lookup = require("./zigguratt")
@@ -25,7 +24,7 @@ module.rand = function(... : number)
     local valid_shape,err_msg = ndarray_utils.VerifyShape(shape)
 
     if not valid_shape then
-        Exceptions.FormatException("Array", err_msg)
+        exceptions.FormatException("Array", err_msg)
     end
 
     local size = ndarray_utils.ComputeSize(shape)
@@ -46,7 +45,7 @@ module.normal = function(mean : number,std_dev : number,shape : {number})
     local valid_shape,err_msg = ndarray_utils.VerifyShape(shape)
 
     if not valid_shape then
-        Exceptions.FormatException("Array", err_msg)
+        exceptions.FormatException("Array", err_msg)
     end
 
     local size = ndarray_utils.ComputeSize(shape)
