@@ -32,6 +32,7 @@ reference:
 local types = require("@self/types")
 
 export type ndArray<T> = types.ndArray<T>
+export type Generator = types.Generator
 
 local Merge = function(... : {})
     local Result = {}

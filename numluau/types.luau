@@ -36,4 +36,10 @@ export type Version = {
     minor : number
 }
 
+export type Generator = {
+    BitGenerator : () -> number,
+    rand : (self : Generator,... number) -> ndArray<number>,
+    normal : (self : Generator,mean : number,std_dev : number,shape : {number}) -> ndArray<number>
+}
+
 return nil
