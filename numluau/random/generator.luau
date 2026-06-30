@@ -63,13 +63,40 @@ schema.integers = function(self : types.Generator,min : number, max : number, sh
     return ndArray(data, shape, strides, 0, "number")
 end
 
+schema.choice = function<T>(self : types.Generator,target : types.ndArray<T>,shape : {})
+    if target.ndim ~= 1 then
+        exceptions.FormatException("Array", "Target array ndim must be 1")
+    end
+
+    shape = shape or {1}
+
+    local valid_shape,err_msg = ndarray_utils.VerifyShape(shape)
+
+    if not valid_shape then
+        exceptions.FormatException("Array", err_msg)
+    end
+
+    local size = ndarray_utils.ComputeSize(shape)
+    local data = table.create(size,0)
+    local strides = ndarray_utils.ComputeStrides(shape)
+
+    local max = #target
+
+    for i = 1,size do
+        local index = self.BitGenerator() % max + 1
+        data[i] = target[index]
+    end
+
+    return ndArray(data, shape, strides, 0, target.dtype)
+end
+
 -- distribuitions
 
 local ziggurat = function(BitGenerator : () -> number)
     local layers = 128
     local r = 3.442619855899  -- right edge
     while true do
-        local layer = math.random(1,layers)
+        local layer = 1 + (BitGenerator() % (layers))
 
         local x_i = zig_lookup.x[layer]
         local k_i = zig_lookup.k[layer]
