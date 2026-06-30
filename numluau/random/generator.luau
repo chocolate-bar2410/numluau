@@ -10,6 +10,10 @@ local interface = {}
 local schema = {}
 local meta = {__index = schema}
 
+-- luau numbers can technically hold up to 2^53 bits
+-- but RNG algorithms rely on 32 bit outputs
+local RNG_MAX = 2^32 - 1 
+
 interface.new = function(bit_generator : () -> number)
     local generator = {}
     generator.BitGenerator = bit_generator
@@ -32,13 +36,13 @@ schema.rand = function(self : types.Generator,... : number)
     local strides = ndarray_utils.ComputeStrides(shape)
 
     for i = 1,size do
-        data[i] = math.random()
+        data[i] = self.BitGenerator() / (RNG_MAX)
     end
 
     return ndArray(data, shape, strides, 0, "number")
 end
 
-local ziggurat = function()
+local ziggurat = function(BitGenerator : () -> number)
     local layers = 128
     local r = 3.442619855899  -- right edge
     while true do
@@ -47,12 +51,12 @@ local ziggurat = function()
         local x_i = zig_lookup.x[layer]
         local k_i = zig_lookup.k[layer]
 
-        local u = math.random()
+        local u = BitGenerator() / (RNG_MAX)
 
         local x_value = u * x_i
 
         if u < k_i then
-            local value = math.random() > 0.5 and x_value or -x_value
+            local value = BitGenerator() / (RNG_MAX) > 0.5 and x_value or -x_value
             return value
         end
 
@@ -64,20 +68,20 @@ local ziggurat = function()
             local y_tail
 
             repeat
-                x_tail = -math.log(math.random()) / r
-                y_tail = -math.log(math.random())
+                x_tail = -math.log(BitGenerator() / (RNG_MAX)) / r
+                y_tail = -math.log(BitGenerator() / (RNG_MAX))
             until y_tail + y_tail > x_tail * x_tail
 
-            local value = math.random() > 0.5 and r + x_tail or -(r + x_tail)
+            local value = BitGenerator() / (RNG_MAX) > 0.5 and r + x_tail or -(r + x_tail)
             return value
         end
         
         -- rejection test
         -- sees if y falls under the curve exp(-0.5x²)
-        local y_value = zig_lookup.f[layer] + (zig_lookup.f[layer + 1] - zig_lookup.f[layer]) * math.random()
+        local y_value = zig_lookup.f[layer] + (zig_lookup.f[layer + 1] - zig_lookup.f[layer]) * BitGenerator() / (RNG_MAX)
 
         if y_value >= math.exp(-0.5 * x_value ^ 2) then continue end
-        local value = math.random() > 0.5 and x_value or -x_value
+        local value = BitGenerator() / (RNG_MAX) > 0.5 and x_value or -x_value
         return value
     end
 end
@@ -99,9 +103,8 @@ schema.normal = function(self : types.Generator,mean : number,std_dev : number,s
     -- using zigguratt algorithm
 
     for i = 1,size do
-        data[i] = mean + std_dev * ziggurat()
+        data[i] = mean + std_dev * ziggurat(self.BitGenerator)
     end
-
 
     return ndArray(data, shape, strides, 0, "number")
 end
