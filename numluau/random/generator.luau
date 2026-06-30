@@ -21,7 +21,7 @@ interface.new = function(bit_generator : () -> number)
     return setmetatable(generator, meta)
 end
 
-schema.rand = function(self : types.Generator,... : number)
+schema.random = function(self : types.Generator,... : number)
     local shape = {...} or {1}
     
     local valid_shape,err_msg = ndarray_utils.VerifyShape(shape)
@@ -41,6 +41,29 @@ schema.rand = function(self : types.Generator,... : number)
 
     return ndArray(data, shape, strides, 0, "number")
 end
+
+schema.integers = function(self : types.Generator,min : number, max : number, shape : {number})
+    shape = shape or {1}
+
+    local valid_shape,err_msg = ndarray_utils.VerifyShape(shape)
+
+    if not valid_shape then
+        exceptions.FormatException("Array", err_msg)
+    end
+
+    local size = ndarray_utils.ComputeSize(shape)
+    local data = table.create(size,0)
+    local strides = ndarray_utils.ComputeStrides(shape)
+
+    for i = 1,size do
+        local value = self.BitGenerator() 
+        data[i] = min + (value % (max - min + 1))
+    end
+
+    return ndArray(data, shape, strides, 0, "number")
+end
+
+-- distribuitions
 
 local ziggurat = function(BitGenerator : () -> number)
     local layers = 128
@@ -104,6 +127,27 @@ schema.normal = function(self : types.Generator,mean : number,std_dev : number,s
 
     for i = 1,size do
         data[i] = mean + std_dev * ziggurat(self.BitGenerator)
+    end
+
+    return ndArray(data, shape, strides, 0, "number")
+end
+
+schema.uniform = function(self : types.Generator,min : number, max : number, shape : {number})
+    shape = shape or {1}
+
+    local valid_shape,err_msg = ndarray_utils.VerifyShape(shape)
+
+    if not valid_shape then
+        exceptions.FormatException("Array", err_msg)
+    end
+
+    local size = ndarray_utils.ComputeSize(shape)
+    local data = table.create(size,0)
+    local strides = ndarray_utils.ComputeStrides(shape)
+
+    for i = 1,size do
+        local value = self.BitGenerator() / RNG_MAX
+        data[i] = value * (max - min) + min
     end
 
     return ndArray(data, shape, strides, 0, "number")
