@@ -21,7 +21,7 @@ to do:
         > gradient (derivative) --[done]
         > cummulative sum (integral) --[done]
         > cummulative product --[done]
-    - polynomial --[incomplete]
+    - polynomial --[WIP]
     - random --[incomplete]
     
 reference:
