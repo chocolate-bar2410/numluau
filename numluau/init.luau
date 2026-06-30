@@ -203,7 +203,9 @@ local Base = {
 
         return x_grid,y_grid
     end,
+    
     linalg = require("@self/math/lin_algebra"),
+    random = require("@self/random/random"),
     version = {major = 1, minor = 1} :: types.Version
 }
 
