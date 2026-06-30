@@ -116,4 +116,34 @@ function module.IdentityBuffer(rows : number, cols : number)
     return data
 end
 
+function module.VerifyShape(shape : {number}) : (boolean,string)
+    local result = true
+    local message = ""
+
+    for i = 1,#shape do
+        local value = shape[i]
+        if typeof(value) ~= "number" then
+            result = false
+            message = "shape parameter must be a number"
+        elseif i <= 0 then 
+            result = false
+            message = "shape parameter must be above 0"
+        elseif i % 1 ~= 0 then
+            result = false
+            message = "shape parameter must be an integer"
+        end
+    end
+
+    return result,message
+end
+
+function module.ComputeSize(shape : {number}) : number
+    local size = 1
+    for i = 1,#shape do
+        size *= shape[i]
+    end
+    
+    return size
+end
+
 return module
