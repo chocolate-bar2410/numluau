@@ -29,11 +29,11 @@ module.rand = function(... : number)
 
     local size = ndarray_utils.ComputeSize(shape)
 
-    local data = {}
+    local data = table.create(size,0)
     local strides = ndarray_utils.ComputeStrides(shape)
 
     for i = 1,size do
-        table.insert(data,math.random())
+        data[i] = math.random()
     end
 
     return ndArray(data, shape, strides, 0, "number")
@@ -50,7 +50,7 @@ module.normal = function(mean : number,std_dev : number,shape : {number})
 
     local size = ndarray_utils.ComputeSize(shape)
 
-    local data = {}
+    local data = table.create(size,0)
     local strides = ndarray_utils.ComputeStrides(shape)
     
     -- using zigguratt algorithm
@@ -71,7 +71,7 @@ module.normal = function(mean : number,std_dev : number,shape : {number})
 
             if u < k_i then
                 local value = math.random() > 0.5 and x_value or -x_value
-                table.insert(data,value)
+                data[i] = value
                 break
             end
 
@@ -88,7 +88,7 @@ module.normal = function(mean : number,std_dev : number,shape : {number})
                 until y_tail + y_tail > x_tail * x_tail
 
                 local value = math.random() > 0.5 and r + x_tail or -(r + x_tail)
-                table.insert(data,value)
+                data[i] = value
                 break
             end
             
@@ -98,7 +98,7 @@ module.normal = function(mean : number,std_dev : number,shape : {number})
 
             if y_value >= math.exp(-0.5 * x_value ^ 2) then continue end
             local value = math.random() > 0.5 and x_value or -x_value
-            table.insert(data,value)
+            data[i] = value
         end
     end
 
