@@ -4,7 +4,7 @@ local prng = require("./prng")
 local module = {}
 
 module.default_rng = function(seed : number) : types.Generator
-    return generator.new(seed, prng.PCG64DXSM(seed))
+    return generator.new(seed, prng.PCGXSH(seed))
 end
 
 module.generator = generator.new
