@@ -15,6 +15,7 @@ export type ndArray<T> = setmetatable<{
     transpose : (self : ndArray<T>) -> ndArray<T>,
     item : (self : ndArray<T>,...number) -> T,
     toflatlist : (self : ndArray<T>) -> {T},
+    swap : (self : ndArray<T>) -> ()
 },{
     __index : (ndArray<T>,index : number | ndArray<boolean> | string) -> T | ndArray<T>,
     __newindex : (ndArray<T>,index : number | string,value : T) -> (),
@@ -37,12 +38,17 @@ export type Version = {
 }
 
 export type Generator = {
+    type : "Generator",
     BitGenerator : () -> number,
     rand : (self : Generator,... number) -> ndArray<number>,
     integers : (self : Generator,min : number, max : number, shape : {number}) -> ndArray<number>,
     
     normal : (self : Generator,mean : number,std_dev : number,shape : {number}) -> ndArray<number>,
     uniform : (self : Generator,min : number, max : number, shape : {number}) -> ndArray<number>,
+
+    choice : <T>(self : Generator,target : ndArray<T>,shape : {number}) -> ndArray<T>,
+
+    shuffle : <T>(self : Generator,target : ndArray<T>) -> ()
 }
 
 return nil

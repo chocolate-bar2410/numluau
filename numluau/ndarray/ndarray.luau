@@ -299,6 +299,8 @@ meta.__len = function<T>(self : types.ndArray<T>) : number
     return size
 end
 
+-- methods
+
 schema.copy = function<T>(self : types.ndArray<T>)
     local Data = table.clone(self.Buffer)
 
@@ -392,6 +394,31 @@ schema.toflatlist = function<T>(self : types.ndArray<T>) : {T}
     end
 
     return data
+end
+
+schema.swap = function<T>(self : types.ndArray<T>,index1 : number,index2 : number,axis : number)
+    if self.ndim == 0 then return end
+
+    if self.ndim == 1 then
+        local temp = self[index1]
+
+        self[index1] = self[index2]
+        self[index2] = temp
+
+        return
+    end
+    axis = axis or 0
+    local target_axis = self.ndim - axis
+
+    local delta = (index2 - index1) * self.Strides[target_axis]
+
+    utils.ForEachSlice(self.Shape, self.Strides, axis, self.Offset, function(base)
+        local a = base + (index1 - 1) * self.Strides[target_axis]
+        local b = a + delta
+
+        self.Buffer[a + 1], self.Buffer[b + 1] = self.Buffer[b + 1],self.Buffer[a + 1]
+    end)
+
 end
 
 return New_ndarray
