@@ -49,7 +49,7 @@ export type Generator = {
     choice : <T>(self : Generator,target : ndArray<T>,shape : {number}) -> ndArray<T>,
 
     shuffle : <T>(self : Generator,target : ndArray<T>,axis : number) -> (),
-    permutation : <T>(self : Generator,target : ndArray<T>,axis : number) -> ()
+    permutation : <T>(self : Generator,target : ndArray<T> | number,axis : number) -> ()
 }
 
 return nil

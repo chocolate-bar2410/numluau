@@ -218,4 +218,30 @@ schema.shuffle = function<T>(self : types.Generator,target : types.ndArray<T>,ax
 
 end
 
+schema.permutation = function<T>(self : types.Generator,target : types.ndArray<T> | number,axis : number)
+    local new_array : types.ndArray<T>
+
+    if type(target) == "number" then
+        local data = {}
+        for i = 1,target do table.insert(data,i) end
+
+        new_array = ndArray(data, {target}, {1}, 0, "number")
+    else
+        if target.ndim == 0 then return end
+
+        new_array = target:copy()
+    end
+
+
+    axis = axis or new_array.ndim - 1
+
+    for i = new_array.Shape[1], 2,-1 do
+        local index = lemire_constrain(self.BitGenerator, 1, i - 1)
+
+        new_array:swap(index,i,axis)
+    end
+
+    return new_array
+end
+
 return interface
