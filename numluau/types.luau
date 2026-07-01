@@ -44,8 +44,12 @@ export type Generator = {
     integers : (self : Generator,min : number, max : number, shape : {number}) -> ndArray<number>,
     
     normal : (self : Generator,mean : number,std_dev : number,shape : {number}) -> ndArray<number>,
-    uniform : (self : Generator,min : number, max : number, shape : {number}) -> ndArray<number>,
+    lognormal : (self : Generator,mean : number,std_dev : number,shape : {number}) -> ndArray<number>,
+    exponential : (self : Generator,scale : number,shape : {number}) -> ndArray<number>,
 
+    
+    uniform : (self : Generator,min : number, max : number, shape : {number}) -> ndArray<number>,
+    
     choice : <T>(self : Generator,target : ndArray<T>,shape : {number}) -> ndArray<T>,
 
     shuffle : <T>(self : Generator,target : ndArray<T>,axis : number) -> (),

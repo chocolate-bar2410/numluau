@@ -5,8 +5,9 @@ local exceptions = require("../exceptions")
 local ndarray_utils = require("../utility/ndarray")
 
 local zig_normal = require("./zig_normal")
+local zig_exp = require("./zig_exp")
 
-local math32 = require("../utility/math32")
+local math_util = require("../utility/math")
 
 local interface = {}
 local schema = {}
@@ -22,14 +23,14 @@ local lemire_constrain = function(bit_generator : () -> number,min : number,max 
     local range = max - min + 1
 
     local value = bit_generator()
-    local multiplied,fractional = math32.multiply32(value, range)
+    local multiplied,fractional = math_util.multiply32(value, range)
 
     if fractional < range then
         local threshold = (BIT32_MAX - range) % range
 
         while fractional < threshold do
             value = bit_generator()
-            multiplied,fractional = math32.multiply32(value, range)
+            multiplied,fractional = math_util.multiply32(value, range)
         end
     end
 
@@ -159,6 +160,37 @@ local ziggurat_normal = function(BitGenerator : () -> number)
     end
 end
 
+local ziggurat_exp = function(BitGenerator : () -> number)
+    local layers = 128
+    local r = 7.69711747013104972  -- right edge
+    while true do
+        local layer = lemire_constrain(BitGenerator, 1, layers)
+
+        local x_i = zig_exp.x[layer]
+        local k_i = zig_exp.k[layer]
+
+        local u = BitGenerator() / (RNG_MAX)
+
+        local x_value = u * x_i
+
+        -- fast path
+        if u < k_i then
+            return x_value
+        end
+
+        -- slow path
+        if BitGenerator() / (RNG_MAX) * zig_exp.f[layer] < math.exp(-x_value) then
+            return x_value
+        end
+
+        -- tail handling
+        if layer == 1 then
+            return zig_exp.x[1] - math.log(math.max(BitGenerator() / (RNG_MAX),0))
+        end
+
+    end
+end
+
 schema.normal = function(self : types.Generator,mean : number,std_dev : number,shape : {number})
     shape = shape or {1}
 
@@ -204,6 +236,31 @@ schema.lognormal = function(self : types.Generator,mean : number,std_dev : numbe
     return ndArray(data, shape, strides, 0, "number")
 end
 
+-- scale (or mean) β where rate λ = 1/β
+schema.exponential = function(self : types.Generator,scale : number,shape : {number})
+    scale = scale or 1
+    shape = shape or {1}
+
+    local valid_shape,err_msg = ndarray_utils.VerifyShape(shape)
+
+    if not valid_shape then
+        exceptions.FormatException("Array", err_msg)
+    end
+
+    local size = ndarray_utils.ComputeSize(shape)
+
+    local data = table.create(size,0)
+    local strides = ndarray_utils.ComputeStrides(shape)
+    
+    -- using zigguratt algorithm
+
+    for i = 1,size do
+        data[i] = scale * ziggurat_exp(self.BitGenerator)
+    end
+
+    return ndArray(data, shape, strides, 0, "number")
+end
+
 schema.uniform = function(self : types.Generator,min : number, max : number, shape : {number})
     shape = shape or {1}
 
@@ -222,6 +279,73 @@ schema.uniform = function(self : types.Generator,min : number, max : number, sha
         data[i] = value * (max - min) + min
     end
 
+    return ndArray(data, shape, strides, 0, "number")
+end
+
+-- discrete distributions
+-- λ representing rate
+schema.poisson = function(self : types.Generator,lambda : number,shape : {number})
+    lambda = lambda or 1
+    shape = shape or {1}
+
+    local valid_shape,err_msg = ndarray_utils.VerifyShape(shape)
+
+    if not valid_shape then
+        exceptions.FormatException("Array", err_msg)
+    end
+
+    local size = ndarray_utils.ComputeSize(shape)
+    local data = table.create(size,0)
+    local strides = ndarray_utils.ComputeStrides(shape)
+
+    local L = math.exp(-lambda)
+
+    local slam = math.sqrt(lambda)
+    local b = 0.931 + 2.53 * slam
+    local a = -0.059 + 0.02483 * b
+
+    local invalpha = 1.1239 + 1.1328 / (b - 3.4)
+    local vr = 0.9277 - 3.6224 / (b - 2)
+
+    for i = 1,size do
+
+        if lambda < 10 then
+            -- knuths method
+            local k = 0
+            local p = 1
+            while p > L do
+                k += 1
+                local uniform = self.BitGenerator()
+                p *= uniform
+            end
+
+            data[i] = k - 1
+        else
+            -- PTRS method
+            local x
+            while true do
+                local u = ((self.BitGenerator() + 0.5) / (RNG_MAX)) - 0.5
+                local v = (self.BitGenerator() / (RNG_MAX))
+
+                local us = 0.5 - math.abs(u)
+
+
+                if us == 0 then continue end
+                if u > 1 - 1.12 * us * us then continue end
+                
+                x = math.floor((2*a/us + b) * u + lambda + 0.43)
+                
+                if v <= vr then break end
+                
+                local logarithmic_prob = -lambda + x * math.log(lambda) - math_util.log_gamma(x)
+
+                if logarithmic_prob >= math.log(v) then break end
+            end 
+
+            data[i] = x            
+        end
+
+    end
     return ndArray(data, shape, strides, 0, "number")
 end
 
