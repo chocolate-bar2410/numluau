@@ -40,6 +40,7 @@ end
 interface.new = function(bit_generator : () -> number)
     local generator = {}
     generator.BitGenerator = bit_generator
+    generator.type = "Generator"
 
     return setmetatable(generator, meta)
 end
@@ -200,6 +201,21 @@ schema.uniform = function(self : types.Generator,min : number, max : number, sha
     end
 
     return ndArray(data, shape, strides, 0, "number")
+end
+
+-- shuffles
+
+schema.shuffle = function<T>(self : types.Generator,target : types.ndArray<T>,axis : number)
+    if target.ndim == 0 then return end
+
+    axis = axis or target.ndim - 1
+
+    for i = target.Shape[1], 2,-1 do
+        local index = lemire_constrain(self.BitGenerator, 1, i - 1)
+
+        target:swap(index,i,axis)
+    end
+
 end
 
 return interface
