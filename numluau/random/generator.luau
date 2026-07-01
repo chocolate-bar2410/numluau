@@ -4,7 +4,7 @@ local ndArray = require("../ndarray/ndarray")
 local exceptions = require("../exceptions")
 local ndarray_utils = require("../utility/ndarray")
 
-local zig_lookup = require("./zigguratt")
+local zig_lookup = require("./zig_normal")
 
 local math32 = require("../utility/math32")
 
@@ -141,8 +141,8 @@ local ziggurat = function(BitGenerator : () -> number)
             local y_tail
 
             repeat
-                x_tail = -math.log(BitGenerator() / (RNG_MAX)) / r
-                y_tail = -math.log(BitGenerator() / (RNG_MAX))
+                x_tail = -math.log(math.max(BitGenerator() / (RNG_MAX),0)) / r
+                y_tail = -math.log(math.max(BitGenerator() / (RNG_MAX),0))
             until y_tail + y_tail > x_tail * x_tail
 
             local value = BitGenerator() / (RNG_MAX) > 0.5 and r + x_tail or -(r + x_tail)
