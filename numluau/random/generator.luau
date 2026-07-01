@@ -4,7 +4,7 @@ local ndArray = require("../ndarray/ndarray")
 local exceptions = require("../exceptions")
 local ndarray_utils = require("../utility/ndarray")
 
-local zig_lookup = require("./zig_normal")
+local zig_normal = require("./zig_normal")
 
 local math32 = require("../utility/math32")
 
@@ -115,14 +115,14 @@ end
 
 -- distribuitions
 
-local ziggurat = function(BitGenerator : () -> number)
+local ziggurat_normal = function(BitGenerator : () -> number)
     local layers = 128
     local r = 3.442619855899  -- right edge
     while true do
         local layer = lemire_constrain(BitGenerator, 1, layers)
 
-        local x_i = zig_lookup.x[layer]
-        local k_i = zig_lookup.k[layer]
+        local x_i = zig_normal.x[layer]
+        local k_i = zig_normal.k[layer]
 
         local u = BitGenerator() / (RNG_MAX)
 
@@ -151,7 +151,7 @@ local ziggurat = function(BitGenerator : () -> number)
         
         -- rejection test
         -- sees if y falls under the curve exp(-0.5x²)
-        local y_value = zig_lookup.f[layer] + (zig_lookup.f[layer + 1] - zig_lookup.f[layer]) * BitGenerator() / (RNG_MAX)
+        local y_value = zig_normal.f[layer] + (zig_normal.f[layer + 1] - zig_normal.f[layer]) * BitGenerator() / (RNG_MAX)
 
         if y_value >= math.exp(-0.5 * x_value ^ 2) then continue end
         local value = BitGenerator() / (RNG_MAX) > 0.5 and x_value or -x_value
@@ -176,7 +176,29 @@ schema.normal = function(self : types.Generator,mean : number,std_dev : number,s
     -- using zigguratt algorithm
 
     for i = 1,size do
-        data[i] = mean + std_dev * ziggurat(self.BitGenerator)
+        data[i] = mean + std_dev * ziggurat_normal(self.BitGenerator)
+    end
+
+    return ndArray(data, shape, strides, 0, "number")
+end
+
+schema.lognormal = function(self : types.Generator,mean : number,std_dev : number,shape : {number})
+    shape = shape or {1}
+
+    local valid_shape,err_msg = ndarray_utils.VerifyShape(shape)
+
+    if not valid_shape then
+        exceptions.FormatException("Array", err_msg)
+    end
+
+    local size = ndarray_utils.ComputeSize(shape)
+
+    local data = table.create(size,0)
+    local strides = ndarray_utils.ComputeStrides(shape)
+    
+    -- using zigguratt algorithm
+    for i = 1,size do
+        data[i] = math.exp(mean + std_dev * ziggurat_normal(self.BitGenerator))
     end
 
     return ndArray(data, shape, strides, 0, "number")
