@@ -6,6 +6,8 @@ local ndarray_utils = require("../ndarray/ndarray_utils")
 
 local zig_lookup = require("./zigguratt")
 
+local math32 = require("../utility/math32")
+
 local interface = {}
 local schema = {}
 local meta = {__index = schema}
@@ -13,6 +15,27 @@ local meta = {__index = schema}
 -- luau numbers can technically hold up to 2^53 bits
 -- but RNG algorithms rely on 32 bit outputs
 local RNG_MAX = 2^32 - 1 
+local BIT32_MAX = 2^32
+
+-- avoids modulo bias when constraining a value to between min & max
+local lemire_constrain = function(bit_generator : () -> number,min : number,max : number)
+    local range = max - min + 1
+
+    local value = bit_generator()
+    local multiplied,fractional = math32.multiply32(value, range)
+
+    if fractional < range then
+        local threshold = (BIT32_MAX - range) % range
+
+        while fractional < threshold do
+            value = bit_generator()
+            multiplied,fractional = math32.multiply32(value, range)
+        end
+    end
+
+    return min + multiplied 
+end
+
 
 interface.new = function(bit_generator : () -> number)
     local generator = {}
@@ -56,14 +79,13 @@ schema.integers = function(self : types.Generator,min : number, max : number, sh
     local strides = ndarray_utils.ComputeStrides(shape)
 
     for i = 1,size do
-        local value = self.BitGenerator() 
-        data[i] = min + (value % (max - min + 1))
+        data[i] = lemire_constrain(self.BitGenerator,min,max)
     end
 
     return ndArray(data, shape, strides, 0, "number")
 end
 
-schema.choice = function<T>(self : types.Generator,target : types.ndArray<T>,shape : {})
+schema.choice = function<T>(self : types.Generator,target : types.ndArray<T>,shape : {number})
     if target.ndim ~= 1 then
         exceptions.FormatException("Array", "Target array ndim must be 1")
     end
@@ -77,13 +99,13 @@ schema.choice = function<T>(self : types.Generator,target : types.ndArray<T>,sha
     end
 
     local size = ndarray_utils.ComputeSize(shape)
-    local data = table.create(size,0)
+    local data = table.create(size)
     local strides = ndarray_utils.ComputeStrides(shape)
 
     local max = #target
 
     for i = 1,size do
-        local index = self.BitGenerator() % max + 1
+        local index = lemire_constrain(self.BitGenerator,1,max)
         data[i] = target[index]
     end
 
@@ -96,7 +118,7 @@ local ziggurat = function(BitGenerator : () -> number)
     local layers = 128
     local r = 3.442619855899  -- right edge
     while true do
-        local layer = 1 + (BitGenerator() % (layers))
+        local layer = lemire_constrain(BitGenerator, 1, layers)
 
         local x_i = zig_lookup.x[layer]
         local k_i = zig_lookup.k[layer]
