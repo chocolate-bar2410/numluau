@@ -304,13 +304,11 @@ schema.poisson = function(self : types.Generator,lambda : number,shape : {number
     local b = 0.931 + 2.53 * slam
     local a = -0.059 + 0.02483 * b
 
-    local invalpha = 1.1239 + 1.1328 / (b - 3.4)
     local vr = 0.9277 - 3.6224 / (b - 2)
 
-    for i = 1,size do
-
-        if lambda < 10 then
+    if lambda < 10 then
             -- knuths method
+        for i = 1,size do
             local k = 0
             local p = 1
             while p > L do
@@ -320,8 +318,10 @@ schema.poisson = function(self : types.Generator,lambda : number,shape : {number
             end
 
             data[i] = k - 1
-        else
-            -- PTRS method
+        end
+    else
+        -- PTRS method
+        for i = 1,size do
             local x
             while true do
                 local u = ((self.BitGenerator() + 0.5) / (RNG_MAX)) - 0.5
@@ -348,6 +348,173 @@ schema.poisson = function(self : types.Generator,lambda : number,shape : {number
     end
     return ndArray(data, shape, strides, 0, "number")
 end
+
+
+-- simpler implementation since numpy's BTPE is like 500 lines of gotos
+local function BTPE(bit_generator : () -> number,trial_num : number,probability) : number
+    if probability > 0.5 then return trial_num - BTPE(bit_generator,trial_num,1 - probability) end
+    
+    local mean = trial_num * probability
+
+    -- numpy constants
+    local r = math.min(probability,(1 - probability))
+    local q = 1 - r
+
+    local fm = trial_num * r + r
+    local m = math.floor(fm)
+    local xm = m + 0.5
+
+    local s = r / q
+    local a0 = s * (trial_num + 1)
+    local nrq = trial_num * r * q
+
+    local c = 0.134 + 20.5 / (15.3 + mean);
+
+    local p1 = math.floor(2.195 * math.sqrt(trial_num * probability * (1 - probability)) - 4.6 * (1 - probability)) + 0.5
+    local p2 = p1 * (1 + 2 * c)
+
+    local xl = xm - p1
+    local xr = xm + p1
+
+    local a = (fm - xl) / (fm - xl * r)
+
+    local laml = a * (1 + a / 2)
+    a = (xr - fm) / (xr * q)
+
+    local lamr = a * (1 + a / 2)
+
+    local p3 = p2 + c / laml
+    local p4 = p3 + c / lamr
+
+    while true do
+        local U = (bit_generator() / (RNG_MAX))* p4
+        local V = bit_generator() / (RNG_MAX)
+
+        local k
+
+        if U <= p1 then
+            k = math.floor(xm - p1 * V + U)
+        elseif U <= p2 then
+            local x = xl + (U - p1) / c
+            V = V * c + 1 - math.abs(mean - x + 0.5) / p1
+
+            if V > 1 then
+                continue
+            end
+
+            k = math.floor(x)
+
+        elseif U <= p3 then
+            k = math.floor(xl + math.log(V) / laml);
+
+            if (k < 0) or (V == 0.0) then continue end
+
+            V = (U - p2) * laml
+
+        else    
+            k = math.floor(xr - math.log(V) / lamr)
+
+            if ((k > trial_num) or (V == 0.0)) then continue end
+
+            V *= (U - p3) * lamr;
+        end
+
+        if k < 0 or k > trial_num then
+            continue
+        end
+
+        local F = 1.0
+
+        if m < k then
+            for i = m + 1, k do
+                F *= (a0 / i - s)
+            end
+        elseif m > k then
+            for i = k + 1, m do
+                F /= (a0 / i - s)
+            end
+        end
+
+        if V <= F then
+            return k
+        end
+
+        local k_abs = math.abs(k - m)
+
+        if k_abs < nrq / 2 then
+            local rho = (k_abs / nrq) * ((k_abs * (k_abs / 3 + 0.625) + 1/6) / nrq + 0.5)
+
+            local t = -(k_abs * k_abs) / (2 * nrq)
+            local A = math.log(V)
+
+            if A > (t - rho) then return k end
+
+            if A > (t + rho) then continue end
+        else
+            continue
+        end
+
+        if probability > 0.5 then
+            return trial_num - k
+        end
+
+        return k
+    end
+end
+
+schema.binomial = function(self : types.Generator,trial_num : number,probability : number,shape : {number})
+    trial_num = math.floor(trial_num or 1)
+    shape = shape or {1}
+
+    local valid_shape,err_msg = ndarray_utils.VerifyShape(shape)
+
+    if not valid_shape then
+        exceptions.FormatException("Array", err_msg)
+    end
+    
+    local mean = trial_num * probability
+    local variance = mean * (1 - probability)
+    local epsilon = 1e-6
+
+    local size = ndarray_utils.ComputeSize(shape)
+    local data = table.create(size,0)
+    local strides = ndarray_utils.ComputeStrides(shape)
+
+    if probability > 1 - epsilon then
+        return trial_num - self:binomial(trial_num, 1 - probability, shape)
+
+    elseif probability < epsilon then
+        return self:poisson(mean, shape)
+
+    elseif mean <= 30 then
+        for i = 1,size do
+            local result = 0
+            for k = 1,trial_num do
+                local uniform = self.BitGenerator() / (RNG_MAX)
+                if uniform > probability then continue end
+
+                result += 1
+            end
+
+            data[i] = result
+        end
+    elseif variance < 1e7 then
+        for i = 1,size do
+            data[i] = BTPE(self.BitGenerator,trial_num,probability)
+        end
+    else
+        local normal = self:normal(trial_num, math.sqrt(variance), shape) -- centeral limit theorem
+
+        for i,v in normal do
+            normal.Buffer[i] = math.clamp(math.round(v),0,trial_num)
+        end
+
+        return normal
+    end
+
+    return ndArray(data, shape, strides, 0, "number")
+end
+
 
 -- shuffles
 
