@@ -1,8 +1,6 @@
 --!strict
 local module = {}
 
-local EULER = math.exp(1)
-
 local lancozs_coeff = {
     0.99999999999980993,
     676.5203681218851,

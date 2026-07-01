@@ -162,7 +162,7 @@ end
 
 local ziggurat_exp = function(BitGenerator : () -> number)
     local layers = 128
-    local r = 7.69711747013104972  -- right edge
+
     while true do
         local layer = lemire_constrain(BitGenerator, 1, layers)
 
