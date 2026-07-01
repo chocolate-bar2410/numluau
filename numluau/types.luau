@@ -16,8 +16,8 @@ export type ndArray<T> = setmetatable<{
     item : (self : ndArray<T>,...number) -> T,
     toflatlist : (self : ndArray<T>) -> {T},
 },{
-    __index : (ndArray<T>,index : number | ndArray<boolean> | string) -> (),
-    __newindex : () -> (),
+    __index : (ndArray<T>,index : number | ndArray<boolean> | string) -> T | ndArray<T>,
+    __newindex : (ndArray<T>,index : number | string,value : T) -> (),
     __tostring : (ndArray<T>) -> string,
     __add : (ndArray<T>,value : number | ndArray<T>) -> ndArray<T>,
     __sub : (ndArray<T>,value : number | ndArray<T>) -> ndArray<T>,
