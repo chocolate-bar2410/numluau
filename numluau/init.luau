@@ -1,5 +1,5 @@
 local ndArray = require("@self/ndarray/FromTable")
-local ndArray_utils = require("@self/ndarray/ndarray_utils")
+local ndArray_utils = require("@self/utility/ndarray")
 local math_utils = require("@self/math/math_utils")
 local aggregations = require("@self/math/aggregations")
 local Exceptions = require("@self/Exceptions")

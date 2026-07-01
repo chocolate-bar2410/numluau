@@ -1,7 +1,7 @@
 local module = {}
 local types = require("../types")
 
-local utils = require("../ndarray/ndarray_utils")
+local utils = require("../utility/ndarray")
 local ndArray = require("../ndarray/ndarray")
 
 local exceptions = require("../Exceptions")

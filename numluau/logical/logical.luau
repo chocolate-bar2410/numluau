@@ -1,7 +1,7 @@
 local module = {}
 local types = require("../types")
 local Broadcast = require("../ndarray/Broadcast")
-local ndArray_utils = require("../ndarray/ndarray_utils")
+local ndArray_utils = require("../utility/ndarray")
 local ndArray = require("../ndarray/ndarray")
 
 function module.logical_and(x1 : types.ndArray<any>,x2 : types.ndArray<any>)

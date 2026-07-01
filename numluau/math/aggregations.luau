@@ -1,5 +1,5 @@
 local module = {}
-local ndArray_utils = require("../ndarray/ndarray_utils")
+local ndArray_utils = require("../utility/ndarray")
 local types = require("../types")
 local ndArray = require("../ndarray/ndarray")
 

@@ -1,7 +1,7 @@
 local schema = {}
 local meta = {}
 
-local utils = require("./ndarray_utils")
+local utils = require("../utility/ndarray")
 local types = require("../types")
 
 local Broadcast = require("./Broadcast")
