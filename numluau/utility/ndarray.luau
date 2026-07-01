@@ -146,4 +146,32 @@ function module.ComputeSize(shape : {number}) : number
     return size
 end
 
+function module.ForEachSlice(shape : {number},stride : {number},axis : number,offset : number,callback : (base : number) -> ())
+    axis = axis or 0
+    local ndim = #shape
+    local target_axis = ndim - axis
+
+    local slice_size = 1
+    for i = 1,ndim do
+        if i == target_axis then continue end
+        slice_size *= shape[i]
+    end
+
+    for lin = 0, slice_size - 1 do
+        local n = lin
+        local base = offset
+
+        for dim = ndim,1,-1 do
+            if dim == target_axis then continue end
+
+            local co_ord = n % shape[dim]
+            n //= shape[dim]
+
+            base += co_ord * stride[dim]
+        end
+
+        callback(base)
+    end
+end
+
 return module
