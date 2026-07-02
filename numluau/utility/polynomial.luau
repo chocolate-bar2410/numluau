@@ -1,4 +1,5 @@
 local types = require("../types")
+local math_utils = require("../math/math_utils")
 local module = {}
 
 local superscript_mapping = {
@@ -15,21 +16,31 @@ local superscript_mapping = {
 }
 
 module.prettyprint = function(self : types.Polynomial)
-    local format_base = "%d+"
+    local result = ""
 
-    for i = 2,self.coef.Shape[1] do
-        format_base ..= "%d" .. self.symbol .. (i == 2 and "" or (i - 1)).. "+"
+    local size = self.coef.Shape[1]
+
+    if size == 1 then
+        return self.coef.Buffer[1]
     end
 
-    format_base = format_base:sub(1,#format_base - 1)
+    for i,number in self.coef do
 
-    for init,translated in superscript_mapping do
-        format_base = format_base:gsub(init, translated)
+        if i - 1 == 0 then
+            result ..= "%g"
+            continue
+        end
+
+        result ..= number < 0 and "-" or "+"
+        result ..= "%g" .. "∙" .. self.symbol .. i - 1
     end
 
-    format_base = format_base:gsub("+"," + ")
-    
-    return format_base:format(table.unpack(self.coef:toflatlist()))
+    result = result:gsub("+"," + ")
+    result = result:gsub("-"," - ")
+
+    result = result:gsub("%d",superscript_mapping)
+
+    return result:format(table.unpack(math_utils.abs(self.coef):toflatlist()))
 end
 
 
