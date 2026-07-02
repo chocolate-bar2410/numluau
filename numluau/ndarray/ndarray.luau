@@ -333,7 +333,7 @@ end
 
 schema.flatten = function<T>(self : types.ndArray<T>)
     local result = self:view()
-    result.Shape = {#self.Buffer}
+    result.Shape = {#self}
     result.Strides = {1}
     result.ndim = 1
 
