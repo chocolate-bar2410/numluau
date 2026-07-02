@@ -10,7 +10,8 @@ local ExceptionTypes = {
 
     ["Axis"] = "Axis supplied was invalid",
     ["LinAlg"] = "Error with linear algebra: %s",
-    ["Random"] = "Error with generating random number: %s"
+    ["Random"] = "Error with generating random number: %s",
+    ["Poly"] = "Error with handling polynomial: %s",
 }
 
 module.FormatException = function(ExceptionType : string,Message : string)
