@@ -2,6 +2,7 @@ local types = require("../types")
 local ndArray = require("../ndarray/ndarray")
 
 local poly_utils = require("../utility/polynomial")
+local linear_algebra = require("../math/lin_algebra")
 
 local exceptions = require("../Exceptions")
 
@@ -104,6 +105,43 @@ schema.integ = function(self : types.Polynomial)
 
     return interface.new(data,table.clone(self.domain),table.clone(self.window),self.symbol)
 end
+
+schema.trim = function(self : types.Polynomial,tol : number)
+    tol = tol or 0
+
+    local data = self.coef:toflatlist()
+    for i = self.coef.Shape[1],1,-1 do
+        if self.coef.Buffer[i] > tol then break end
+        table.remove(self.coef.Buffer,i)
+    end
+
+    local result = self:copy()
+    result.coef = ndArray(data, {#data}, {1}, 0, "number")
+    
+    return result
+end
+
+schema.roots = function(self : types.Polynomial)
+    if self.coef.Shape[1] == 2 then
+        return ndArray({self.coef.Buffer[2] / self.coef.Buffer[1]}, {}, {}, 0, "number")
+    end
+
+    if self.coef.Shape[1] == 3 then
+        local a = self.coef.Buffer[3]
+        local b = self.coef.Buffer[2]
+        local c = self.coef.Buffer[1]
+        return ndArray({
+            (-b - math.sqrt((b^2) - 4 * a * c)) / (2 * a),
+            (-b + math.sqrt((b^2) - 4 * a * c)) / (2 * a)
+        }, {2}, {1}, 0, "number")
+    end
+
+    local trimmed = self:trim()
+
+
+    return
+end
+
 
 
 

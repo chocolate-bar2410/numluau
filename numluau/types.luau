@@ -68,6 +68,11 @@ export type Polynomial = setmetatable<{
     degree : (self : Polynomial) -> number,
     cutdeg : (self : Polynomial,degree : number) -> Polynomial,
     copy : (self : Polynomial) -> Polynomial,
+    deriv : (self : Polynomial) -> Polynomial,
+    integ : (self : Polynomial) -> Polynomial,
+    trim : (self : Polynomial) -> Polynomial,
+    roots : (self : Polynomial) -> ndArray<number>,
+
 },{
     __call : (self : Polynomial, value : ndArray<number> | number) -> ndArray<number> | number,
     __tostring : (self : Polynomial) -> string,
