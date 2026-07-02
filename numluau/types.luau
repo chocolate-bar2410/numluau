@@ -60,4 +60,12 @@ export type Generator = {
     permutation : <T>(self : Generator,target : ndArray<T> | number,axis : number) -> ()
 }
 
+export type Polynomial = {
+    coef : ndArray<number>,
+    domain : {number},
+    window : {number},
+    symbol : string
+}
+
+
 return nil

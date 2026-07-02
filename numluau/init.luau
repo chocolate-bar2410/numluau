@@ -207,6 +207,7 @@ local Base = {
     
     linalg = require("@self/math/lin_algebra"),
     random = require("@self/random"),
+    polynomial = require("@self/polynomial"),
     version = {major = 1, minor = 1} :: types.Version
 }
 
