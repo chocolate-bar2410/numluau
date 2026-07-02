@@ -4,6 +4,11 @@ local types = require("../types")
 module.suppress = false
 module.precision = 8
 
+module.edgeitems = 3
+module.threshold = 100
+
+module.linewidth = 75
+
 function module.ReverseTable(tab)
     local result = {}
     for i = #tab,1,-1 do
@@ -62,8 +67,62 @@ function module.PrettyPrint(ndArray,dim,indices : {})
         parts[i] = if module.suppress then string.format(`%.{module.precision}f`,v):gsub("%.?0+$","") else string.format(`%.{module.precision}g`,v)
     end
 
+    local truncated = false
+    local truncated_pos = 0
+
+    if #parts > module.threshold then
+        truncated = true
+        local new_parts = {}
+        for i = 1,module.edgeitems do
+            table.insert(new_parts,parts[i])
+        end
+
+        table.insert(new_parts,"...")
+        truncated_pos = #new_parts
+
+        for i = #parts - module.edgeitems + 1,#parts do
+            table.insert(new_parts,parts[i])
+        end
+
+        parts = new_parts
+    end
+
     if dim == ndArray.ndim then
-        return "[" .. table.concat(parts, " ") .. "]"
+        local indent_length = #("array([")
+        local current_line_width = 1 + indent_length
+        local result = "["
+        local max_item_len = 0
+
+        for _,v in parts do
+            max_item_len = math.max(#v,max_item_len)
+        end
+
+        for i,v in parts do
+            if truncated and i == truncated_pos and v == "..." then
+                result ..= v .. "  "
+                current_line_width += 3
+                continue
+            end
+            local padded_v = v .. string.rep(" ",max_item_len - #v)
+
+            local gap_width = 2
+
+            local gap = i < #parts and string.rep(" ", gap_width) or ""
+            local total_width = #gap + #padded_v
+
+            if current_line_width + total_width > module.linewidth then
+
+                local indent = string.rep(" ",indent_length - if tonumber(v) and tonumber(v) < 0 then 1 else 0)
+                
+                result ..= "\n" .. indent
+                current_line_width = indent_length
+            end
+
+            result ..= padded_v .. gap
+            current_line_width += total_width
+        end
+
+        return result:sub(1,#result - 1) .."]"
     else
         local inner = table.concat(parts, "\n")
         return "[\n" .. inner:gsub("^", "  "):gsub("\n", "\n  ") .. "\n]"

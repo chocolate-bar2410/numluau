@@ -209,12 +209,13 @@ local Base = {
     random = require("@self/random"),
     polynomial = require("@self/polynomial"),
     version = {major = 1, minor = 1} :: types.Version,
-    set_printoptions = function(args : {suppress : boolean, precision : number})
-        args.suppress = if args.suppress ~= nil then args.suppress else ndArray_utils.suppress
-        args.precision = if args.precision ~= nil then args.precision else ndArray_utils.precision
+    set_printoptions = function(args : {suppress : boolean, precision : number,threshold : number,edgeitems : number})
+        ndArray_utils.suppress = if args.suppress ~= nil then args.suppress else ndArray_utils.suppress
+        ndArray_utils.precision = if args.precision ~= nil then args.precision else ndArray_utils.precision
 
-        ndArray_utils.suppress = args.suppress
-        ndArray_utils.precision = args.precision
+        ndArray_utils.edgeitems = if args.edgeitems ~= nil then args.edgeitems else ndArray_utils.edgeitems
+        ndArray_utils.threshold = if args.threshold ~= nil then args.threshold else ndArray_utils.threshold
+
     end
 }
 
