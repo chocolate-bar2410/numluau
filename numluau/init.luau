@@ -206,7 +206,7 @@ local Base = {
     end,
     
     linalg = require("@self/math/lin_algebra"),
-    random = require("@self/random/random"),
+    random = require("@self/random"),
     version = {major = 1, minor = 1} :: types.Version
 }
 

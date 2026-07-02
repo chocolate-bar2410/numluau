@@ -1,6 +1,6 @@
-local types = require("../types")
-local generator = require("./generator")
-local prng = require("./prng")
+local types = require("./types")
+local generator = require("@self/generator")
+local prng = require("@self/prng")
 
 local Merge = function(... : {})
     local Result = {}
