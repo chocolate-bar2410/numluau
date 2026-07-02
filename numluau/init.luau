@@ -208,7 +208,14 @@ local Base = {
     linalg = require("@self/math/lin_algebra"),
     random = require("@self/random"),
     polynomial = require("@self/polynomial"),
-    version = {major = 1, minor = 1} :: types.Version
+    version = {major = 1, minor = 1} :: types.Version,
+    set_printoptions = function(args : {suppress : boolean, precision : number})
+        args.suppress = if args.suppress ~= nil then args.suppress else ndArray_utils.suppress
+        args.precision = if args.precision ~= nil then args.precision else ndArray_utils.precision
+
+        ndArray_utils.suppress = args.suppress
+        ndArray_utils.precision = args.precision
+    end
 }
 
 type out = typeof(Base) & typeof(math_utils) & typeof(aggregations) & typeof(comparison) & typeof(logical) & typeof(calculus)

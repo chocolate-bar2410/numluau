@@ -1,6 +1,9 @@
 local module = {}
 local types = require("../types")
 
+module.suppress = false
+module.precision = 8
+
 function module.ReverseTable(tab)
     local result = {}
     for i = #tab,1,-1 do
@@ -56,7 +59,7 @@ function module.PrettyPrint(ndArray,dim,indices : {})
 
     for i,v in parts do
         if not tonumber(v) then continue end
-        parts[i] = string.format("%.8g",v)
+        parts[i] = if module.suppress then string.format(`%.{module.precision}f`,v):gsub("%.?0+$","") else string.format(`%.{module.precision}g`,v)
     end
 
     if dim == ndArray.ndim then
