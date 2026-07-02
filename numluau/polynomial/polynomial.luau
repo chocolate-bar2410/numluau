@@ -52,11 +52,12 @@ meta.__tostring = function(self : types.Polynomial)
 end
 
 schema.degree = function(self : types.Polynomial)
-    return self.coef.Shape[1] - 1
+    local trimmed = self:trim()
+    return trimmed.coef.Shape[1] - 1
 end
 
 schema.cutdeg = function(self : types.Polynomial,degree : number)
-    if degree > self.coef.Shape[1] - 1 then
+    if degree > self:degree() then
         exceptions.FormatException("Poly", ("cutting degree %s must be less than the current degree %s"):format(degree,self:degree()))
     end
     if degree < 0 then
@@ -121,12 +122,35 @@ schema.trim = function(self : types.Polynomial,tol : number)
     return result
 end
 
-schema.roots = function(self : types.Polynomial)
-    if self.coef.Shape[1] == 2 then
-        return ndArray({self.coef.Buffer[2] / self.coef.Buffer[1]}, {}, {}, 0, "number")
+schema.companion =function(self : types.Polynomial)
+    local degree = self:degree()
+
+    if degree < 2 then
+        return exceptions.FormatException("Poly", "polynomial must have degree")
     end
 
-    if self.coef.Shape[1] == 3 then
+    local companion_matrix = ndArray(table.create(degree * degree,0), {degree,degree}, {degree,1}, 0, "number")
+
+    for i = 1,degree - 1 do
+        companion_matrix[i + 1][i] = 1
+    end
+
+    local leading_coeff = self.coef.Buffer[degree + 1]
+
+    for i = 1,degree do
+        companion_matrix[i][degree] = -self.coef.Buffer[i] / leading_coeff
+    end
+
+    return companion_matrix
+end
+
+schema.roots = function(self : types.Polynomial)
+    local degree = self:degree()
+    if degree == 1 then
+        return ndArray({-self.coef.Buffer[1] / self.coef.Buffer[2]}, {}, {}, 0, "number")
+    end
+
+    if degree == 2 then
         local a = self.coef.Buffer[3]
         local b = self.coef.Buffer[2]
         local c = self.coef.Buffer[1]
@@ -136,10 +160,7 @@ schema.roots = function(self : types.Polynomial)
         }, {2}, {1}, 0, "number")
     end
 
-    local trimmed = self:trim()
-
-
-    return
+    return linear_algebra.eigenval(self:companion())
 end
 
 
