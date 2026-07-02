@@ -60,12 +60,18 @@ export type Generator = {
     permutation : <T>(self : Generator,target : ndArray<T> | number,axis : number) -> ()
 }
 
-export type Polynomial = {
+export type Polynomial = setmetatable<{
     coef : ndArray<number>,
     domain : {number},
     window : {number},
-    symbol : string
-}
+    symbol : string,
+    degree : (self : Polynomial) -> number,
+    cutdeg : (self : Polynomial,degree : number) -> Polynomial,
+    copy : (self : Polynomial) -> Polynomial,
+},{
+    __call : (self : Polynomial, value : ndArray<number> | number) -> ndArray<number> | number,
+    __tostring : (self : Polynomial) -> string,
+}>
 
 
 return nil

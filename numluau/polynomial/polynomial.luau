@@ -26,7 +26,7 @@ meta.__call = function(self : types.Polynomial, value : types.ndArray<number> | 
     if typeof(value) == "number" then
         local result = 0
         for i,v in self.coef do
-            result += (value ^ (i - 1)) * v
+            result += (i > 0 and (value ^ (i - 1)) or 1) * v
         end
 
         return result
@@ -35,7 +35,10 @@ meta.__call = function(self : types.Polynomial, value : types.ndArray<number> | 
     local data = {}
 
     for i,val in value do
-        local result = self(val)
+        local result = 0
+        for i,v in self.coef do
+            result += (i > 0 and (val ^ (i - 1)) or 1) * v
+        end
 
         data[i] = result
     end
@@ -79,6 +82,29 @@ schema.copy = function(self : types.Polynomial)
         self.symbol
     )
 end
+
+schema.deriv = function(self : types.Polynomial)
+    local result_coeff : types.ndArray<number> = self.coef:copy()["2:"]
+
+    for i = 1,#result_coeff do
+        result_coeff[i] *= i
+    end
+
+    return interface.new(result_coeff:toflatlist(),table.clone(self.domain),table.clone(self.window),self.symbol)
+end
+
+schema.integ = function(self : types.Polynomial)
+    local data = self.coef:toflatlist()
+
+    for i = 1,#data do
+        data[i] /= (i)
+    end
+
+    table.insert(data,1,0)
+
+    return interface.new(data,table.clone(self.domain),table.clone(self.window),self.symbol)
+end
+
 
 
 return interface
