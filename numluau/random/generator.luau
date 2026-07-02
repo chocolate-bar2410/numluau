@@ -261,6 +261,81 @@ schema.exponential = function(self : types.Generator,scale : number,shape : {num
     return ndArray(data, shape, strides, 0, "number")
 end
 
+schema.gamma = function(self : types.Generator,alpha : number,scale : number,shape : {number})
+    if alpha <= 0 then
+        exceptions.FormatException("Random", ("alpha value %s has to be greater than 0"):format(alpha))
+    end
+
+    if alpha < 1 then
+        local U = self.BitGenerator() / (RNG_MAX)
+        return self:gamma(alpha + 1,scale,shape) * (U ^ (1/alpha))
+    end
+
+    scale = scale or 1
+
+    local valid_shape,err_msg = ndarray_utils.VerifyShape(shape)
+
+    if not valid_shape then
+        exceptions.FormatException("Array", err_msg)
+    end
+
+    local size = ndarray_utils.ComputeSize(shape)
+    local data = table.create(size,0)
+    local strides = ndarray_utils.ComputeStrides(shape)
+
+    local d = alpha - (1/3)
+    local c = 1/math.sqrt(9 * d)
+
+    for i = 1,size do
+        while true do
+            local normal_value = ziggurat_normal(self.BitGenerator)
+            local V = (1 + c * normal_value)
+
+            if V <= 0 then continue end
+
+            V *= V * V
+
+            local U = self.BitGenerator() / (RNG_MAX)
+
+            if U < 1 - 0.0331 * (normal_value ^ 4) then
+                data[i] = scale * d * V
+                break
+            end
+
+            if math.log(U) < (normal_value ^ 2) / 2 + d * (1 - V + math.log(V)) then
+                data[i] = scale * d * V
+                break
+            end
+
+        end
+    end
+
+    return ndArray(data, shape, strides, 0, "number")
+end
+
+schema.beta = function(self : types.Generator,alpha : number,beta : number,shape : {number})
+    local valid_shape,err_msg = ndarray_utils.VerifyShape(shape)
+
+    if not valid_shape then
+        exceptions.FormatException("Array", err_msg)
+    end
+
+    if alpha <= 0 then
+        exceptions.FormatException("Random", ("alpha value %s has to be greater than 0"):format(alpha))
+    end
+
+    if beta <= 0 then
+        exceptions.FormatException("Random", ("beta value %s has to be greater than 0"):format(alpha))
+    end
+
+
+    local X = self:gamma(alpha, 1, shape)
+    local Y = self:gamma(alpha, 1, shape)
+
+    return X / (X + Y)
+end
+
+
 schema.uniform = function(self : types.Generator,min : number, max : number, shape : {number})
     shape = shape or {1}
 
