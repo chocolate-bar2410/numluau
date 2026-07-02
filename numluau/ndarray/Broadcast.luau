@@ -56,7 +56,12 @@ end
 module.BroadcastScalar = function<T>(A : types.ndArray<T> | T,B : types.ndArray<T> | T,Callback : (A : T,B : T) -> T)
     local not_ndarray : T = type(A) ~= "table" and A or B
     local _ndarray : types.ndArray<T> = type(A) == "table" and A or B
-    
+
+    if not _ndarray.type then exceptions.FormatException("Broadcasting",("Tried to broadcast between a %s and a table"):format(typeof(not_ndarray))) end
+
+    if _ndarray.type ~= "ndArray" then exceptions.FormatException("Broadcasting",("Tried to broadcast between a %s and a %s"):format(_ndarray.type,typeof(not_ndarray))) end
+
+
     local result = {}
 
     for i = 1,#_ndarray.Buffer do
@@ -72,6 +77,9 @@ end
 
 module.CreateBroadcastArray = function<T>(A : types.ndArray<T>,B : types.ndArray<T>,Callback : (A : T,B : T) -> T)
     if typeof(A) ~= "table" or typeof(B) ~= "table" then return module.BroadcastScalar(A, B, Callback) end
+
+    if not A.type or not B.type then exceptions.FormatException("Broadcasting",("Tried to broadcast between a %s and a table"):format(A.type or B.type)) end
+    if A.type ~= "ndArray" or B.type ~= "ndArray" then exceptions.FormatException("Broadcasting",("Tried to broadcast between a %s and a %s"):format(A.type,B.type)) end
 
     local Result = {}
 
