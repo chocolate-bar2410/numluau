@@ -105,7 +105,7 @@ function module.PrettyPrint(ndArray,dim,indices : {})
             end
             local padded_v = v .. string.rep(" ",max_item_len - #v)
 
-            local gap_width = 2
+            local gap_width = 1
 
             local gap = i < #parts and string.rep(" ", gap_width) or ""
             local total_width = #gap + #padded_v
