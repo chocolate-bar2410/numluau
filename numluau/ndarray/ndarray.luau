@@ -2,6 +2,7 @@ local schema = {}
 local meta = {}
 
 local utils = require("../utility/ndarray")
+local table_utils = require("../utility/table")
 local types = require("../types")
 
 local Broadcast = require("./Broadcast")
@@ -62,15 +63,7 @@ local function set_ndarray(ndArray : types.ndArray<any>,index : number,value : a
 
     local NewOffset = ndArray.Offset + (index-1) * ndArray.Strides[1]
 
-    local NewShape = table.move(ndArray.Shape, 2, #ndArray.Shape, 1,{})
-    local NewStrides = table.move(ndArray.Strides, 2, #ndArray.Shape, 1,{})
-
-    if #NewShape == 0 then
-        ndArray.Buffer[NewOffset + 1] = value
-        return value
-    end
-
-    return New_ndarray(ndArray.Buffer,NewShape,NewStrides,NewOffset,ndArray.dtype)
+    ndArray.Buffer[NewOffset + 1] = value
 end
 
 local function is_ndarray(target)
@@ -174,7 +167,23 @@ meta.__index = function(self : types.ndArray<any>,index)
     return rawget(self, index) or schema[index]
 end
 
-meta.__newindex = function(self : types.ndArray<any>,index,value)
+meta.__newindex = function<T>(self : types.ndArray<T>,index,value)
+    if typeof(value) == "table" and value.type == "ndArray" then
+        local target = self[index]
+        
+        if target.ndim ~= value.ndim then 
+            Exceptions.FormatException("Value", "assigning requires for ndims to match")
+            return
+        elseif not table_utils.equals(target.Shape, value.Shape) then 
+            Exceptions.FormatException("Value", "assigning requires for shapes to match")
+            return 
+        end
+
+        for i = 1,#value do
+            target.Buffer[target.Offset + i] = value.Buffer[value.Offset + i]
+        end
+    end
+
     if typeof(index) == "number" then
         return set_ndarray(self, index,value)
     end
