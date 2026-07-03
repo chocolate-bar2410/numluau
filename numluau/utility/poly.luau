@@ -1,5 +1,6 @@
 local types = require("../types")
 local math_utils = require("../math/math_utils")
+local exceptions = require("../Exceptions")
 local module = {}
 
 local superscript_mapping = {
@@ -41,6 +42,23 @@ module.prettyprint = function(self : types.Polynomial)
     result = result:gsub("%d",superscript_mapping)
 
     return result:format(table.unpack(math_utils.abs(self.coef):toflatlist()))
+end
+
+module.fit = function(self : types.Polynomial,x : types.ndArray<number>,y : types.ndArray<number>,degree : number)
+    if typeof(degree) ~= "number" then
+        exceptions.FormatException("Type", "polyfit degree must be a number")
+    elseif degree <= 0 then
+        exceptions.FormatException("Value", "polyfit degree must be greater than 0")
+    elseif x.ndim ~= 1 then
+        exceptions.FormatException("Value", "polyfit x parameter must have ndim = 1")
+    elseif y.ndim ~= 1 then
+        exceptions.FormatException("Value", "polyfit y parameter must have ndim = 1")
+    elseif x.Shape[1] ~= y.Shape[1] then
+        exceptions.FormatException("Value", "polyfit x & y parameters must have the same length")
+    end
+
+    local order = degree + 1
+
 end
 
 
