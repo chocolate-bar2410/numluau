@@ -12,15 +12,19 @@ local ExceptionTypes = {
     ["LinAlg"] = "Error with linear algebra: %s",
     ["Random"] = "Error with generating random number: %s",
     ["Poly"] = "Error with handling polynomial: %s",
+    ["Type"] = "Type error: %s",
+    ["Value"] = "Value error: %s",
 }
 
-module.FormatException = function(ExceptionType : string,Message : string)
+type exception_type = "Broadcasting" | "Array" | "Malformed" | "Axis" | "LinAlg" | "Random" | "Poly" | "Type" | "Value"
+
+module.FormatException = function(ExceptionType : exception_type,Message : string)
     local Tag = ExceptionTypes[ExceptionType]
 
     error(RED .. string.format(Tag,Message) .. RESET)
 end
 
-module.Exception = function(ExceptionType : string)
+module.Exception = function(ExceptionType : exception_type)
     local Tag = ExceptionTypes[ExceptionType]
 
     error(RED .. Tag .. RESET)
