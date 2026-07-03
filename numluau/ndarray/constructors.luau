@@ -1,4 +1,5 @@
 local module = {}
+local exceptions = require("@numluau/exceptions")
 local types = require("../types")
 local FromTable = require("./FromTable")
 local ndArray_utils = require("../utility/ndarray")
@@ -16,6 +17,7 @@ module.arange = function(start : number,stop : number?) : types.ndArray<number>
 
     return FromTable(result)
 end
+
 module.linspace = function(start : number,stop : number?,num : number?) : types.ndArray<number>
     local result = {}
     num = (num or 50)
@@ -37,6 +39,7 @@ module.linspace = function(start : number,stop : number?,num : number?) : types.
 
     return FromTable(result)
 end
+
 module.ones = function(... : number) : types.ndArray<number>
     local shape = {...}
     local size = 1
@@ -47,13 +50,14 @@ module.ones = function(... : number) : types.ndArray<number>
 
     local result = table.create(size,1)
 
-    local Array : types.ndArray<any> = FromTable(result)
+    local Array : types.ndArray<number> = FromTable(result)
     Array.Shape = shape
     Array.Strides = ndArray_utils.ComputeStrides(shape)
     Array.ndim = #shape
 
     return Array
 end
+
 module.zeros = function(... : number) : types.ndArray<number>
     local shape = {...}
     local result = {}
@@ -66,14 +70,15 @@ module.zeros = function(... : number) : types.ndArray<number>
 
     for i = 1,size do table.insert(result,0) end
 
-    local Array : types.ndArray<any> = FromTable(result)
+    local Array : types.ndArray<number> = FromTable(result)
     Array.Shape = shape
     Array.Strides = ndArray_utils.ComputeStrides(shape)
     Array.ndim = #shape
 
     return Array
 end
-module.where = function(Mask : types.ndArray<boolean>,Target : types.ndArray<any>,FillValue : any) : types.ndArray<any>
+
+module.where = function<T>(Mask : types.ndArray<boolean>,Target : types.ndArray<T>,FillValue : any) : types.ndArray<T>
     if FillValue == nil then
         Exceptions.FormatException("Array", "Fill Value must not be nil")
         return
@@ -95,7 +100,8 @@ module.where = function(Mask : types.ndArray<boolean>,Target : types.ndArray<any
 
     return Result
 end
-module.reshape = function(Target : types.ndArray<any>,Shape : {number}) : types.ndArray<any>
+
+module.reshape = function<T>(Target : types.ndArray<T>,Shape : {number}) : types.ndArray<T>
 
     local Size = 1
     for i = 1,#Shape do
@@ -113,7 +119,8 @@ module.reshape = function(Target : types.ndArray<any>,Shape : {number}) : types.
 
     return result
 end
-module.flatten = function(Target) : types.ndArray<any>
+
+module.flatten = function<T>(Target : types.ndArray<T>) : types.ndArray<T>
     local result = Target:copy()
     result.Shape = {#Target.Buffer}
     result.Strides = {1}
@@ -121,6 +128,7 @@ module.flatten = function(Target) : types.ndArray<any>
 
     return result
 end
+
 module.meshgrid = function<T>(X : types.ndArray<T>,Y : types.ndArray<T>)
     if X.ndim ~= 1 or Y.ndim ~= 1 then
         Exceptions.Exception("Array","meshgrid inputs must have ndim = 1")
@@ -161,13 +169,27 @@ module.meshgrid = function<T>(X : types.ndArray<T>,Y : types.ndArray<T>)
     return x_grid,y_grid
 end
 
+module.vander = function(Target : types.ndArray<number>)
+    if Target.ndim ~= 1 then
+        exceptions.FormatException("Value","vandermonde Target array must have ndim = 1")
+    end
+
+    local pow,tar = module.meshgrid(
+        module.arange(0,Target.Shape[1] - 1), 
+        Target
+    )
+
+    return tar ^ pow
+end
+
 return module :: {
     arange   : <T>(start : number,stop : number?) -> types.ndArray<number>,
     linspace : <T>(start : number,stop : number?,num : number?) -> types.ndArray<number>,
     ones     : <T>(...number) -> types.ndArray<number>,
     zeros    : <T>(...number) -> types.ndArray<number>,
-    where    : <T>(Mask : types.ndArray<boolean>,Target : types.ndArray<any>,FillValue : any) -> types.ndArray<any>,
-    reshape  : <T>(Target : types.ndArray<any>,Shape : {number}) -> types.ndArray<any>,
-    flatten  : <T>(Target : types.ndArray<any>) -> types.ndArray<any>,
+    where    : <T>(Mask : types.ndArray<boolean>,Target : types.ndArray<T>,FillValue : any) -> types.ndArray<T>,
+    reshape  : <T>(Target : types.ndArray<T>,Shape : {number}) -> types.ndArray<T>,
+    flatten  : <T>(Target : types.ndArray<T>) -> types.ndArray<T>,
     meshgrid : <T>(X : types.ndArray<T>,Y : types.ndArray<T>) -> (types.ndArray<T>,types.ndArray<T>),
+    vander : <T>(Target : types.ndArray<number>) -> (types.ndArray<number>)
 }
