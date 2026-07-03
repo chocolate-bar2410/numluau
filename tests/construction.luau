@@ -83,8 +83,7 @@ unit_tests.Test("ndarray reshaping",function()
     unit_tests.AssertEquals(A.Shape, {2,2})
     unit_tests.AssertEquals(A.Strides, {2,1})
 
-    local result = pcall(numluau.reshape,A, {10})
-    unit_tests.AssertFalse(result)
+    unit_tests.AssertError(numluau.reshape,A, {10})
 end)
 
 unit_tests.Test("meshgrid generation", function()
@@ -100,9 +99,44 @@ unit_tests.Test("meshgrid generation", function()
     unit_tests.AssertEquals(YV.Buffer, {4,4,4,5,5,5})
 
     local grid = numluau.reshape(X, {3,1})
-    local result = pcall(numluau.meshgrid,grid, Y)
-    unit_tests.AssertFalse(result)
+    unit_tests.AssertError(numluau.meshgrid,grid, Y)
 end)
 
+unit_tests.Test("vandermonde matrix",function()
+    local A = numluau.array({1,2,3})
+    local vander_A = numluau.vander(A)
+
+    unit_tests.AssertEquals(vander_A.Shape, {3,3})
+    unit_tests.AssertEquals(vander_A.Strides, {3,1})
+    unit_tests.AssertEquals(vander_A.Buffer, {1, 1, 1, 1, 2, 4, 1, 3, 9})
+
+    local B = numluau.array({5})
+    local vander_B = numluau.vander(B)
+
+    unit_tests.AssertEquals(vander_B.Shape, {1,1})
+    unit_tests.AssertEquals(vander_B.Strides, {1,1})
+    unit_tests.AssertEquals(vander_B.Buffer, {1})
+
+    local C = numluau.array({0,2})
+    local vander_C = numluau.vander(C)
+
+    unit_tests.AssertEquals(vander_C.Shape, {2,2})
+    unit_tests.AssertEquals(vander_C.Strides, {2,1})
+    unit_tests.AssertEquals(vander_C.Buffer, {1,0,1,2})
+
+    local D = numluau.array({-1,1.5})
+    local vander_D = numluau.vander(D)
+
+    unit_tests.AssertEquals(vander_D.Shape, {2,2})
+    unit_tests.AssertEquals(vander_D.Strides, {2,1})
+    unit_tests.AssertEquals(vander_D.Buffer, {1,-1,1,1.5})
+
+    unit_tests.AssertError(numluau.vander,numluau.array({{1,2},{3,4}}))
+
+    local E = numluau.vander(numluau.array({}))
+
+    unit_tests.AssertEquals(E.Shape,{0,0})
+    unit_tests.AssertEquals(E.Buffer,{})
+end)
 
 unit_tests.PrintResults()
