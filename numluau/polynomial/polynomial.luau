@@ -171,9 +171,4 @@ schema.roots = function(self : types.Polynomial)
     return linear_algebra.eigenval(self:companion())
 end
 
-schema.fit = function(self : types.Polynomial,x : types.ndArray<number>,y : types.ndArray<number>,degree : number)
-    return poly_utils.fit(self, x, y, degree)
-end
-
-
 return interface
