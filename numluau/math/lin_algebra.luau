@@ -7,6 +7,8 @@ local ndarray = require("../ndarray/ndarray")
 
 local aggregations = require("./aggregations")
 
+local math_utils = require("./math_utils")
+
 export type interface = {
     matmul : (A : types.ndArray<number>,B : types.ndArray<number>) -> types.ndArray<number>,
     dot : (A : types.ndArray<number>,B : types.ndArray<number>) -> types.ndArray<number>,
@@ -22,34 +24,30 @@ export type interface = {
 module.matmul = function(A : types.ndArray<number>,B : types.ndArray<number>)
     if A.ndim ~= 2 or B.ndim ~= 2 then return end
 
-    local width = A.Shape[1]
-    local n = A.Shape[2]
+    local A_row = A.Shape[1]
+    local A_column = A.Shape[2]
 
-    local height = B.Shape[1]
-    local n2 = B.Shape[2]
+    local B_row = B.Shape[1]
+    local B_column = B.Shape[2]
 
-    if n ~= height then return end
+    if A_column ~= B_row then return end
 
-    local result = {}
-
-    local Shape = {width,n2}
+    local Shape = {A_row,B_column}
     local Strides = ndArray_utils.ComputeStrides(Shape)
+    
+    local result = ndarray(table.create(A_row * B_column,0),Shape, Strides, 0, A.dtype)
 
-    for i = 1, height do
-        for j = 1, width do
+    for i = 1,A_row do
+        for j = 1,B_column do
             local sum = 0
-            for k = 1, n do
-                local a = ndArray_utils.GetElement(A, {i,k})
-                local b = ndArray_utils.GetElement(B, {k,j})
-                sum = sum + a * b
+            for k = 1,B_row do
+                sum += A[i][k] * B[k][j]
             end
-
-            local offset = (i - 1) * Strides[1] + (j - 1) * Strides[2]
-            result[offset + 1] = sum
+            result[i][j] = sum
         end
     end
 
-    return ndarray(result, Shape, Strides, 0, A.dtype)
+    return result
 end
 
 module.lu = function(matrix : types.ndArray<number>)
@@ -361,7 +359,8 @@ module.eig = function(matrix : types.ndArray<number>)
         if i == 1 then
             eigen_vectors = Q
         else
-            eigen_vectors = module.matmul(Q, eigen_vectors)
+            eigen_vectors = module.matmul(eigen_vectors,Q)
+            eigen_vectors = module.qr(eigen_vectors)
         end
 
     end
@@ -423,6 +422,125 @@ module.solve = function(A : types.ndArray<number>,B: types.ndArray<number>)
 
 
     return ndarray(X_data, {n}, {1}, 0, A.dtype)
+end
+
+module.norm = function(A : types.ndArray<number>,axis : number,order : number)
+    order = order or 2
+    axis = axis or 0
+
+    if order == 1 then
+        local target_axis = A.ndim - axis
+        local axis_stride = A.Strides[target_axis]
+        local axis_shape = A.Shape[target_axis]
+
+        local result = A:copy()
+
+        ndArray_utils.ForEachSlice(A.Shape, A.Strides, axis, A.Offset, function(base: number)
+            local sum_of_abs = 0
+
+            for i = 0,axis_shape - 1 do
+                local index = base + (i * axis_stride)
+                sum_of_abs += math.abs(A.Buffer[index + 1])
+            end
+
+            if sum_of_abs == 0 then
+                return
+            end
+
+            local length = math.sqrt(sum_of_abs)
+
+            for i = 0,axis_shape - 1 do
+                local index = base + (i * axis_stride)
+                result.Buffer[index + 1] /= length
+            end
+        end)  
+        
+        return result
+    end
+
+    if order == 2 then
+        local target_axis = A.ndim - axis
+        local axis_stride = A.Strides[target_axis]
+        local axis_shape = A.Shape[target_axis]
+
+        local result = A:copy()
+
+        ndArray_utils.ForEachSlice(A.Shape, A.Strides, axis, A.Offset, function(base: number)
+            local sum_of_squares = 0
+
+            for i = 0,axis_shape - 1 do
+                local index = base + (i * axis_stride)
+                sum_of_squares += A.Buffer[index + 1] * A.Buffer[index + 1]
+            end
+
+            if sum_of_squares == 0 then
+                return
+            end
+
+            local length = math.sqrt(sum_of_squares)
+
+            for i = 0,axis_shape - 1 do
+                local index = base + (i * axis_stride)
+                result.Buffer[index + 1] /= length
+            end
+        end)  
+        
+        return result
+    end
+    
+end
+
+module.svd = function(A : types.ndArray<number>)
+    
+    local sym_l = module.matmul(A, A:transpose())
+    local sym_r = module.matmul(A:transpose(), A)
+
+    local eigenvalues_l, U = module.eig(sym_l)
+    local eigenvalues_r, V = module.eig(sym_r)
+
+    local singular_values = eigenvalues_r:copy()
+
+    for i,v in singular_values do
+        singular_values[i] = math.sqrt(math.max(v,0))
+    end
+
+
+    local indices_l = table.create(#eigenvalues_l)
+    for i = 1,#eigenvalues_l do
+        indices_l[i] = i
+    end
+
+    table.sort(indices_l,function(a, b)
+        return singular_values[a] > singular_values[b]
+    end)
+
+    local U_sorted = U:copy()
+
+    for i,index in ipairs(indices_l) do
+        U_sorted[`:{i}`] = U[`:{index}`]  
+    end
+
+    local indices_r = table.create(#eigenvalues_r)
+    for i = 1,#eigenvalues_r do
+        indices_r[i] = i
+    end
+
+    table.sort(indices_r,function(a, b)
+        return singular_values[a] > singular_values[b]
+    end)
+    
+    local V_sorted = V:copy()
+    for i,index in ipairs(indices_r) do
+        V_sorted[`:{i}`] = V[`:{index}`]  
+    end
+
+    table.sort(singular_values.Buffer,function(a, b)  
+        return a > b
+    end)
+
+    local sigma = A:eye() * singular_values
+
+    return U_sorted,sigma,V_sorted:transpose()
 end
 
 return module :: interface
