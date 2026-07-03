@@ -2,17 +2,7 @@ local types = require("./types")
 local generator = require("@self/generator")
 local prng = require("@self/prng")
 
-local Merge = function(... : {})
-    local Result = {}
-
-    for _,tab in {...} do
-        for i,v in tab do
-            Result[i] = v
-        end
-    end
-
-    return Result
-end
+local table_utils = require("./utility/table")
 
 local module = {}
 
@@ -24,7 +14,7 @@ module.generator = generator.new
 
 type bit_generator = (seed : number) -> number
 
-return Merge(module,prng) :: {
+return table_utils.merge(module,prng) :: {
     default_rng : (seed : number) -> types.Generator,
     generator : (bit_generator) -> types.Generator,
     XOSHIRO128 : () -> bit_generator,

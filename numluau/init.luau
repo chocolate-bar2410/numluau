@@ -8,6 +8,8 @@ local comparison = require("@self/logical/comparison")
 local logical = require("@self/logical/logical")
 
 local calculus = require("@self/math/calculus")
+
+local table_utils = require("@self/utility/table")
 --[[
 to do:
     - linear algebra
@@ -33,18 +35,6 @@ local types = require("@self/types")
 
 export type ndArray<T> = types.ndArray<T>
 export type Generator = types.Generator
-
-local Merge = function(... : {})
-    local Result = {}
-
-    for _,tab in {...} do
-        for i,v in tab do
-            Result[i] = v
-        end
-    end
-
-    return Result
-end
 
 local Base = {
     array = FromTable,
@@ -73,4 +63,4 @@ type out = typeof(Base) &
            typeof(calculus) &
            typeof(constructors)
 
-return Merge(Base,math_utils,aggregations,comparison,logical,calculus,constructors) :: out
+return table_utils.merge(Base,math_utils,aggregations,comparison,logical,calculus,constructors) :: out
