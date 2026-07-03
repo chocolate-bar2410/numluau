@@ -1,6 +1,11 @@
 local types = require("../types")
 local math_utils = require("../math/math_utils")
 local exceptions = require("../Exceptions")
+
+local constructors = require("../ndarray/constructors")
+
+local linear_algebra = require("../math/lin_algebra")
+
 local module = {}
 
 local superscript_mapping = {
@@ -44,7 +49,7 @@ module.prettyprint = function(self : types.Polynomial)
     return result:format(table.unpack(math_utils.abs(self.coef):toflatlist()))
 end
 
-module.fit = function(self : types.Polynomial,x : types.ndArray<number>,y : types.ndArray<number>,degree : number)
+module.fit = function(x : types.ndArray<number>,y : types.ndArray<number>,degree : number)
     if typeof(degree) ~= "number" then
         exceptions.FormatException("Type", "polyfit degree must be a number")
     elseif degree <= 0 then
@@ -59,6 +64,11 @@ module.fit = function(self : types.Polynomial,x : types.ndArray<number>,y : type
 
     local order = degree + 1
 
+    local vandemonde = constructors.vander(x,order)
+
+    local coef = linear_algebra.solve(vandemonde, y)
+
+    print(coef)
 end
 
 
