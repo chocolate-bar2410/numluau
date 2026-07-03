@@ -169,13 +169,14 @@ module.meshgrid = function<T>(X : types.ndArray<T>,Y : types.ndArray<T>)
     return x_grid,y_grid
 end
 
-module.vander = function(Target : types.ndArray<number>)
+module.vander = function(Target : types.ndArray<number>,col_num : number)
     if Target.ndim ~= 1 then
         exceptions.FormatException("Value","vandermonde Target array must have ndim = 1")
     end
+    col_num = col_num or Target.Shape[1]
 
     local pow,tar = module.meshgrid(
-        module.arange(0,Target.Shape[1] - 1), 
+        module.arange(0,col_num - 1), 
         Target
     )
 
@@ -191,5 +192,5 @@ return module :: {
     reshape  : <T>(Target : types.ndArray<T>,Shape : {number}) -> types.ndArray<T>,
     flatten  : <T>(Target : types.ndArray<T>) -> types.ndArray<T>,
     meshgrid : <T>(X : types.ndArray<T>,Y : types.ndArray<T>) -> (types.ndArray<T>,types.ndArray<T>),
-    vander : <T>(Target : types.ndArray<number>) -> (types.ndArray<number>)
+    vander : <T>(Target : types.ndArray<number>,col_num : number) -> (types.ndArray<number>)
 }
