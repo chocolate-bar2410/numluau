@@ -22,6 +22,31 @@ export type interface = {
 }
 
 module.matmul = function(A : types.ndArray<number>,B : types.ndArray<number>)
+    if A.ndim == 2 and B.ndim == 1 then
+        local A_row = A.Shape[1]
+        local A_column = A.Shape[2]
+ 
+        local B_len = B.Shape[1]
+
+        if B_len ~= A_column then
+            exceptions.FormatException("Value", "matrix vector multiplication requires vector length = matrix column length")
+        end
+
+        local Shape = {A_row}
+        local Strides = ndArray_utils.ComputeStrides(Shape)
+        
+        local result = ndarray(table.create(A_row,0),Shape, Strides, 0, A.dtype)
+
+        for i = 1, A_row do
+            for j = 1, A_column do
+                result[i] += A[i][j] * B[j]
+            end
+        end
+
+        return result
+    end
+
+
     if A.ndim ~= 2 or B.ndim ~= 2 then return end
 
     local A_row = A.Shape[1]
@@ -299,46 +324,23 @@ module.eig = function(matrix : types.ndArray<number>)
         local v1 = mean + math.sqrt(mean * mean - determinant)
         local v2 = mean - math.sqrt(mean * mean - determinant)
 
-        local ev1_x
-        local ev1_y
-        local ev2_x
-        local ev2_y
+        local fuzzy_factor = 1e-12
 
-        local fuzzy_factor = 1e-9 -- to account for floating point percission
 
-        if math.abs(v1 - v2) < fuzzy_factor then
+        local ev1_x = if math.abs(matrix[1][2]) > fuzzy_factor then 1 elseif math.abs(matrix[2][1]) > fuzzy_factor then -(matrix[2][2] - v1) / matrix[2][1] else 1
+        local ev1_y = if math.abs(matrix[1][2]) > fuzzy_factor then -(matrix[1][1] - v1) / matrix[1][2] elseif math.abs(matrix[2][1]) > fuzzy_factor then 1 else 0
 
-            if math.abs(matrix[1][2]) < fuzzy_factor and math.abs(matrix[2][1]) < fuzzy_factor then
-                ev1_x,ev1_y = 1,0
-                ev2_x,ev2_y = 0,1
-            else
-                if math.abs(matrix[2][1]) > fuzzy_factor then
-                    ev1_y = 1
-                    ev1_x = -(matrix[2][2] - v1) / matrix[2][1]
-                else
-                    ev1_x = 1
-                    ev1_y = -(matrix[1][1] - v1) / matrix[1][2]
-                end
+        local ev2_x = if math.abs(matrix[1][2]) > fuzzy_factor then 1 elseif math.abs(matrix[2][1]) > fuzzy_factor then -(matrix[2][2] - v2) / matrix[2][1] else 1
+        local ev2_y = if math.abs(matrix[1][2]) > fuzzy_factor then -(matrix[1][1] - v2) / matrix[1][2] elseif math.abs(matrix[2][1]) > fuzzy_factor then 1 else 0
 
-                local norm = math.sqrt(ev1_x*ev1_x + ev1_y*ev1_y)
-                ev1_x, ev1_y = ev1_x / norm, ev1_y / norm
+        local ev1_length = math.sqrt(ev1_x ^ 2 + ev1_y ^ 2)
+        local ev2_length = math.sqrt(ev2_x ^ 2 + ev2_y ^ 2)
 
-                ev2_x, ev2_y = ev1_x, ev1_y
-            end
-
-            
-        else
-            ev1_x = math.sqrt(math.abs((v1 - matrix[2][2])/(v1 - v2)))
-            ev1_y = math.sqrt(math.abs((v1 - matrix[1][1])/(v1 - v2)))
-
-            ev2_x = math.sqrt(math.abs((v2 - matrix[2][2])/(v2 - v1)))
-            ev2_y = math.sqrt(math.abs((v2 - matrix[1][1])/(v2 - v1)))
-
-            if matrix[1][2] < fuzzy_factor then
-                ev1_y = -ev1_y
-                ev2_y = -ev2_y
-            end
-        end
+        ev1_x /= ev1_length
+        ev1_y /= ev1_length
+        
+        ev2_x /= ev2_length
+        ev2_y /= ev2_length
         
         return ndarray({v1,v2}, {2}, {1}, 0, matrix.dtype), ndarray({ev1_x,ev2_x,ev1_y,ev2_y}, {2,2}, {2,1}, 0, matrix.dtype)
     end
@@ -360,7 +362,8 @@ module.eig = function(matrix : types.ndArray<number>)
             eigen_vectors = Q
         else
             eigen_vectors = module.matmul(eigen_vectors,Q)
-            eigen_vectors = module.qr(eigen_vectors)
+            local reorthnormalised,_ = module.qr(eigen_vectors)
+            eigen_vectors = reorthnormalised
         end
 
     end
@@ -490,6 +493,10 @@ module.norm = function(A : types.ndArray<number>,axis : number,order : number)
     
 end
 
+local Golub_Kahan_Lanczos_Bidiagonalization = function()
+    
+end
+
 module.svd = function(A : types.ndArray<number>)
     
     local sym_l = module.matmul(A, A:transpose())
@@ -511,7 +518,7 @@ module.svd = function(A : types.ndArray<number>)
     end
 
     table.sort(indices_l,function(a, b)
-        return singular_values[a] > singular_values[b]
+        return eigenvalues_l[a] > eigenvalues_l[b]
     end)
 
     local U_sorted = U:copy()
@@ -526,7 +533,7 @@ module.svd = function(A : types.ndArray<number>)
     end
 
     table.sort(indices_r,function(a, b)
-        return singular_values[a] > singular_values[b]
+        return eigenvalues_r[a] > eigenvalues_r[b]
     end)
     
     local V_sorted = V:copy()
@@ -538,9 +545,7 @@ module.svd = function(A : types.ndArray<number>)
         return a > b
     end)
 
-    local sigma = A:eye() * singular_values
-
-    return U_sorted,sigma,V_sorted:transpose()
+    return U_sorted,singular_values,V_sorted:transpose()
 end
 
 return module :: interface
