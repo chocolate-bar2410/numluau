@@ -122,7 +122,7 @@ function module.PrettyPrint(ndArray,dim,indices : {})
             current_line_width += total_width
         end
 
-        return result:sub(1,#result - 1) .."]"
+        return result .."]"
     else
         local inner = table.concat(parts, "\n")
         return "[\n" .. inner:gsub("^", "  "):gsub("\n", "\n  ") .. "\n]"
