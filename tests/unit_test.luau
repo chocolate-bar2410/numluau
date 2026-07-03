@@ -116,4 +116,10 @@ module.AssertFalse = function(Condition)
     error("Condition is true")
 end
 
+module.AssertError = function(callback,...)
+    local result = pcall(callback,...)
+    if result == false then return end
+    error("callback function did not error")
+end
+
 return module
