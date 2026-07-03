@@ -1,7 +1,7 @@
 local types = require("../types")
 local ndArray = require("../ndarray/ndarray")
 
-local poly_utils = require("../utility/polynomial")
+local poly_utils = require("../utility/poly")
 local linear_algebra = require("../math/lin_algebra")
 
 local exceptions = require("../Exceptions")
@@ -22,29 +22,37 @@ interface.new = function(coef : {number},domain : {number},window : {number},sym
     return setmetatable(polynomial, meta) :: types.Polynomial
 end
 
-meta.__call = function(self : types.Polynomial, value : types.ndArray<number> | number)
-    
-    if typeof(value) == "number" then
-        local result = 0
-        for i,v in self.coef do
-            result += (i > 0 and (value ^ (i - 1)) or 1) * v
+meta.__call = function(self : types.Polynomial, ... : types.ndArray<number> | number)
+    local args = {...}
+    if #args == 1 then
+        local value = args[1]
+
+        if typeof(value) == "number" then
+            local result = 0
+            for i,v in self.coef do
+                result += (i > 0 and (value ^ (i - 1)) or 1) * v
+            end
+
+            return result
         end
 
-        return result
-    end
+        local data = {}
 
-    local data = {}
+        for i,val in value do
+            local result = 0
+            for i,v in self.coef do
+                result += (i > 0 and (val ^ (i - 1)) or 1) * v
+            end
 
-    for i,val in value do
-        local result = 0
-        for i,v in self.coef do
-            result += (i > 0 and (val ^ (i - 1)) or 1) * v
+            data[i] = result
         end
 
-        data[i] = result
+        return ndArray(data, table.clone(value.Shape), table.clone(value.Strides), 0, "number")
     end
 
-    return ndArray(data, table.clone(value.Shape), table.clone(value.Strides), 0, "number")
+    local arg_ndarray = ndArray(args, {#args}, {1}, 0, "number")
+
+    return meta.__call(self,arg_ndarray)
 end
 
 meta.__tostring = function(self : types.Polynomial)
@@ -163,7 +171,9 @@ schema.roots = function(self : types.Polynomial)
     return linear_algebra.eigenval(self:companion())
 end
 
-
+schema.fit = function(self : types.Polynomial,x : types.ndArray<number>,y : types.ndArray<number>,degree : number)
+    return poly_utils.fit(self, x, y, degree)
+end
 
 
 return interface
