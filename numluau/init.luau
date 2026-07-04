@@ -1,6 +1,6 @@
 local FromTable = require("@self/ndarray/FromTable")
 local ndArray_utils = require("@self/utility/ndarray")
-local math_utils = require("@self/math/math_utils")
+local math_utils = require("@self/math/luau_math")
 local aggregations = require("@self/math/aggregations")
 local constructors = require("@self/ndarray/constructors")
 
@@ -24,8 +24,8 @@ to do:
         > gradient (derivative) --[done]
         > cummulative sum (integral) --[done]
         > cummulative product --[done]
+    - random --[done]
     - polynomial --[incomplete]
-    - random --[WIP]
     
 reference:
     - https://www.youtube.com/watch?v=VXU4LSAQDSc

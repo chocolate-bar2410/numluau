@@ -7,7 +7,6 @@ local ndarray = require("../ndarray/ndarray")
 
 local aggregations = require("./aggregations")
 
-local math_utils = require("./math_utils")
 local constructors = require("../ndarray/constructors")
 
 export type interface = {
