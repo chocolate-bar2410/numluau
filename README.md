@@ -1,4 +1,4 @@
-# numLuau
+# numluau
 numluau (numerical luau) is a scientific computing library designed to bring vectorised operations, matrix utilities and scientific Computing in general to luau programmers.
 
 Create N-dimensional arrays & compute operations, aggregations, linear equations and so much more.
