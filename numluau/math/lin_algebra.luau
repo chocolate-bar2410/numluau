@@ -8,6 +8,7 @@ local ndarray = require("../ndarray/ndarray")
 local aggregations = require("./aggregations")
 
 local math_utils = require("./math_utils")
+local constructor = require("../ndarray/constructors")
 
 export type interface = {
     matmul : (A : types.ndArray<number>,B : types.ndArray<number>) -> types.ndArray<number>,
@@ -362,8 +363,6 @@ module.eig = function(matrix : types.ndArray<number>)
             eigen_vectors = Q
         else
             eigen_vectors = module.matmul(eigen_vectors,Q)
-            local reorthnormalised,_ = module.qr(eigen_vectors)
-            eigen_vectors = reorthnormalised
         end
 
     end
@@ -436,7 +435,7 @@ module.norm = function(A : types.ndArray<number>,axis : number,order : number)
         local axis_stride = A.Strides[target_axis]
         local axis_shape = A.Shape[target_axis]
 
-        local result = A:copy()
+        local data = {}
 
         ndArray_utils.ForEachSlice(A.Shape, A.Strides, axis, A.Offset, function(base: number)
             local sum_of_abs = 0
@@ -452,13 +451,10 @@ module.norm = function(A : types.ndArray<number>,axis : number,order : number)
 
             local length = math.sqrt(sum_of_abs)
 
-            for i = 0,axis_shape - 1 do
-                local index = base + (i * axis_stride)
-                result.Buffer[index + 1] /= length
-            end
+            table.insert(data,length)
         end)  
         
-        return result
+        return ndarray(data, {#data}, {1}, 0, "number")
     end
 
     if order == 2 then
@@ -466,7 +462,7 @@ module.norm = function(A : types.ndArray<number>,axis : number,order : number)
         local axis_stride = A.Strides[target_axis]
         local axis_shape = A.Shape[target_axis]
 
-        local result = A:copy()
+        local data = {}
 
         ndArray_utils.ForEachSlice(A.Shape, A.Strides, axis, A.Offset, function(base: number)
             local sum_of_squares = 0
@@ -482,20 +478,14 @@ module.norm = function(A : types.ndArray<number>,axis : number,order : number)
 
             local length = math.sqrt(sum_of_squares)
 
-            for i = 0,axis_shape - 1 do
-                local index = base + (i * axis_stride)
-                result.Buffer[index + 1] /= length
-            end
+            table.insert(data,length)
         end)  
         
-        return result
+        return ndarray(data, {#data}, {1}, 0, "number")
     end
     
 end
 
-local Golub_Kahan_Lanczos_Bidiagonalization = function()
-    
-end
 
 module.svd = function(A : types.ndArray<number>)
     
@@ -510,7 +500,6 @@ module.svd = function(A : types.ndArray<number>)
     for i,v in singular_values do
         singular_values[i] = math.sqrt(math.max(v,0))
     end
-
 
     local indices_l = table.create(#eigenvalues_l)
     for i = 1,#eigenvalues_l do
