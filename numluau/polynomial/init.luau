@@ -31,6 +31,10 @@ module.fromroots = function(roots : {number})
     return polynomial.new(coef)
 end
 
+module.set_printstyle = function(printstyle : poly_utils.printstyle)
+    poly_utils.printstyle = printstyle
+end
+
 return setmetatable(module, {
     __call = function(_,coef : {number},domain : {number},window : {number},symbol : string) : types.Polynomial
         return polynomial.new(coef,domain,window) :: types.Polynomial
@@ -38,7 +42,7 @@ return setmetatable(module, {
 }) :: setmetatable<{
     fit : (x : types.ndArray<number>,y : types.ndArray<number>,degree : number) -> types.Polynomial,
     fromroots : (roots : {number}) -> types.Polynomial,
-
+    set_printstyle : (printstyle : poly_utils.printstyle) -> ()
 },{
-    __call : (nil,coef : {number},domain : {number},window : {number},symbol : string) -> types.Polynomial
+    __call : (coef : {number},domain : {number},window : {number},symbol : string) -> types.Polynomial
 }>

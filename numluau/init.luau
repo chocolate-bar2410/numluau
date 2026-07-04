@@ -10,6 +10,7 @@ local logical = require("@self/logical/logical")
 local calculus = require("@self/math/calculus")
 
 local table_utils = require("@self/utility/table")
+local poly_utils = require("@self/utility/poly")
 --[[
 to do:
     - linear algebra
@@ -52,6 +53,8 @@ local Base = {
         ndArray_utils.threshold = if args.threshold ~= nil then args.threshold else ndArray_utils.threshold
         ndArray_utils.linewidth = if args.linewidth ~= nil then args.linewidth else ndArray_utils.linewidth
 
+        poly_utils.suppress = if args.suppress ~= nil then args.suppress else poly_utils.suppress
+        poly_utils.precision = if args.precision ~= nil then args.precision else poly_utils.precision
     end
 }
 
