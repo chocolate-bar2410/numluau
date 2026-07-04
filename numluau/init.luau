@@ -36,6 +36,7 @@ local types = require("@self/types")
 
 export type ndArray<T> = types.ndArray<T>
 export type Generator = types.Generator
+export type Polynomial = types.Polynomial
 
 local Base = {
     array = FromTable,
