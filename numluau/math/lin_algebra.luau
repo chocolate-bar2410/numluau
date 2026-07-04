@@ -19,7 +19,8 @@ export type interface = {
     eig : (matrix : types.ndArray<number>) -> (types.ndArray<number>, types.ndArray<number>),
     qr : (matrix : types.ndArray<number>) -> types.ndArray<number>,
     lu : (matrix : types.ndArray<number>) -> (types.ndArray<number>,types.ndArray<number>,{number},number),
-    solve : (A : types.ndArray<number>,B: types.ndArray<number>) -> types.ndArray<number>
+    solve : (A : types.ndArray<number>,B: types.ndArray<number>) -> types.ndArray<number>,
+    svd : (A : types.ndArray<number>) -> (types.ndArray<number>,types.ndArray<number>,types.ndArray<number>)
 }
 
 module.matmul = function(A : types.ndArray<number>,B : types.ndArray<number>)
@@ -273,6 +274,7 @@ module.qr = function(matrix : types.ndArray<number>)
 
     return Q,R
 end
+
 module.eigenval = function(matrix : types.ndArray<number>)
     if matrix.ndim ~= 2 then
         exceptions.FormatException("LinAlg", "eigenval is only support for ndim = 2")
@@ -489,7 +491,6 @@ module.norm = function(A : types.ndArray<number>,axis : number,order : number)
     end
     
 end
-
 
 module.svd = function(A : types.ndArray<number>)
     
