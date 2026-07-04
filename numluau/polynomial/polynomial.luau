@@ -85,6 +85,10 @@ meta.__add = function(self : types.Polynomial,other : types.Polynomial | number)
         return copy
     end
 
+    if self.symbol ~= other.symbol then
+        exceptions.FormatException("Poly", "Cannot add polynomials with different symbols")
+    end
+
     local max_size = math.max(self.coef.Shape[1],other.coef.Shape[1])
 
     local broad_data_A = table_utils.fillup(self.coef.Buffer, 0, max_size)
@@ -93,7 +97,7 @@ meta.__add = function(self : types.Polynomial,other : types.Polynomial | number)
     local coef_A = ndArray(broad_data_A, {max_size}, {1}, 0, "number")
     local coef_B = ndArray(broad_data_B, {max_size}, {1}, 0, "number")
 
-    return interface.new(coef_A + coef_B)
+    return interface.new(coef_A + coef_B,table.clone(self.domain),table.clone(self.window),self.symbol)
 end
 
 meta.__sub = function(self : types.Polynomial,other : types.Polynomial | number)
@@ -111,6 +115,10 @@ meta.__sub = function(self : types.Polynomial,other : types.Polynomial | number)
         return copy
     end
 
+    if self.symbol ~= other.symbol then
+        exceptions.FormatException("Poly", "Cannot subtract polynomials with different symbols")
+    end
+
     local max_size = math.max(self.coef.Shape[1],other.coef.Shape[1])
 
     local broad_data_A = table_utils.fillup(self.coef.Buffer, 0, max_size)
@@ -119,7 +127,147 @@ meta.__sub = function(self : types.Polynomial,other : types.Polynomial | number)
     local coef_A = ndArray(broad_data_A, {max_size}, {1}, 0, "number")
     local coef_B = ndArray(broad_data_B, {max_size}, {1}, 0, "number")
 
-    return interface.new(coef_A - coef_B)
+    return interface.new(coef_A - coef_B,table.clone(self.domain),table.clone(self.window),self.symbol)
+end
+
+meta.__mul = function(self : types.Polynomial,other : types.Polynomial | number)
+    if typeof(other) == "number" then
+        local copy = self:copy()
+        for i,v in copy.coef do
+            copy.coef[i] = v * other
+        end
+
+        return copy
+    end
+
+    if typeof(self) == "number" then
+        local copy = other:copy()
+        for i,v in copy.coef do
+            copy.coef[i] = v * self
+        end
+
+        return copy
+    end
+
+    if self.symbol ~= other.symbol then
+        exceptions.FormatException("Poly", "Cannot multiply polynomials with different symbols")
+    end
+
+    local coef_A = self.coef.Buffer
+    local coef_B = other.coef.Buffer
+
+    local length_A = #coef_A
+    local length_B = #coef_B
+
+    if length_A == 0 or length_B == 0 then
+        return interface.new({0},table.clone(self.domain),table.clone(self.window),self.symbol)
+    end
+
+    local result_length = length_A + length_B - 1
+    local result_coef = table.create(result_length,0)
+
+    for i = 1,length_A  do
+
+        if coef_A[i] == 0 then continue end
+
+        for j = 1,length_B do
+            local target_index = i + j - 1
+            result_coef[target_index] += coef_A[i] * coef_B[j]
+        end
+    end
+
+    for i = #result_coef,1,-1 do
+        if result_coef[i] > 0 then break end
+        table.remove(result_coef,i)
+    end
+
+    return interface.new(result_coef,table.clone(self.domain),table.clone(self.window),self.symbol)
+end
+
+meta.__idiv = function(self : types.Polynomial,other : types.Polynomial | number)
+    if typeof(other) == "number" then
+        local copy = self:copy()
+        for i,v in copy.coef do
+            copy.coef[i] = v // other
+        end
+
+        return copy
+    end
+
+    if typeof(self) == "number" then
+        local copy = other:copy()
+        for i,v in copy.coef do
+            copy.coef[i] = self // v
+        end
+
+        return copy
+    end
+
+    if self.symbol ~= other.symbol then
+        exceptions.FormatException("Poly", "Cannot divide polynomials with different symbols")
+    end
+
+    local coef_A = self.coef.Buffer
+    local coef_B = other.coef.Buffer
+
+    local remainder_coef = table.move(coef_A, 1, #coef_A, 1, table.create(#coef_A))
+    local divisor_coef = coef_B
+
+    local dividend_degree = #remainder_coef - 1
+    local divisor_degree = #divisor_coef - 1
+
+    if divisor_degree == 0 and divisor_coef[1] == 0 then
+        exceptions.FormatException("Value", "cannot by divide by zero polynomial")
+    end
+
+    if dividend_degree < divisor_degree then
+        return interface.new({0}, table.clone(self.domain), table.clone(self.window), self.symbol)
+    end
+
+    local quotient_degree = dividend_degree - divisor_degree
+    local quotient_coef = table.create(quotient_degree + 1,0)
+
+    for i = quotient_degree,0,-1 do
+        local remainder_index = i + divisor_degree + 1
+        local divisor_index = divisor_degree + 1
+
+        local lead_coef = remainder_coef[remainder_index] / divisor_coef[divisor_index]
+        quotient_coef[i + 1] = lead_coef
+
+        for j = 0,divisor_degree do
+            local target_remainder_index = i + j + 1
+            remainder_coef[target_remainder_index] -= lead_coef * divisor_coef[j + 1]
+        end
+    end
+
+    return interface.new(quotient_coef,table.clone(self.domain),table.clone(self.window),self.symbol)
+end
+
+meta.__div = function(self : types.Polynomial,other : types.Polynomial | number)
+    if typeof(other) == "number" then
+        local copy = self:copy()
+        for i,v in copy.coef do
+            copy.coef[i] = v // other
+        end
+
+        return copy
+    end
+
+    if typeof(self) == "number" then
+        local copy = other:copy()
+        for i,v in copy.coef do
+            copy.coef[i] = self // v
+        end
+
+        return copy
+    end
+
+    if self.symbol ~= other.symbol then
+        exceptions.FormatException("Poly", "Cannot multiply polynomials with different symbols")
+    end
+
+    exceptions.FormatWarn("Poly","use // operator for polynomial division")
+    return self // other
 end
 
 schema.degree = function(self : types.Polynomial)

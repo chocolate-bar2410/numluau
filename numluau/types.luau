@@ -76,8 +76,10 @@ export type Polynomial = setmetatable<{
 },{
     __call : (self : Polynomial, value : ndArray<number> | number) -> ndArray<number> | number,
     __tostring : (self : Polynomial) -> string,
-    __add : (self : Polynomial,other : Polynomial | number) -> Polynomial,
-    __sub : (self : Polynomial,other : Polynomial | number) -> Polynomial,
+    __add : (self : Polynomial | number,other : Polynomial | number) -> Polynomial,
+    __sub : (self : Polynomial | number,other : Polynomial | number) -> Polynomial,
+    __mul : (self : Polynomial | number,other : Polynomial | number) -> Polynomial,
+    __idiv : (self : Polynomial | number,other : Polynomial | number) -> Polynomial,
 }>
 
 
