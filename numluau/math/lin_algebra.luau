@@ -232,38 +232,42 @@ module.qr = function(matrix : types.ndArray<number>)
 
         if R[k][k] < 0 then alpha *= -1 end
 
-        local v = {}
+        local raw_v = {}
         local v_len = n - k + 1
 
-        v[1] = R[k][k] - alpha
+        raw_v[1] = R[k][k] - alpha
         for i = 2, v_len do
-            v[i] = R[k + i - 1][k]
+            raw_v[i] = R[k + i - 1][k]
         end
 
-        local dot_vv = 0
-        for i = 1, v_len do
-            dot_vv += v[i] * v[i]
-        end
-        local v_norm = math.sqrt(dot_vv)
+        local v = ndarray(raw_v, {v_len}, {1}, 0, matrix.dtype)
+        local v_norm = module.norm(v)
 
         if v_norm ~= 0 then
-            for i = 1, v_len do
-                v[i] /= v_norm
+            v /= v_norm
+        end
+
+        for j = k,n do
+            local dot = 0
+            for i = k,n do
+                dot += v.Buffer[i - k + 1] * R[i][j]
+            end
+
+            for i = k,n do
+                R[i][j] -= 2 * v.Buffer[i - k + 1] * dot
             end
         end
 
-        local H = matrix:eye()
-        for i = k, n do
-            for j = k, n do
-                local vi = v[i - k + 1]
-                local vj = v[j - k + 1]
-                local init_val = (i == j) and 1 or 0
-                H[i][j] = init_val - 2 * vi * vj
+        for i = 1,n do
+            local dot = 0
+            for j = k,n do
+                dot += Q[i][j] * v.Buffer[j - k + 1]
+            end
+
+            for j = k,n do
+                Q[i][j] -= 2 * dot * v.Buffer[j - k + 1]
             end
         end
-
-        R = module.matmul(H, R)
-        Q = module.matmul(Q, H)
     
     end
 
