@@ -1,3 +1,4 @@
+--!strict
 local types = require("../types")
 local math_utils = require("../math/math_utils")
 local exceptions = require("../Exceptions")
@@ -21,13 +22,13 @@ local superscript_mapping = {
     ["9"] = "⁹"
 }
 
-module.prettyprint = function(self : types.Polynomial)
+module.prettyprint = function(self : types.Polynomial) : string
     local result = ""
 
     local size = self.coef.Shape[1]
 
     if size == 1 then
-        return self.coef.Buffer[1]
+        return tostring(self.coef.Buffer[1])
     end
 
     for i,number in self.coef do
@@ -62,13 +63,9 @@ module.fit = function(x : types.ndArray<number>,y : types.ndArray<number>,degree
         exceptions.FormatException("Value", "polyfit x & y parameters must have the same length")
     end
 
-    local order = degree + 1
+    local coef = linear_algebra.lstsq(x,y,degree)
 
-    local vandemonde = constructors.vander(x,order)
-
-    local coef = linear_algebra.solve(vandemonde, y)
-
-    print(coef)
+    return coef
 end
 
 
