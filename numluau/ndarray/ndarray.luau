@@ -170,6 +170,7 @@ end
 meta.__newindex = function<T>(self : types.ndArray<T>,index,value)
     if typeof(value) == "table" and value.type == "ndArray" then
         local target = self[index]
+
         if target.ndim ~= value.ndim then 
             Exceptions.FormatException("Value", "assigning requires for ndims to match")
         elseif not table_utils.equals(target.Shape, value.Shape) then 
