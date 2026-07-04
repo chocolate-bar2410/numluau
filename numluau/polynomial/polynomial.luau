@@ -11,7 +11,11 @@ local schema = {}
 
 local meta = {__index = schema}
 
-interface.new = function(coef : {number},domain : {number},window : {number},symbol : string) : types.Polynomial
+interface.new = function(coef : {number} | types.ndArray<number>,domain : {number}?,window : {number}?,symbol : string?) : types.Polynomial
+    if coef.type ~= nil and coef.type == "ndArray" then
+        coef = coef.Buffer
+    end
+    
     local polynomial = {}
 
     polynomial.coef = ndArray(coef, {#coef}, {1}, 0, "number")
@@ -24,13 +28,18 @@ end
 
 meta.__call = function(self : types.Polynomial, ... : types.ndArray<number> | number)
     local args = {...}
+
+    local window_range = self.window[2] - self.window[1]
+    local domain_range = self.domain[2] - self.domain[1] 
+
     if #args == 1 then
         local value = args[1]
 
         if typeof(value) == "number" then
+            local mapped_value = self.window[1] + (window_range * (value - self.domain[1]) / domain_range)
             local result = 0
             for i,v in self.coef do
-                result += (i > 0 and (value ^ (i - 1)) or 1) * v
+                result += (i > 0 and (mapped_value ^ (i - 1)) or 1) * v
             end
 
             return result
@@ -39,9 +48,10 @@ meta.__call = function(self : types.Polynomial, ... : types.ndArray<number> | nu
         local data = {}
 
         for i,val in value do
+            local mapped_value = self.window[1] + (window_range * (value - self.domain[1]) / domain_range)
             local result = 0
             for i,v in self.coef do
-                result += (i > 0 and (val ^ (i - 1)) or 1) * v
+                result += (i > 0 and (mapped_value ^ (i - 1)) or 1) * v
             end
 
             data[i] = result
@@ -162,9 +172,12 @@ schema.roots = function(self : types.Polynomial)
         local a = self.coef.Buffer[3]
         local b = self.coef.Buffer[2]
         local c = self.coef.Buffer[1]
+
+        local discriminant = (b^2) - 4 * a * c
+
         return ndArray({
-            (-b - math.sqrt((b^2) - 4 * a * c)) / (2 * a),
-            (-b + math.sqrt((b^2) - 4 * a * c)) / (2 * a)
+            (-b - math.sqrt(discriminant)) / (2 * a),
+            (-b + math.sqrt(discriminant)) / (2 * a)
         }, {2}, {1}, 0, "number")
     end
 
