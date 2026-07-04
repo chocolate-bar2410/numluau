@@ -179,10 +179,10 @@ end
 
 module.dot = function(A : types.ndArray<number>,B : types.ndArray<number>)
     if A.ndim == 2 and B.ndim == 2 then
-        print("for 2d ndArrays, its better to use numluau.linalg.matmul instead of numluau.linalg.dot")
+        exceptions.FormatWarn("LinAlg","for 2d ndArrays, its better to use numluau.linalg.matmul instead of numluau.linalg.dot")
         return module.matmul(A, B)
     elseif A.ndim == 0 and B.ndim == 0 then
-        print("for 0d ndArrays, its better to use the * operator instead of numluau.linalg.dot")
+        exceptions.FormatWarn("LinAlg","for 0d ndArrays, its better to use the * operator instead of numluau.linalg.dot")
         return A * B
     end
 
