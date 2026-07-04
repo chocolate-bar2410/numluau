@@ -25,7 +25,7 @@ to do:
         > cummulative sum (integral) --[done]
         > cummulative product --[done]
     - random --[done]
-    - polynomial --[incomplete]
+    - polynomial --[WIP]
     
 reference:
     - https://www.youtube.com/watch?v=VXU4LSAQDSc
