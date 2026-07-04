@@ -8,7 +8,7 @@ local ndarray = require("../ndarray/ndarray")
 local aggregations = require("./aggregations")
 
 local math_utils = require("./math_utils")
-local constructor = require("../ndarray/constructors")
+local constructors = require("../ndarray/constructors")
 
 export type interface = {
     matmul : (A : types.ndArray<number>,B : types.ndArray<number>) -> types.ndArray<number>,
@@ -20,7 +20,8 @@ export type interface = {
     qr : (matrix : types.ndArray<number>) -> types.ndArray<number>,
     lu : (matrix : types.ndArray<number>) -> (types.ndArray<number>,types.ndArray<number>,{number},number),
     solve : (A : types.ndArray<number>,B: types.ndArray<number>) -> types.ndArray<number>,
-    svd : (A : types.ndArray<number>) -> (types.ndArray<number>,types.ndArray<number>,types.ndArray<number>)
+    svd : (A : types.ndArray<number>) -> (types.ndArray<number>,types.ndArray<number>,types.ndArray<number>),
+    lstsq : (x : types.ndArray<number>,y : types.ndArray<number>,degree : number) -> types.ndArray<number>
 }
 
 module.matmul = function(A : types.ndArray<number>,B : types.ndArray<number>)
@@ -49,7 +50,9 @@ module.matmul = function(A : types.ndArray<number>,B : types.ndArray<number>)
     end
 
 
-    if A.ndim ~= 2 or B.ndim ~= 2 then return end
+    if A.ndim ~= 2 or B.ndim ~= 2 then
+        exceptions.FormatException("Value", "matrix multiplication needs A.ndim = B.ndim")
+    end
 
     local A_row = A.Shape[1]
     local A_column = A.Shape[2]
@@ -57,7 +60,9 @@ module.matmul = function(A : types.ndArray<number>,B : types.ndArray<number>)
     local B_row = B.Shape[1]
     local B_column = B.Shape[2]
 
-    if A_column ~= B_row then return end
+    if A_column ~= B_row then
+        exceptions.FormatException("Value", "matrix multiplication needs A's column length = B's row length")
+    end
 
     local Shape = {A_row,B_column}
     local Strides = ndArray_utils.ComputeStrides(Shape)
@@ -490,9 +495,10 @@ module.norm = function(A : types.ndArray<number>,axis : number,order : number)
         return ndarray(data, {#data}, {1}, 0, "number")
     end
     
+    return
 end
 
-module.svd = function(A : types.ndArray<number>)
+module.svd = function(A : types.ndArray<number>) : (types.ndArray<number>,types.ndArray<number>,types.ndArray<number>)
     
     local sym_l = module.matmul(A, A:transpose())
     local sym_r = module.matmul(A:transpose(), A)
@@ -518,7 +524,7 @@ module.svd = function(A : types.ndArray<number>)
     local U_sorted = U:copy()
 
     for i,index in ipairs(indices_l) do
-        U_sorted[`:{i}`] = U[`:{index}`]  
+        U_sorted[`:,{i}`] = U[`:,{index}`]  
     end
 
     local indices_r = table.create(#eigenvalues_r)
@@ -532,7 +538,7 @@ module.svd = function(A : types.ndArray<number>)
     
     local V_sorted = V:copy()
     for i,index in ipairs(indices_r) do
-        V_sorted[`:{i}`] = V[`:{index}`]  
+        V_sorted[`:,{i}`] = V[`:,{index}`]  
     end
 
     table.sort(singular_values.Buffer,function(a, b)  
@@ -540,6 +546,29 @@ module.svd = function(A : types.ndArray<number>)
     end)
 
     return U_sorted,singular_values,V_sorted:transpose()
+end
+
+module.lstsq = function(x : types.ndArray<number>,y : types.ndArray<number>,degree : number) : types.ndArray<number>
+    local order = degree + 1
+
+    local vandemonde = constructors.vander(x,order)
+
+    local U ,sigma ,Vt  = module.svd(vandemonde)
+
+    local scaled_coef = ndarray(table.create(order,0), {order}, {1}, 0, "number")
+    local fuzzy = 1e-9
+
+    local Ut_y = module.matmul(U:transpose(),y)
+
+    for i = 1,order do
+        local sig_value = sigma.Buffer[i]
+
+        local inverse_sigma = if math.abs(sig_value) > fuzzy then 1 / sig_value else 0
+
+        scaled_coef.Buffer[i] = inverse_sigma * Ut_y.Buffer[i]
+    end
+
+    return module.matmul(Vt:transpose(),scaled_coef)
 end
 
 return module :: interface
