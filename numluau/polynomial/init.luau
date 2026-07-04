@@ -3,7 +3,11 @@ local polynomial = require("@self/polynomial")
 local poly_utils = require("./utility/poly")
 local module = {}
 
-module.fit = poly_utils.fit
+module.fit = function(x : types.ndArray<number>,y : types.ndArray<number>,degree : number)
+    local coef = poly_utils.fit(x, y, degree)
+    
+    return polynomial.new(coef)
+end
 
 
 return setmetatable(module, {
