@@ -64,7 +64,15 @@ function module.PrettyPrint(ndArray,dim,indices : {})
 
     for i,v in parts do
         if not tonumber(v) then continue end
-        parts[i] = if module.suppress then string.format(`%.{module.precision}f`,v):gsub("%.?0+$","") else string.format(`%.{module.precision}g`,v)
+
+        local value_string : string
+        if module.suppress == true then
+            value_string = string.format(`%.{module.precision}f`,v):gsub("%.?0+$", "") 
+        else
+            value_string = string.format(`%.{module.precision}g`,v)
+        end
+
+        parts[i] = value_string
     end
 
     local truncated = false
