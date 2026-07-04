@@ -2,6 +2,7 @@ local types = require("../types")
 local ndArray = require("../ndarray/ndarray")
 
 local poly_utils = require("../utility/poly")
+local table_utils = require("../utility/table")
 local linear_algebra = require("../math/lin_algebra")
 
 local exceptions = require("../Exceptions")
@@ -67,6 +68,58 @@ end
 
 meta.__tostring = function(self : types.Polynomial)
     return poly_utils.prettyprint(self)
+end
+
+meta.__add = function(self : types.Polynomial,other : types.Polynomial | number)
+    if typeof(other) == "number" then
+        local copy = self:copy()
+        copy.coef.Buffer[1] += other
+
+        return copy
+    end
+
+    if typeof(self) == "number" then
+        local copy = other:copy()
+        copy.coef.Buffer[1] += self
+
+        return copy
+    end
+
+    local max_size = math.max(self.coef.Shape[1],other.coef.Shape[1])
+
+    local broad_data_A = table_utils.fillup(self.coef.Buffer, 0, max_size)
+    local broad_data_B = table_utils.fillup(other.coef.Buffer, 0, max_size)
+
+    local coef_A = ndArray(broad_data_A, {max_size}, {1}, 0, "number")
+    local coef_B = ndArray(broad_data_B, {max_size}, {1}, 0, "number")
+
+    return interface.new(coef_A + coef_B)
+end
+
+meta.__sub = function(self : types.Polynomial,other : types.Polynomial | number)
+    if typeof(other) == "number" then
+        local copy = self:copy()
+        copy.coef.Buffer[1] -= other
+
+        return copy
+    end
+
+    if typeof(self) == "number" then
+        local copy = other:copy()
+        copy.coef.Buffer[1] = self - copy.coef.Buffer[1]
+        
+        return copy
+    end
+
+    local max_size = math.max(self.coef.Shape[1],other.coef.Shape[1])
+
+    local broad_data_A = table_utils.fillup(self.coef.Buffer, 0, max_size)
+    local broad_data_B = table_utils.fillup(other.coef.Buffer, 0, max_size)
+
+    local coef_A = ndArray(broad_data_A, {max_size}, {1}, 0, "number")
+    local coef_B = ndArray(broad_data_B, {max_size}, {1}, 0, "number")
+
+    return interface.new(coef_A - coef_B)
 end
 
 schema.degree = function(self : types.Polynomial)
