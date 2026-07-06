@@ -66,10 +66,6 @@ local function set_ndarray(ndArray : types.ndArray<any>,index : number,value : a
     ndArray.Buffer[NewOffset + 1] = value
 end
 
-local function is_ndarray(target)
-    return type(target) == "table" and target.type == "ndArray"
-end
-
 local Slice = function(self : types.ndArray<any>, Keys : {})
     local NewShape = {}
     local NewStrides = {}
@@ -201,7 +197,7 @@ end
 
 meta.__add = function<T>(self : types.ndArray<T>,value)
     local Result,OutShape = Broadcast.CreateBroadcastArray(self,value,function(a,b) return a + b end)
-    local dtype = if is_ndarray(self) then self.dtype else value.dtype
+    local dtype = if utils.is_ndarray(self) then self.dtype else value.dtype
 
     Result = New_ndarray(Result,OutShape,utils.ComputeStrides(OutShape),0,dtype)
     return Result
@@ -209,7 +205,7 @@ end
 
 meta.__sub = function<T>(self : types.ndArray<T>,value)
     local Result,OutShape = Broadcast.CreateBroadcastArray(self,value,function(a,b) return a - b end)
-    local dtype = if is_ndarray(self) then self.dtype else value.dtype
+    local dtype = if utils.is_ndarray(self) then self.dtype else value.dtype
 
     Result = New_ndarray(Result,OutShape,utils.ComputeStrides(OutShape),0,dtype)
     return Result
@@ -217,7 +213,7 @@ end
 
 meta.__mul = function<T>(self : types.ndArray<T>,value)
     local Result,OutShape = Broadcast.CreateBroadcastArray(self,value,function(a,b) return a * b end)
-    local dtype = if is_ndarray(self) then self.dtype else value.dtype
+    local dtype = if utils.is_ndarray(self) then self.dtype else value.dtype
 
     Result = New_ndarray(Result,OutShape,utils.ComputeStrides(OutShape),0,dtype)
     return Result
@@ -225,7 +221,7 @@ end
 
 meta.__div = function<T>(self : types.ndArray<T>,value)
     local Result,OutShape = Broadcast.CreateBroadcastArray(self,value,function(a,b) return a / b end)
-    local dtype = if is_ndarray(self) then self.dtype else value.dtype
+    local dtype = if utils.is_ndarray(self) then self.dtype else value.dtype
 
     Result = New_ndarray(Result,OutShape,utils.ComputeStrides(OutShape),0,dtype)
     return Result
@@ -233,7 +229,7 @@ end
 
 meta.__idiv = function<T>(self : types.ndArray<T>,value)
     local Result,OutShape = Broadcast.CreateBroadcastArray(self,value,function(a,b) return a // b end)
-    local dtype = if is_ndarray(self) then self.dtype else value.dtype
+    local dtype = if utils.is_ndarray(self) then self.dtype else value.dtype
 
     Result = New_ndarray(Result,OutShape,utils.ComputeStrides(OutShape),0,dtype)
     return Result
@@ -241,7 +237,7 @@ end
 
 meta.__pow = function<T>(self : types.ndArray<T>,value)
     local Result,OutShape = Broadcast.CreateBroadcastArray(self,value,function(a,b) return a ^ b end)
-    local dtype = if is_ndarray(self) then self.dtype else value.dtype
+    local dtype = if utils.is_ndarray(self) then self.dtype else value.dtype
 
     Result = New_ndarray(Result,OutShape,utils.ComputeStrides(OutShape),0,dtype)
     return Result
@@ -249,7 +245,7 @@ end
 
 meta.__mod = function<T>(self : types.ndArray<T>,value)
     local Result,OutShape = Broadcast.CreateBroadcastArray(self,value,function(a,b) return a % b end)
-    local dtype = if is_ndarray(self) then self.dtype else value.dtype
+    local dtype = if utils.is_ndarray(self) then self.dtype else value.dtype
 
     Result = New_ndarray(Result,OutShape,utils.ComputeStrides(OutShape),0,dtype)
     return Result

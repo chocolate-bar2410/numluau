@@ -244,4 +244,8 @@ function module.ForEachSlice(shape : {number},stride : {number},axis : number,of
     end
 end
 
+function module.is_ndarray<T>(target : types.ndArray<T>) : boolean
+    return type(target) == "table" and target.type == "ndArray"
+end
+
 return module
