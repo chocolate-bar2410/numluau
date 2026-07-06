@@ -7,6 +7,17 @@ local exceptions = require("../Exceptions")
 
 module.diff = function<T>(array : types.ndArray<T>,axis : number)
     axis = axis or 0
+    if typeof(axis) ~= "number" then 
+        exceptions.FormatException("Axis", "Axis provided must be a number")
+    elseif axis < 0 then 
+        exceptions.FormatException("Axis", "Axis must be greater than zero")
+    elseif axis > array.ndim then 
+        exceptions.FormatException("Axis", "Axis is out of bounds")
+    end
+
+    if utils.is_ndarray(array) == false then
+        exceptions.FormatException("Value", ("Expected ndarray got %q"):format(typeof(array)))
+    end
 
     local target_axis = array.ndim - axis
     local target_shape = array.Shape[target_axis]
@@ -32,6 +43,19 @@ module.diff = function<T>(array : types.ndArray<T>,axis : number)
 end
 
 module.gradient = function<T>(array : types.ndArray<T>,spacing : types.ndArray<T> | types.ndArray<T> | number,axis : number)
+    if utils.is_ndarray(array) == false then
+        exceptions.FormatException("Value", ("Expected ndarray got %q"):format(typeof(array)))
+    end
+
+    if spacing ~= nil and typeof(spacing) ~= "number" and typeof(spacing) ~= "table" then 
+        exceptions.FormatException("Value", "Spacing provided must be either a number, a ndarray or a table of ndarrays")
+    end
+
+    if utils.is_ndarray(array) == false then
+        exceptions.FormatException("Value", ("Expected ndarray got %q"):format(typeof(array)))
+    end
+
+
     if axis == nil then
         local result = {}
         for i = array.ndim - 1, 0,-1 do
@@ -96,6 +120,18 @@ end
 module.cumsum = function<T>(array : types.ndArray<T>,axis : number)
     axis = axis or 0
 
+    if typeof(axis) ~= "number" then 
+        exceptions.FormatException("Axis", "Axis provided must be a number")
+    elseif axis < 0 then 
+        exceptions.FormatException("Axis", "Axis must be greater than zero")
+    elseif axis > array.ndim then 
+        exceptions.FormatException("Axis", "Axis is out of bounds")
+    end
+
+    if utils.is_ndarray(array) == false then
+        exceptions.FormatException("Value", ("Expected ndarray got %q"):format(typeof(array)))
+    end
+
     local target_axis = array.ndim - axis
     local target_shape = array.Shape[target_axis]
     local target_stride = array.Strides[target_axis]
@@ -118,6 +154,18 @@ end
 
 module.cumprod = function<T>(array : types.ndArray<T>,axis : number)
     axis = axis or 0
+
+    if typeof(axis) ~= "number" then 
+        exceptions.FormatException("Axis", "Axis provided must be a number")
+    elseif axis < 0 then 
+        exceptions.FormatException("Axis", "Axis must be greater than zero")
+    elseif axis > array.ndim then 
+        exceptions.FormatException("Axis", "Axis is out of bounds")
+    end
+
+    if utils.is_ndarray(array) == false then
+        exceptions.FormatException("Value", ("Expected ndarray got %q"):format(typeof(array)))
+    end
 
     local target_axis = array.ndim - axis
     local target_shape = array.Shape[target_axis]
