@@ -55,11 +55,17 @@ module.gradient = function<T>(array : types.ndArray<T>,spacing : types.ndArray<T
         exceptions.FormatException("Value", ("Expected ndarray got %q"):format(typeof(array)))
     end
 
-
     if axis == nil then
         local result = {}
         for i = array.ndim - 1, 0,-1 do
-            table.insert(result,module.gradient(array,spacing, i))
+
+            if typeof(spacing) == "number" or utils.is_ndarray(spacing) then
+                table.insert(result,module.gradient(array,spacing, i))
+            else
+                table.insert(result,module.gradient(array,spacing[array.ndim - i], i))
+            end
+
+            
         end
 
         return unpack(result)
