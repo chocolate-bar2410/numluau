@@ -5,7 +5,7 @@ local utils = require("../utility/ndarray")
 
 local exceptions = require("../Exceptions")
 
-module.diff = function<T>(array : types.ndArray<T>,axis : number)
+module.diff = function<T>(array : types.ndArray<T>,axis : number?)
     axis = axis or 0
     if typeof(axis) ~= "number" then 
         exceptions.FormatException("Axis", "Axis provided must be a number")
@@ -42,7 +42,7 @@ module.diff = function<T>(array : types.ndArray<T>,axis : number)
     return result
 end
 
-module.gradient = function<T>(array : types.ndArray<T>,spacing : types.ndArray<T> | types.ndArray<T> | number,axis : number)
+module.gradient = function<T>(array : types.ndArray<T>,spacing : types.ndArray<T> | types.ndArray<T> | number,axis : number?)
     if utils.is_ndarray(array) == false then
         exceptions.FormatException("Value", ("Expected ndarray got %q"):format(typeof(array)))
     end
@@ -123,7 +123,7 @@ module.gradient = function<T>(array : types.ndArray<T>,spacing : types.ndArray<T
     return result
 end
 
-module.cumsum = function<T>(array : types.ndArray<T>,axis : number)
+module.cumsum = function<T>(array : types.ndArray<T>,axis : number?)
     axis = axis or 0
 
     if typeof(axis) ~= "number" then 
@@ -158,7 +158,7 @@ module.cumsum = function<T>(array : types.ndArray<T>,axis : number)
     return result
 end
 
-module.cumprod = function<T>(array : types.ndArray<T>,axis : number)
+module.cumprod = function<T>(array : types.ndArray<T>,axis : number?)
     axis = axis or 0
 
     if typeof(axis) ~= "number" then 
@@ -195,10 +195,10 @@ module.cumprod = function<T>(array : types.ndArray<T>,axis : number)
 end
 
 export type interface = {
-    diff : (array : types.ndArray<any>,axis : number) -> types.ndArray<any>,
-    gradient : (array : types.ndArray<any>,axis : number) -> types.ndArray<any>,
-    cumsum : (array : types.ndArray<any>,axis : number) -> types.ndArray<any>,
-    cumprod : (array : types.ndArray<any>,axis : number) -> types.ndArray<any>,
+    diff : (array : types.ndArray<any>,axis : number?) -> types.ndArray<any>,
+    gradient : (array : types.ndArray<any>,axis : number?) -> types.ndArray<any>,
+    cumsum : (array : types.ndArray<any>,axis : number?) -> types.ndArray<any>,
+    cumprod : (array : types.ndArray<any>,axis : number?) -> types.ndArray<any>,
 }
 
 return module :: interface
