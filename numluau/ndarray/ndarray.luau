@@ -38,7 +38,12 @@ local function index_ndarray(ndArray : types.ndArray<any>,index : number)
         index = ndArray.Shape[1] + index + 1
     end
 
-    if index < 0 or index > ndArray.Shape[1] then
+    if index % 1 ~= 0 then
+        Exceptions.FormatException("Array", `index {index} must be a integer`)
+        return
+    end
+
+    if index > ndArray.Shape[1] then
         Exceptions.FormatException("Array", `index {index} is out of bounds`)
         return
     end
