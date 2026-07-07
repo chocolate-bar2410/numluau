@@ -67,7 +67,7 @@ module.Test = function(message : string,callback : () -> ())
     })
 end
 
-module.DispatchTests = function()
+module.ProcessResults = function()
     local all_passed = true
     local tests_passed = 0
 
