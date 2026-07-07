@@ -46,12 +46,13 @@ end
 local function tab_string<T>(A : {T})
     local result = ""
 
-    for _,v in result do
+    for _,v in A do
         if stringable(v) then
             result ..= tostring(v)
         else
             result ..= tab_string(v)
         end
+        result ..= ", "
     end
 
     return string.format("{%s}",result)
