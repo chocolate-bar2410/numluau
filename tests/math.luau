@@ -46,7 +46,7 @@ end)
 
 unit_tests.Test("cumprod",function()
     local x : numluau.ndArray<number> = numluau.arange(1,10)
-    local A : numluau.ndArray<number> = numluau.cumsum(x)
+    local A : numluau.ndArray<number> = numluau.cumprod(x)
     
     unit_tests.AssertEquals(A.Buffer, {1,2,6,24,120,720,5040,40320,362880,3628800})
 end)
