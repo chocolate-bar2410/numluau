@@ -1,7 +1,7 @@
 local types = require("../types")
 local ndArray = require("../ndarray/ndarray")
 
-local exceptions = require("../exceptions")
+local exceptions = require("../Exceptions")
 local ndarray_utils = require("../utility/ndarray")
 
 local zig_normal = require("./zig_normal")
