@@ -97,7 +97,15 @@ nav = [
       "api-reference/logical/logical_xor.md",
       "api-reference/logical/logical_not.md",
     ]},
-    {"Calculus" = [
+    {"Math" = [
+      "api-reference/math/elementwise.md",
+      "api-reference/math/sum.md",
+      "api-reference/math/prod.md",
+      "api-reference/math/min.md",
+      "api-reference/math/max.md",
+      "api-reference/math/mean.md",
+      "api-reference/math/var.md",
+      "api-reference/math/std.md",
       "api-reference/math/diff.md",
       "api-reference/math/gradient.md",
       "api-reference/math/cumsum.md",
