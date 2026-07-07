@@ -1,5 +1,4 @@
 local module = {}
-local exceptions = require("@numluau/exceptions")
 local types = require("../types")
 local FromTable = require("./FromTable")
 local ndArray_utils = require("../utility/ndarray")
@@ -171,7 +170,7 @@ end
 
 module.vander = function(Target : types.ndArray<number>,col_num : number)
     if Target.ndim ~= 1 then
-        exceptions.FormatException("Value","vandermonde Target array must have ndim = 1")
+        Exceptions.FormatException("Value","vandermonde Target array must have ndim = 1")
     end
     col_num = col_num or Target.Shape[1]
 
