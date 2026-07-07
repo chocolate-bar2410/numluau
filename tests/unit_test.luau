@@ -87,7 +87,7 @@ module.ProcessResults = function()
     end
 
     if all_passed then
-        error(result .. "\nall tests passed")
+        print(result .. "\nall tests passed")
     else
         error(result .. ("\n%d/%d tests passed"):format(tests_passed,#tests))
     end
