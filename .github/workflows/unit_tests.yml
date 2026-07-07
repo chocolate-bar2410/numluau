@@ -19,3 +19,4 @@ jobs:
         run: | 
           lune run tests/construction.luau
           lune run tests/math.luau
+          lune run tests/indexing.luau
