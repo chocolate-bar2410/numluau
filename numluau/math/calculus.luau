@@ -172,7 +172,6 @@ module.cumprod = function<T>(array : types.ndArray<T>,axis : number?)
     if utils.is_ndarray(array) == false then
         exceptions.FormatException("Value", ("Expected ndarray got %q"):format(typeof(array)))
     end
-
     local target_axis = array.ndim - axis
     local target_shape = array.Shape[target_axis]
     local target_stride = array.Strides[target_axis]
@@ -183,7 +182,6 @@ module.cumprod = function<T>(array : types.ndArray<T>,axis : number?)
         local product = 1
         local base_index = base
         for i = 1, target_shape do
-            print(base_index + 1)
             product *= array.Buffer[base_index + 1]
             result.Buffer[base_index + 1] = product
 
