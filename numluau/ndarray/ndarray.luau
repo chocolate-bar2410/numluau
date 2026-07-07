@@ -309,11 +309,11 @@ end
 schema.copy = function<T>(self : types.ndArray<T>)
     local Data = table.clone(self.Buffer)
 
-    return New_ndarray(Data, self.Shape, self.Strides, self.Offset,self.dtype)
+    return New_ndarray(Data, table.clone(self.Shape), table.clone(self.Strides), self.Offset,self.dtype)
 end
 
 schema.view = function<T>(self : types.ndArray<T>)
-    return New_ndarray(self.Buffer, self.Shape, self.Strides, self.Offset,self.dtype)
+    return New_ndarray(self.Buffer, table.clone(self.Shape), table.clone(self.Strides), self.Offset,self.dtype)
 end
 
 schema.reshape = function<T>(self : types.ndArray<T>,... : number)
