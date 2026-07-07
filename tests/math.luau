@@ -37,4 +37,19 @@ unit_tests.Test("trignometry", function()
     unit_tests.AssertAproxEquals(cos_result.Buffer,{1,0,-1})
 end)
 
+unit_tests.Test("cumsum",function()
+    local x : numluau.ndArray<number> = numluau.arange(1,10)
+    local A : numluau.ndArray<number> = numluau.cumsum(x)
+
+    unit_tests.AssertEquals(A.Buffer, {1,3,6,10,15,21,28,36,45,55})
+end)
+
+unit_tests.Test("cumprod",function()
+    local x : numluau.ndArray<number> = numluau.arange(1,10)
+    local A : numluau.ndArray<number> = numluau.cumsum(x)
+    
+    unit_tests.AssertEquals(A.Buffer, {1,2,6,24,120,720,5040,40320,362880,3628800})
+end)
+
+
 unit_tests.ProcessResults()
