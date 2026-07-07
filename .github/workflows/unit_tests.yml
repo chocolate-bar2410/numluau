@@ -1,0 +1,21 @@
+name: unit_tests
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: 'ubuntu-latest'
+    steps:
+      - name: checkout code
+        uses: actions/checkout@v4
+      
+      - name: setup rokit
+        uses: ThatTimothy/setup-rokit@v1
+
+      - name: run_tests
+        run: | 
+          lune run tests/construction.luau
+          lune run tests/math.luau

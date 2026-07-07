@@ -139,4 +139,4 @@ unit_tests.Test("vandermonde matrix",function()
     unit_tests.AssertEquals(E.Buffer,{})
 end)
 
-unit_tests.PrintResults()
+unit_tests.ProcessResults()

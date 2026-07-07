@@ -37,4 +37,4 @@ unit_tests.Test("trignometry", function()
     unit_tests.AssertAproxEquals(cos_result.Buffer,{1,0,-1})
 end)
 
-unit_tests.PrintResults()
+unit_tests.ProcessResults()
