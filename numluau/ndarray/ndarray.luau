@@ -43,7 +43,7 @@ local function index_ndarray(ndArray : types.ndArray<any>,index : number)
         return
     end
 
-    if index > ndArray.Shape[1] then
+    if index < 1 or index > ndArray.Shape[1] then
         Exceptions.FormatException("Array", `index {index} is out of bounds`)
         return
     end
@@ -61,6 +61,15 @@ local function index_ndarray(ndArray : types.ndArray<any>,index : number)
 end
 
 local function set_ndarray(ndArray : types.ndArray<any>,index : number,value : any)
+    if index < 0 then
+        index = ndArray.Shape[1] + index + 1
+    end
+
+    if index % 1 ~= 0 then
+        Exceptions.FormatException("Array", `index {index} must be a integer`)
+        return
+    end
+
     if index < 1 or index > ndArray.Shape[1] then
         Exceptions.FormatException("Array", `index {index} is out of bounds`)
         return
@@ -184,6 +193,32 @@ meta.__newindex = function<T>(self : types.ndArray<T>,index,value)
 
         return
     end
+
+    if typeof(index) == "string" and index:sub(1,1):match("[^%a]") then
+        local Slices = {}
+
+        for section in index:gmatch("[^,]+") do
+            section = section:gsub("%s+","")
+            local start,stop,step = section:match("([^:]*):([^:]*):?([^:]*)")
+
+            if start then
+                start = tonumber(start)
+                stop = tonumber(stop)
+                step = tonumber(step) or 1
+
+                table.insert(Slices,utils.NewSlice(start, stop, step))
+            else
+                table.insert(Slices,tonumber(section))
+            end
+
+        end
+        local target = Slice(self, Slices)
+
+        for i = 1,#target do
+            target.Buffer[target.Offset + i] = value
+        end
+    end
+
 
     if typeof(index) == "number" then
         return set_ndarray(self, index,value)
