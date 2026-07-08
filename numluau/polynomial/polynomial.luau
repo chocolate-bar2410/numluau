@@ -247,7 +247,7 @@ meta.__div = function(self : types.Polynomial,other : types.Polynomial | number)
     if typeof(other) == "number" then
         local copy = self:copy()
         for i,v in copy.coef do
-            copy.coef[i] = v // other
+            copy.coef[i] = v / other
         end
 
         return copy
@@ -256,7 +256,7 @@ meta.__div = function(self : types.Polynomial,other : types.Polynomial | number)
     if typeof(self) == "number" then
         local copy = other:copy()
         for i,v in copy.coef do
-            copy.coef[i] = self // v
+            copy.coef[i] = self / v
         end
 
         return copy
