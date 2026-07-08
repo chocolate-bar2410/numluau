@@ -106,6 +106,10 @@ local Slice = function(self : types.ndArray<any>, Keys : {})
             local stop = key.stop or self.Shape[axis]
             local step = key.step or 1
 
+            if step < 0 then
+                start,stop = stop,start
+            end
+
             if start < 0 then start += self.Shape[axis] + 1 end
             if stop < 0 then stop += self.Shape[axis] + 1 end
 

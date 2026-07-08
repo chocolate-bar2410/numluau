@@ -138,11 +138,6 @@ function module.PrettyPrint(ndArray,dim,indices : {})
 end
 
 function module.NewSlice(start,stop,step)
-
-    if step < 0 then
-        start,stop = stop,start
-    end
-
     return {
         start = start,
         stop = stop,

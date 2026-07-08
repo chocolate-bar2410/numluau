@@ -48,6 +48,9 @@ unit_tests.Test("1d slicing",function()
     unit_tests.AssertEquals(x["1:3:-1"]:toflatlist(), {3,2,1})
     unit_tests.AssertEquals(x["1:-1"]:toflatlist(), {1,2,3,4,5})
 
+    unit_tests.AssertEquals(x["::1"]:toflatlist(), {1,2,3,4,5})
+    unit_tests.AssertEquals(x["::-1"]:toflatlist(), {5,4,3,2,1})
+
     x["1:3"] = numluau.array({10,20,30})
     unit_tests.AssertEquals(x:toflatlist(), {10,20,30,4,5})
 
