@@ -46,5 +46,15 @@ unit_tests.Test("polynomial arithmetic",function()
     unit_tests.AssertEquals((polyA / 5).coef:toflatlist(),{9/5,6/5,1/5})
 end)
 
+unit_tests.Test("polynomial evaluation",function()
+    local polyA : numluau.Polynomial = numluau.polynomial({9,6,1})
+    local x : numluau.ndArray<number> = numluau.arange(5)
+
+    unit_tests.AssertEquals(polyA(5),64)
+    unit_tests.AssertEquals(polyA(x):toflatlist(),{16,25,36,49,64})
+
+    unit_tests.AssertEquals(polyA(1,2,3,4,5):toflatlist(),{16,25,36,49,64})
+end)
+
 
 unit_tests.ProcessResults()
