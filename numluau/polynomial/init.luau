@@ -37,7 +37,7 @@ end
 
 return setmetatable(module, {
     __call = function(_,coef : {number},domain : {number},window : {number},symbol : string) : types.Polynomial
-        return polynomial.new(coef,domain,window) :: types.Polynomial
+        return polynomial.new(coef,domain,window,symbol) :: types.Polynomial
     end
 }) :: setmetatable<{
     fit : (x : types.ndArray<number>,y : types.ndArray<number>,degree : number) -> types.Polynomial,
