@@ -49,7 +49,7 @@ meta.__call = function(self : types.Polynomial, ... : types.ndArray<number> | nu
         local data = {}
 
         for i,val in value do
-            local mapped_value = self.window[1] + (window_range * (value - self.domain[1]) / domain_range)
+            local mapped_value = self.window[1] + (window_range * (val - self.domain[1]) / domain_range)
             local result = 0
             for i,v in self.coef do
                 result += (i > 0 and (mapped_value ^ (i - 1)) or 1) * v
@@ -61,8 +61,7 @@ meta.__call = function(self : types.Polynomial, ... : types.ndArray<number> | nu
         return ndArray(data, table.clone(value.Shape), table.clone(value.Strides), 0, "number")
     end
 
-    local arg_ndarray = ndArray(args, {#args}, {1}, 0, "number")
-
+    local arg_ndarray = ndArray(args, {#args}, {1}, 0, "number")   
     return meta.__call(self,arg_ndarray)
 end
 
