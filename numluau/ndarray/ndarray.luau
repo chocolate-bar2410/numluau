@@ -96,6 +96,7 @@ local Slice = function(self : types.ndArray<any>, Keys : {})
             NewStrides[#NewStrides+1] = stride
             axis += 1
         elseif type(key) == "number" then
+            if key < 0 then key += self.Shape[axis] + 1 end
             -- integer index removes axis
             NewOffset += (key - 1) * stride
             axis += 1
@@ -173,8 +174,8 @@ meta.__index = function(self : types.ndArray<any>,index)
             else
                 table.insert(Slices,tonumber(section))
             end
-
         end
+
         return Slice(self, Slices)
     end
 
