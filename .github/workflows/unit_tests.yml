@@ -21,3 +21,4 @@ jobs:
           lune run tests/math.luau
           lune run tests/indexing.luau
           lune run tests/polynomials.luau
+          lune run tests/linear_algebra.luau
