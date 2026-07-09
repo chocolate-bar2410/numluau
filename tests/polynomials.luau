@@ -28,6 +28,13 @@ unit_tests.Test("polynomial construction",function()
     unit_tests.AssertEquals(polyD.coef:toflatlist(),{9,6,1})
     unit_tests.AssertEquals(polyD.domain,{-1,1})
     unit_tests.AssertEquals(polyD.window,{-1,1})
+
+
+    local polyE : numluau.Polynomial = numluau.polynomial({})
+    unit_tests.AssertEquals(polyE.coef:toflatlist(),{})
+
+    local polyF : numluau.Polynomial = numluau.polynomial({0,0,0})
+    unit_tests.AssertEquals(polyF.coef:toflatlist(),{0,0,0})
 end)
 
 unit_tests.Test("polynomial arithmetic",function()
@@ -44,6 +51,16 @@ unit_tests.Test("polynomial arithmetic",function()
     unit_tests.AssertEquals((polyA - 5).coef:toflatlist(),{4,6,1})
     unit_tests.AssertEquals((polyA * 5).coef:toflatlist(),{45,30,5})
     unit_tests.AssertEquals((polyA / 5).coef:toflatlist(),{9/5,6/5,1/5})
+
+    polyA.symbol = "y"
+    local meta = getmetatable(polyA)
+
+    unit_tests.AssertError(meta.__add,polyA,polyB)
+    unit_tests.AssertError(meta.__sub,polyA,polyB)
+    unit_tests.AssertError(meta.__mul,polyA,polyB)
+    unit_tests.AssertError(meta.__idiv,polyA,polyB)
+
+    unit_tests.AssertError(meta.__idiv,polyA,numluau.polynomial({0,0,0}))
 end)
 
 unit_tests.Test("polynomial evaluation",function()
@@ -54,6 +71,49 @@ unit_tests.Test("polynomial evaluation",function()
     unit_tests.AssertEquals(polyA(x):toflatlist(),{16,25,36,49,64})
 
     unit_tests.AssertEquals(polyA(1,2,3,4,5):toflatlist(),{16,25,36,49,64})
+end)
+
+unit_tests.Test("degree",function()
+    local polyA : numluau.Polynomial = numluau.polynomial({9,6,1})
+    unit_tests.AssertEquals(polyA:degree(), 2)
+
+    local polyB : numluau.Polynomial = numluau.polynomial({1,2,3,0})
+    unit_tests.AssertEquals(polyB:degree(),2)
+
+    local polyC : numluau.Polynomial = numluau.polynomial({1,2,3,4,5,6})
+    unit_tests.AssertEquals(polyC:cutdeg(3).coef:toflatlist(),{1,2,3,4})
+end)
+
+unit_tests.Test("polynomial calculus",function()
+    local polyA : numluau.Polynomial = numluau.polynomial({9,6,1})    
+    unit_tests.AssertEquals(polyA:deriv().coef:toflatlist(), {6,2})
+
+    local polyB : numluau.Polynomial = numluau.polynomial({5})
+    unit_tests.AssertEquals(polyB:deriv().coef:toflatlist(), {0})
+
+    local polyC : numluau.Polynomial = numluau.polynomial({1,2})
+    unit_tests.AssertEquals(polyC:integ().coef:toflatlist(), {0,1,1})
+end)
+
+unit_tests.Test("polynomial companion",function()
+    local polyA : numluau.Polynomial = numluau.polynomial({9,6,1})    
+    local companionA = polyA:companion()
+
+    unit_tests.AssertEquals(companionA[2][1], 1)
+    unit_tests.AssertEquals(companionA[1][2], -9)
+    unit_tests.AssertEquals(companionA[2][2], -6)
+
+    local polyB : numluau.Polynomial = numluau.polynomial({1,2})
+    unit_tests.AssertError(polyB.companion,polyB)
+end)
+
+
+unit_tests.Test("polynomial roots",function()
+    local polyA : numluau.Polynomial = numluau.polynomial({2,4})    
+    unit_tests.AssertEquals(polyA:roots():toflatlist(), numluau.array(-0.5):toflatlist())
+
+    local polyB : numluau.Polynomial = numluau.polynomial({1,2,1})    
+    unit_tests.AssertEquals(polyB:roots():toflatlist(), numluau.array({-1,-1}):toflatlist())
 end)
 
 
