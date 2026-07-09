@@ -71,6 +71,7 @@ export type Polynomial = setmetatable<{
     deriv : (self : Polynomial) -> Polynomial,
     integ : (self : Polynomial) -> Polynomial,
     trim : (self : Polynomial) -> Polynomial,
+    companion : (self : Polynomial) -> ndArray<number>,
     roots : (self : Polynomial) -> ndArray<number>,
 
 },{
