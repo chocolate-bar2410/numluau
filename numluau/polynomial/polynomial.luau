@@ -347,7 +347,7 @@ schema.companion =function(self : types.Polynomial)
     local degree = self:degree()
 
     if degree < 2 then
-        return exceptions.FormatException("Poly", "polynomial must have degree")
+        exceptions.FormatException("Poly", "polynomial must have degree > 2")
     end
 
     local companion_matrix = ndArray(table.create(degree * degree,0), {degree,degree}, {degree,1}, 0, "number")
