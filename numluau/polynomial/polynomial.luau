@@ -310,7 +310,10 @@ schema.deriv = function(self : types.Polynomial)
         result_coeff[i] *= i
     end
 
-    return interface.new(result_coeff:toflatlist(),table.clone(self.domain),table.clone(self.window),self.symbol)
+    local data = result_coeff:toflatlist()
+    if #data == 0 then data[1] = 0 end
+
+    return interface.new(data,table.clone(self.domain),table.clone(self.window),self.symbol)
 end
 
 schema.integ = function(self : types.Polynomial)
@@ -331,7 +334,7 @@ schema.trim = function(self : types.Polynomial,tol : number)
     local data = self.coef:toflatlist()
     for i = self.coef.Shape[1],1,-1 do
         if self.coef.Buffer[i] > tol then break end
-        table.remove(self.coef.Buffer,i)
+        table.remove(data,i)
     end
 
     local result = self:copy()
