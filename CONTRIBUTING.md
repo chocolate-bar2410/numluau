@@ -58,7 +58,7 @@ Generative AI lacks intent, cannot gaurantee numerical stability and is highly p
 
 ### Allowed *(subject to the rules from above)*:
 - **API Documentation:** Generating API docs (will remove this once we get a zensical plugin for doc comments).
-- **Unit test data & scenarios:** Generating mock data, boundary values or inputs for testing.
+- **Unit test data & scenarios:** Generating data/cases for testing.
 
 ### Prohibited:
 - **Core functionality:** Any library computation, core algorithm or math logic.
