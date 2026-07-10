@@ -43,13 +43,21 @@ zensical serve
 As this is a math/science library, AI usage is restricted to protect the safety, reliability and correctness of the codebase.
 Generative AI lacks intent, cannot gaurantee numerical stability and is highly prone to hallucinations.
 
-If you use generative AI, you must:
+### what counts as generative AI:
+- **LLMs:** general purpose text/code generation models, like chatgpt or claude.
+- **Coding agents:** models/environments which autonomously modify files/codebases, like open claw or github copilot.
+- **Reasoning models:** models optimised with chain of thought, like deepseek.
+
+### what doesn't:
+- **math solvers:** AI which solves math for you, like wolfram alpha.
+
+### If you use generative AI, you must:
 - **Disclose** where Generative AI was used in your contribution
 - **Justify** why Generative AI was necessary or beneficial.
 - **Explain** thoroughly how the resulting code works. If you cannot explain, dont submit it.
 
 ### Allowed *(subject to the rules from above)*:
-- **Documentation:** drafting or improving english documentation.
+- **API Documentation:** Generating API docs (will remove this once we get a zensical plugin for doc comments).
 - **Unit test data & scenarios:** Generating mock data, boundary values or inputs for testing.
 
 ### Prohibited:
@@ -57,6 +65,8 @@ If you use generative AI, you must:
 - **Utility/Helper methods:** Even simple helper functions should be human written to ensure optimal performance.
 - **Objects:** Implementation of objects like ndArrays, polynomials, generators or some other data structure.
 - **Unit test infrastructure:** Core framework logic of how the unit test system operates.
+- **Documentation:** documentation of the library including user guides, tutorials and examples (excluding API)
 - **Automated translation:** Translating the documentation into other human languages (Mandarin, Japanese, Korean etc.). Technical Translations require human precision to avoid misunderstandings of mathematical concepts. 
 
 Machine translations are banned as to ensure localisations remain natural, and precise for non english speakers.
+This includes non generative AIs like google translate.
