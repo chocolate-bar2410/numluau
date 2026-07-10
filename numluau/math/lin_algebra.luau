@@ -104,7 +104,7 @@ module.lu = function(matrix : types.ndArray<number>)
         end
 
         if max_value < 1e-9 then 
-            return nil,nil,swaps 
+            return nil,nil,nil,swaps 
         end
         
         if pivot_row ~= k then
@@ -186,8 +186,13 @@ module.dot = function(A : types.ndArray<number>,B : types.ndArray<number>)
         return A * B
     end
 
-    if A.ndim ~= 1 or B.ndim ~= 1 then return end
-    if #A ~= #B then return end 
+    if A.ndim ~= 1 or B.ndim ~= 1 then 
+        exceptions.FormatException("LinAlg", "both ndims must equal 1 for dot products")
+    end
+
+    if #A ~= #B then
+        exceptions.FormatException("LinAlg", "both ndArrays must have the same size when doing dot product")
+    end 
 
     local product = A * B
     local result = aggregations.sum(product)
@@ -198,11 +203,15 @@ end
 module.cross = function(A : types.ndArray<number>,B : types.ndArray<number>)
     if A.ndim > 1 or B.ndim > 1 then
         exceptions.FormatException("LinAlg","cross product not implemented for ndim > 1")
+    elseif A.ndim < 1 or B.ndim < 1 then
+        exceptions.FormatException("LinAlg","cross product not implemented for ndim < 1")
     elseif A.ndim == 0 or B.ndim == 0 then
         exceptions.FormatException("LinAlg","cross product undefined for 0d ndArrays")
     end
 
-    if #A ~= #B then return end 
+    if #A ~= #B then
+        exceptions.FormatException("LinAlg", "cross product can only be done with ndArrays of the same size")
+    end
     if #A ~= 3 then
         exceptions.FormatException("LinAlg","cross product only available between 3d vectors")
     end
