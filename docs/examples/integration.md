@@ -3,12 +3,25 @@ icon: lucide/rocket
 title: integration example
 description: example of applying integration
 ---
+let the function be defined as:
 
-let f(x,y) = exp(-(x² + y²)) ∙ sin(x) for -2 ≤ x ≤ 2 and -2 ≤ y ≤ 2
+$$
+f(x,y) = e^{-(x^2 + y^2)} \cdot \sin(x)
+$$
 
-find:
-1. Find the volume |f(x,y)| in the specified x and y range
-2. Find the volume |f(x,y)| only in the region where √(x² + y^²) > 0.5
+over the domain $D = {(x,y) \in \mathbb{R} ^ 2 \mid -2 \le x \le 2, -2 \le y \le 2}$
+
+find: <br>
+1. The volume under $|f(x,y)|$ over the entire domain.
+$$
+\iint_{D}|f(x,y)|\,dx\,dy
+$$
+2. The volume under $|f(x,y)|$ restricted to the region where $\sqrt{x^2 + y^2} > 0.5$.
+
+$$\displaylines{
+\iint_{R}|f(x,y)|\,dx\,dy \\
+R = {(x,y) \in D \mid \sqrt{x^2 + y^2} > 0.5} \\
+}$$
 
 ```lua
 

@@ -5,13 +5,15 @@ description: example of solving a linear equation for a circuit
 ---
 After examining a circuit full of resistors, you find that the voltage at 4 specified points is given by:
 
-3v₁ + 2v₂ + 3v₃ + 10v₄ = 4
-2v₁ - 2v₂ + 5v₃ + 8v₄  = 1
-3v₁ + 3v₂ + 4v₃ + 9v₄  = 3
-3v₁ + 4v₂ - 3v₃ - 7v₄  = 2
+$$\displaylines{
+3v_{1} + 2v_{2} + 3v_{3} + 10v_{4} = 4 \\
+2v_{1} - 2v_{2} + 5v_{3} + 8v_{4}  = 1 \\
+3v_{1} + 3v_{2} + 4v_{3} + 9v_{4}  = 3 \\
+3v_{1} + 4v_{2} - 3v_{3} - 7v_{4}  = 2 \\
+}$$
 
-where v₁ - v₄ are voltages
-find v₁,v₂,v₃,v₄
+where $v_{1} - v_{4}$ are voltages
+find $v_{1},v_{2},v_{3},v_{4}$
 
 ```lua
 local numluau = require("../numluau/numluau")
