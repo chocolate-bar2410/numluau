@@ -1,6 +1,6 @@
 ---
 icon: lucide/rocket
-title: circuit linear equation example
+title: circuit linear equation
 description: example of solving a linear equation for a circuit
 ---
 After examining a circuit full of resistors, you find that the voltage at 4 specified points is given by:
@@ -12,8 +12,8 @@ $$\displaylines{
 3v_{1} + 4v_{2} - 3v_{3} - 7v_{4}  = 2 \\
 }$$
 
-where $v_{1} - v_{4}$ are voltages
-find $v_{1},v_{2},v_{3},v_{4}$
+Where $v_{1} - v_{4}$ are voltages. <br>
+Find $v_{1},v_{2},v_{3},v_{4}$ <br>
 
 ```lua
 local numluau = require("../numluau/numluau")
