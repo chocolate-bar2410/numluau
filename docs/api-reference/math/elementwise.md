@@ -1,15 +1,14 @@
 ---
-title: element-wise math
+title: luau math wrappers
 ---
 
 ```luau
-function numluau.abs(
+function numluau.<[mathfunc]>(
     Array : types.ndArray<number>
 ) : types.ndArray<number>
 ```
 
-The element-wise math functions apply one Luau `math` function to every value in
-an `ndArray<number>` and return the result as a new `ndArray<number>`.
+The numluau provides wrapper functions that allow you to apply Luau `math` function to an `ndArray<number>` and return the result as a `ndArray<number>`.
 
 # Supported functions
 
