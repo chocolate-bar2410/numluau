@@ -62,6 +62,10 @@ nav = [
       "tutorials/fundementals/arithmetic.md",
       "tutorials/fundementals/filtering.md",
     ] },
+    { "additional modules" = [
+      "tutorials/random.md",
+    ] },
+
   ] },
   { "examples" = [
     "examples/index.md",
