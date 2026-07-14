@@ -3,6 +3,8 @@ local types = require("../types")
 local exceptions = require("../Exceptions")
 
 local linear_algebra = require("../math/lin_algebra")
+local ndarray_util = require("./ndarray")
+
 
 export type printstyle = "ascii" | "unicode"
 
@@ -85,6 +87,8 @@ module.fit = function(x : types.ndArray<number>,y : types.ndArray<number>,degree
     end
 
     local coef = linear_algebra.lstsq(x,y,degree)
+
+    coef.Buffer = ndarray_util.ReverseTable(coef.Buffer)
 
     return coef
 end
