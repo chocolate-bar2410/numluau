@@ -38,33 +38,42 @@ export type ndArray<T> = types.ndArray<T>
 export type Generator = types.Generator
 export type Polynomial = types.Polynomial
 
+--- The numluau library.
+---@class numluau
+
 local Base = {
-    array = FromTable,
-    
-    
-    linalg = require("@self/math/lin_algebra"),
-    random = require("@self/random"),
-    polynomial = require("@self/polynomial"),
-    version = {major = 1, minor = 1} :: types.Version,
-    set_printoptions = function(args : {suppress : boolean, precision : number,threshold : number,edgeitems : number,linewidth : number})
-        ndArray_utils.suppress = if args.suppress ~= nil then args.suppress else ndArray_utils.suppress
-        ndArray_utils.precision = if args.precision ~= nil then args.precision else ndArray_utils.precision
+	array = FromTable,
 
-        ndArray_utils.edgeitems = if args.edgeitems ~= nil then args.edgeitems else ndArray_utils.edgeitems
-        ndArray_utils.threshold = if args.threshold ~= nil then args.threshold else ndArray_utils.threshold
-        ndArray_utils.linewidth = if args.linewidth ~= nil then args.linewidth else ndArray_utils.linewidth
+	linalg = require("@self/math/lin_algebra"),
+	random = require("@self/random"),
+	polynomial = require("@self/polynomial"),
+	version = { major = 1, minor = 1 } :: types.Version,
+	set_printoptions = function(args: {
+		suppress: boolean,
+		precision: number,
+		threshold: number,
+		edgeitems: number,
+		linewidth: number,
+	})
+		ndArray_utils.suppress = if args.suppress ~= nil then args.suppress else ndArray_utils.suppress
+		ndArray_utils.precision = if args.precision ~= nil then args.precision else ndArray_utils.precision
 
-        poly_utils.suppress = if args.suppress ~= nil then args.suppress else poly_utils.suppress
-        poly_utils.precision = if args.precision ~= nil then args.precision else poly_utils.precision
-    end
+		ndArray_utils.edgeitems = if args.edgeitems ~= nil then args.edgeitems else ndArray_utils.edgeitems
+		ndArray_utils.threshold = if args.threshold ~= nil then args.threshold else ndArray_utils.threshold
+		ndArray_utils.linewidth = if args.linewidth ~= nil then args.linewidth else ndArray_utils.linewidth
+
+		poly_utils.suppress = if args.suppress ~= nil then args.suppress else poly_utils.suppress
+		poly_utils.precision = if args.precision ~= nil then args.precision else poly_utils.precision
+	end,
 }
 
-type out = typeof(Base) &
-           typeof(math_utils) &
-           typeof(aggregations) &
-           typeof(comparison) &
-           typeof(logical) &
-           typeof(calculus) &
-           typeof(constructors)
+type out =
+	typeof(Base)
+	& typeof(math_utils)
+	& typeof(aggregations)
+	& typeof(comparison)
+	& typeof(logical)
+	& typeof(calculus)
+	& typeof(constructors)
 
-return table_utils.merge(Base,math_utils,aggregations,comparison,logical,calculus,constructors) :: out
+return table_utils.merge(Base, math_utils, aggregations, comparison, logical, calculus, constructors) :: out
