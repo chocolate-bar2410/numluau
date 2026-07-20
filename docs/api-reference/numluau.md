@@ -10,9 +10,16 @@ The numluau library.
  
 ---
 
-### constructors
+## properties 
+<h3> 
+version
+<span class = "tsukuyomi-api-type"> : Version </span> 
+</h3> 
+
+The version of numluau. 
 
 ## methods 
+### constructors
 <h4 markdown>
 arange 
 <span class = "tsukuyomi-api-type"> -> () </span> 

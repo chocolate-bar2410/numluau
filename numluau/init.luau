@@ -40,6 +40,8 @@ export type Polynomial = types.Polynomial
 
 --- The numluau library.
 ---@class numluau
+---The version of numluau.
+---@prop version Version
 
 --- A object that represents the version of numluau.
 ---@class Version
