@@ -448,8 +448,10 @@ numluau.set_printoptions(args: {
 
 configures the prettyprint of the library.
 
-- suppress: suppresses small numbers (default: false)  
-- precission: the precission of the numbers (default: 8dp)
-- threshold: the number of values, a ndarray per row/nested row it can have before its tostring is truncated. (default: 100)
-- edge items: the ammount of items that show up when a ndarray's tostring is truncated. (default: 3)
-- line width: the max ammount of characters before a ndarray's tostring is wrapped around. (default: 75)
+|property	 | description 																			 | default value|
+|------------|---------------------------------------------------------------------------------------|--------------|
+| suppress   | suppresses small numbers 															 | false   		|
+| precission | the precission of the numbers 														 | 8 d.p   		|
+| threshold  | the number of values, a ndarray it can have per row before its tostring is truncated. | 100 	   		|
+| edge items | the ammount of items that show up when a ndarray's tostring is truncated. 			 | 3 	   		|
+| line width | the max ammount of characters before a ndarray's tostring is wrapped around. 		 | 75	   		|

@@ -49,6 +49,14 @@ local Base = {
 	polynomial = require("@self/polynomial"),
 	version = { major = 1, minor = 1 } :: types.Version,
 
+	--- configures the prettyprint of the library.
+	--- |property	 | description 																			 | default value|
+	--- |------------|---------------------------------------------------------------------------------------|--------------|
+	--- | suppress   | suppresses small numbers 															 | false   		|
+	--- | precission | the precission of the numbers 														 | 8 d.p   		|
+	--- | threshold  | the number of values, a ndarray it can have per row before its tostring is truncated. | 100 	   		|
+	--- | edge items | the ammount of items that show up when a ndarray's tostring is truncated. 			 | 3 	   		|
+	--- | line width | the max ammount of characters before a ndarray's tostring is wrapped around. 		 | 75	   		|
 	---@within numluau
 	---@method set_printoptions
 	---@param args {suppress: boolean,precision: number,threshold: number,edgeitems: number,linewidth: number}
