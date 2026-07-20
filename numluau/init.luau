@@ -48,6 +48,10 @@ local Base = {
 	random = require("@self/random"),
 	polynomial = require("@self/polynomial"),
 	version = { major = 1, minor = 1 } :: types.Version,
+
+	---@within numluau
+	---@method set_printoptions
+	---@param args {suppress: boolean,precision: number,threshold: number,edgeitems: number,linewidth: number}
 	set_printoptions = function(args: {
 		suppress: boolean,
 		precision: number,

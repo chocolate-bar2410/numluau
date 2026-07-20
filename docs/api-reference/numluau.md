@@ -429,3 +429,27 @@ numluau.std(
 ): ndArray
 ```
 Creates a ndarray of the standard deviations across either the entire ndArray or across a specified axis
+
+### miscellaneous
+
+<h4 markdown>
+set_printoptions
+<span class = "tsukuyomi-api-type"> -> () </span> 
+</h4>
+```luau
+numluau.set_printoptions(args: {
+	suppress: boolean,
+	precision: number,
+	threshold: number,
+	edgeitems: number,
+	linewidth: number,
+})
+```
+
+configures the prettyprint of the library.
+
+- suppress: suppresses small numbers (default: false)  
+- precission: the precission of the numbers (default: 8dp)
+- threshold: the number of values, a ndarray per row/nested row it can have before its tostring is truncated. (default: 100)
+- edge items: the ammount of items that show up when a ndarray's tostring is truncated. (default: 3)
+- line width: the max ammount of characters before a ndarray's tostring is wrapped around. (default: 75)
