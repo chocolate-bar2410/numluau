@@ -27,23 +27,17 @@ local Exceptions = require("../Exceptions")
 
 local function isValid<T>(data: { T }, dtype: string): boolean | string
 	for i = 1, #data do
-		if typeof(data[i]) ~= dtype then
-			return "ndArray elements must have the same type"
-		end
+		if typeof(data[i]) ~= dtype then return "ndArray elements must have the same type" end
 	end
 
 	return true
 end
 
 local function New_ndarray<T>(data: { T }, Shape: { number }, Strides: { number }, Offset: number, dtype: string)
-	if typeof(data) ~= "table" then
-		data = { data }
-	end
+	if typeof(data) ~= "table" then data = { data } end
 
 	local validation = isValid(data, dtype)
-	if type(validation) == "string" then
-		Exceptions.FormatException("Malformed", validation)
-	end
+	if type(validation) == "string" then Exceptions.FormatException("Malformed", validation) end
 
 	return setmetatable({
 		Buffer = data,
@@ -57,9 +51,7 @@ local function New_ndarray<T>(data: { T }, Shape: { number }, Strides: { number 
 end
 
 local function index_ndarray(ndArray: types.ndArray<any>, index: number)
-	if index < 0 then
-		index = ndArray.Shape[1] + index + 1
-	end
+	if index < 0 then index = ndArray.Shape[1] + index + 1 end
 
 	if index % 1 ~= 0 then
 		Exceptions.FormatException("Array", `index {index} must be a integer`)
@@ -76,17 +68,13 @@ local function index_ndarray(ndArray: types.ndArray<any>, index: number)
 	local NewShape = table.move(ndArray.Shape, 2, #ndArray.Shape, 1, {})
 	local NewStrides = table.move(ndArray.Strides, 2, #ndArray.Shape, 1, {})
 
-	if #NewShape == 0 then
-		return ndArray.Buffer[NewOffset + 1]
-	end
+	if #NewShape == 0 then return ndArray.Buffer[NewOffset + 1] end
 
 	return New_ndarray(ndArray.Buffer, NewShape, NewStrides, NewOffset, ndArray.dtype)
 end
 
 local function set_ndarray(ndArray: types.ndArray<any>, index: number, value: any)
-	if index < 0 then
-		index = ndArray.Shape[1] + index + 1
-	end
+	if index < 0 then index = ndArray.Shape[1] + index + 1 end
 
 	if index % 1 ~= 0 then
 		Exceptions.FormatException("Array", `index {index} must be a integer`)
@@ -158,17 +146,13 @@ local Slice = function(self: types.ndArray<any>, Keys: {})
 		NewStrides[#NewStrides + 1] = self.Strides[i]
 	end
 
-	if #NewShape == 0 then
-		return self.Buffer[NewOffset + 1]
-	end
+	if #NewShape == 0 then return self.Buffer[NewOffset + 1] end
 
 	return New_ndarray(self.Buffer, NewShape, NewStrides, NewOffset, self.dtype)
 end
 
 meta.__index = function(self: types.ndArray<any>, index)
-	if typeof(index) == "number" then
-		return index_ndarray(self, index)
-	end
+	if typeof(index) == "number" then return index_ndarray(self, index) end
 
 	if typeof(index) == "table" and index.type and index.type == "ndArray" then
 		if #index.Buffer ~= #self.Buffer then
@@ -179,9 +163,7 @@ meta.__index = function(self: types.ndArray<any>, index)
 		local result = {}
 
 		for i = 1, #self.Buffer do
-			if index.Buffer[i] == false then
-				continue
-			end
+			if index.Buffer[i] == false then continue end
 			result[#result + 1] = self.Buffer[i]
 		end
 
@@ -253,17 +235,13 @@ meta.__newindex = function<T>(self: types.ndArray<T>, index, value)
 		end
 	end
 
-	if typeof(index) == "number" then
-		return set_ndarray(self, index, value)
-	end
+	if typeof(index) == "number" then return set_ndarray(self, index, value) end
 
 	return rawset(self, index, value)
 end
 
 meta.__tostring = function(self: types.ndArray<any>)
-	if self.ndim == 0 then
-		return `array({tostring(self.Buffer[self.Offset + 1])})`
-	end
+	if self.ndim == 0 then return `array({tostring(self.Buffer[self.Offset + 1])})` end
 
 	return `array({utils.PrettyPrint(self, 1, {})})`
 end
@@ -362,9 +340,7 @@ meta.__iter = function<T>(self: types.ndArray<T>)
 	local yielded = 0
 
 	return function()
-		if yielded >= size then
-			return
-		end
+		if yielded >= size then return end
 
 		local index = self.Offset
 
@@ -374,9 +350,7 @@ meta.__iter = function<T>(self: types.ndArray<T>)
 
 		for i = self.ndim, 1, -1 do
 			dimensions[i] += 1
-			if dimensions[i] < self.Shape[i] then
-				break
-			end
+			if dimensions[i] < self.Shape[i] then break end
 
 			dimensions[i] = 0
 		end
@@ -418,7 +392,7 @@ schema.view = function<T>(self: types.ndArray<T>)
 	return New_ndarray(self.Buffer, table.clone(self.Shape), table.clone(self.Strides), self.Offset, self.dtype)
 end
 
----creates a new view of the original ndArray with the specified shape.
+---creates a new view of the original ndArray using the arguments provided for the shape.
 ---@within ndArray
 ---@method reshape
 ---@param self ndArray
@@ -487,9 +461,7 @@ end
 ---@param self ndArray
 ---@return ndArray
 schema.transpose = function<T>(self: types.ndArray<T>)
-	if self.ndim < 2 then
-		return self
-	end
+	if self.ndim < 2 then return self end
 
 	local new_shape = utils.ReverseTable(self.Shape)
 	local new_strides = utils.ReverseTable(self.Strides)
@@ -509,9 +481,7 @@ end
 ---@param ... number
 ---@return ndArray
 schema.item = function<T>(self: types.ndArray<T>, ...: number)
-	if self.ndim == 0 then
-		return self.Buffer[1]
-	end
+	if self.ndim == 0 then return self.Buffer[1] end
 	local args = { ... }
 
 	for i, v in args do
@@ -551,9 +521,7 @@ end
 ---@param axis number
 ---@return ndArray
 schema.swap = function<T>(self: types.ndArray<T>, index1: number, index2: number, axis: number)
-	if self.ndim == 0 then
-		return
-	end
+	if self.ndim == 0 then return end
 
 	if self.ndim == 1 then
 		local temp = self[index1]
