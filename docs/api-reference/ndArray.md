@@ -1,72 +1,165 @@
 ---
-title: ndArray
-description: ndArray API document.
+icon: octicons/note-16
+---
+<h1 class = "tsukuyomi-api-header" markdown> 
+<span class="tsukuyomi-api-icon" markdown>:octicons-note-24:</span> 
+<span class="tsukuyomi-api-name">ndArray</span> 
+</h1> 
+
+ndArrays represent an nth dimensional array that you can perform vectorised operations on. 
+
 ---
 
-```luau
-export type ndArray<T>{
-    type : "ndArray",
-    dtype : string,
-    ndim : number,
-    Offset : number,
-    Buffer : {T},
-    Shape : {number},
-    Strides : {number},
+## properties 
+<h3> 
+Buffer
+<span class = "tsukuyomi-api-type"> : {T} </span> 
+</h3> 
 
-    copy : (ndArray<T>) -> ndArray<T>,
-    view : (ndArray<T>) -> ndArray<T>,
-    reshape : (ndArray<T>,...number) -> ndArray<T>,
-    flatten : (ndArray<T>,...number) -> ndArray<T>,
-    eye : (ndArray<T>) -> ndArray<number>,
-    transpose : (ndArray<T>) -> ndArray<T>,
-    item : (ndArray<T>,...number) -> T
-}
+A flat table containing the array's values. 
+<h3> 
+ndim
+<span class = "tsukuyomi-api-type"> : number </span> 
+</h3> 
+
+The dimension number of the array. 
+<h3> 
+Shape
+<span class = "tsukuyomi-api-type"> : {number} </span> 
+</h3> 
+
+The table that defines the dimensions of the array. 
+<h3> 
+Strides
+<span class = "tsukuyomi-api-type"> : {number} </span> 
+</h3> 
+
+The table that defines how indices get converted into a flat index. 
+<h3> 
+Offset
+<span class = "tsukuyomi-api-type"> : number </span> 
+</h3> 
+
+The offset where the first index begins. 
+<h3> 
+type
+<span class = "tsukuyomi-api-type"> : "ndArray" </span> 
+</h3> 
+
+The type of the object, this being "ndArray" 
+<h3> 
+dtype
+<span class = "tsukuyomi-api-type"> : string </span> 
+</h3> 
+
+The datatype of the values the array is holding. 
+ 
+ 
+---
+## methods 
+<h3 markdown>
+copy 
+<span class = "tsukuyomi-api-type"> -> () </span> 
+</h3>
+```luau
+ndArray:copy(
+	
+): ndArray
 ```
 
-# members
+creates a new copy of the original ndArray.  
+<h3 markdown>
+view 
+<span class = "tsukuyomi-api-type"> -> () </span> 
+</h3>
+```luau
+ndArray:view(
+	
+): ndArray
+```
 
-### type : "ndArray"
-A value used to tell if a value is a ndArray.
+creates a new view of the original ndArray.  
+<h3 markdown>
+reshape 
+<span class = "tsukuyomi-api-type"> -> () </span> 
+</h3>
+```luau
+ndArray:reshape(
+	... : number
+): ndArray
+```
 
-### dtype : string
-The data type of the items of the ndArray.
+creates a new view of the original ndArray using the arguments provided for the shape.  
+<h3 markdown>
+flatten 
+<span class = "tsukuyomi-api-type"> -> () </span> 
+</h3>
+```luau
+ndArray:flatten(
+	
+): ndArray
+```
 
-### ndim : number
-The dimension of the ndArray.
+creates a new view of the original ndArray as a flat array.  
+<h3 markdown>
+eye 
+<span class = "tsukuyomi-api-type"> -> () </span> 
+</h3>
+```luau
+ndArray:eye(
+	
+): ndArray
+```
 
-### Offset : number
-A table that determins the dimensions of the ndArray.
+returns the identity matrix of the ndArray.
+!!!warning
+ndArray must be have ndim = 2  
+<h3 markdown>
+transpose 
+<span class = "tsukuyomi-api-type"> -> () </span> 
+</h3>
+```luau
+ndArray:transpose(
+	
+): ndArray
+```
 
-### Buffer : {T\}
-A table that describes how to index the ndArray.
+creates a new view of the original ndArray which is transposed.  
+<h3 markdown>
+item 
+<span class = "tsukuyomi-api-type"> -> () </span> 
+</h3>
+```luau
+ndArray:item(
+	... : number
+): ndArray
+```
 
-### Shape : {number\}
-The raw table that holds the data.
+gets the value from the ndArray using the indices provided.
+0d ndArrays will just return the value they're holding.  
+<h3 markdown>
+toflatlist 
+<span class = "tsukuyomi-api-type"> -> () </span> 
+</h3>
+```luau
+ndArray:toflatlist(
+	... : number
+): {T}
+```
 
-### Strides : {number\}
-Determines the first item of the ndArray.
+returns a flat table of elements from the ndArray, with respect to its shape, stride and offset.  
+<h3 markdown>
+swap 
+<span class = "tsukuyomi-api-type"> -> () </span> 
+</h3>
+```luau
+ndArray:swap(
+	index1 : number,
+	index2 : number,
+	axis : number
+): ndArray
+```
 
-
-# methods
-
-### copy : (ndArray<T\>) -> ndArray<T\>
-returns a copy of the ndArray.
-
-### view : (ndArray<T\>) -> ndArray<T\>
-returns a view of the ndArray.
-
-### reshape : (ndArray<T\>,...number) -> ndArray<T\>
-returns a view of the ndArray with the shape {`...`}
-
-### flatten : (ndArray<T\>,...number) -> ndArray<T\>
-returns a view of the ndArray with ndim = 1.
-
-### eye : (ndArray<T\>) -> ndArray<number>
-returns the identity of the ndArray.
-
-### transpose : (ndArray<T\>) -> ndArray<T\>
-returns a view of the ndArray with its shape reversed.
-
-### item : (ndArray<T\>,...number) -> T
-Indexes the ndArray using the arguements `...`.
-If ndim = 0 then it just returns the value stored inside it.
+does a implace swap across an axis between the values at index1 and index2  
+ 
+ 
