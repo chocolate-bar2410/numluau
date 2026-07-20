@@ -41,6 +41,11 @@ export type Polynomial = types.Polynomial
 --- The numluau library.
 ---@class numluau
 
+--- A object that represents the version of numluau.
+---@class Version
+---@prop major number
+---@prop minor number
+
 local Base = {
 	array = FromTable,
 
