@@ -79,10 +79,12 @@ nav = [
     { "Objects" = [
       "api-reference/ndArray.md",
       "api-reference/Generator.md",
+      "api-reference/polynomial.md",
     ] },
     { "sub modules" = [
       "api-reference/linalg.md",
       "api-reference/random.md",
+      "api-reference/polynomial_inter.md",
     ] },
   ] },
 ]
