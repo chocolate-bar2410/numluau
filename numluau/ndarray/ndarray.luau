@@ -436,8 +436,6 @@ schema.flatten = function<T>(self: types.ndArray<T>)
 end
 
 ---returns the identity matrix of the ndArray.
----!!!warning
----ndArray must be have ndim = 2
 ---@within ndArray
 ---@method eye
 ---@param self ndArray

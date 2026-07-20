@@ -9,7 +9,6 @@ icon: octicons/note-16
 ndArrays represent an nth dimensional array that you can perform vectorised operations on. 
 
 ---
-
 ## properties 
 <h3> 
 Buffer
@@ -112,8 +111,6 @@ ndArray:eye(
 ```
 
 returns the identity matrix of the ndArray.
-!!!warning
-ndArray must be have ndim = 2  
 <h3 markdown>
 transpose 
 <span class = "tsukuyomi-api-type"> -> () </span> 
