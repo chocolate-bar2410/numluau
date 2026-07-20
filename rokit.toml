@@ -6,5 +6,5 @@
 [tools]
 lune = "lune-org/lune@0.10.5"
 lute = "luau-lang/lute@1.0.0"
-tsukuyomi = "chocolate-bar2410/tsukuyomi@0.1.0-beta"
+tsukuyomi = "chocolate-bar2410/tsukuyomi@0.1.0"
 StyLua = "JohnnyMorganz/StyLua@2.5.2"
