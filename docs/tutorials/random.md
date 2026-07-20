@@ -1,5 +1,5 @@
 ---
-icon: lucide/rocket
+icon: octicons/dice-24
 title: random
 description: random module tutorial
 ---

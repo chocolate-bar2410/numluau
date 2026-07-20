@@ -1,5 +1,4 @@
 ---
-icon: lucide/rocket
 title: N-Dimensional arrays
 description: Basics of N-Dimensional arrays
 ---

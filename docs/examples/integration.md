@@ -1,5 +1,5 @@
 ---
-icon: lucide/rocket
+icon: octicons/graph-bar-horizontal-24
 title: integration example
 description: example of applying integration
 ---

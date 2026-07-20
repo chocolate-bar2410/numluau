@@ -1,5 +1,5 @@
 ---
-icon: lucide/rocket
+icon: octicons/download-24
 title: installing numluau
 description: installation tutorial
 ---

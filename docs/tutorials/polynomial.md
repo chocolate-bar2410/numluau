@@ -1,5 +1,5 @@
 ---
-icon: lucide/rocket
+icon: octicons/graph-24
 title: polynomial
 description: polynomial module tutorial
 ---

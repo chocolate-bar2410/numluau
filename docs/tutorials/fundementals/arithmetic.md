@@ -1,5 +1,4 @@
 ---
-icon: lucide/rocket
 title: Arithmetic
 description: doing arithmetic on N-Dimensional arrays
 ---

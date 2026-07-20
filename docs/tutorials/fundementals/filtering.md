@@ -1,5 +1,4 @@
 ---
-icon: lucide/rocket
 title: Filtering
 description: filtering N-Dimensional arrays
 ---

@@ -1,8 +1,9 @@
 ---
-icon: lucide/rocket
+icon: octicons/zap-24
 title: circuit linear equation
 description: example of solving a linear equation for a circuit
 ---
+
 After examining a circuit full of resistors, you find that the voltage at 4 specified points is given by:
 
 $$\displaylines{
