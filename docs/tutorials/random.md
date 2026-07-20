@@ -123,7 +123,7 @@ print(rng:permutation(items))   -- swaps columns
 print(rng:permutation(items,0)) -- swaps rows
 
 ```
-``` title=output
+``` title="output"
 array([
   [5 6 7 8]
   [9  10 11 12]
