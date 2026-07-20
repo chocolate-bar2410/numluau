@@ -57,7 +57,6 @@ Generative AI lacks intent, cannot gaurantee numerical stability and is highly p
 - **Explain** thoroughly how the resulting code works. If you cannot explain, dont submit it.
 
 ### Allowed *(subject to the rules from above)*:
-- **API Documentation:** Generating API docs (will remove this once we get a zensical plugin for doc comments).
 - **Unit test data & scenarios:** Generating data/cases for testing.
 
 ### Prohibited:
@@ -65,7 +64,7 @@ Generative AI lacks intent, cannot gaurantee numerical stability and is highly p
 - **Utility/Helper methods:** Even simple helper functions should be human written to ensure optimal performance.
 - **Objects:** Implementation of objects like ndArrays, polynomials, generators or some other data structure.
 - **Unit test infrastructure:** Core framework logic of how the unit test system operates.
-- **Documentation:** documentation of the library including user guides, tutorials and examples (excluding API)
+- **Documentation:** documentation of the library including user guides, tutorials and examples etc.
 - **Automated translation:** Translating the documentation into other human languages (Mandarin, Japanese, Korean etc.). Technical Translations require human precision to avoid misunderstandings of mathematical concepts. 
 
 Machine translations are banned as to ensure localisations remain natural, and precise for non english speakers.
