@@ -97,7 +97,13 @@ nav = [
 #
 # Read more: https://zensical.org/docs/customization/#additional-css
 #
-extra_css = ["stylesheets/extra.css"]
+extra_css = [
+  "assets/stylesheets/page.css",
+  "assets/stylesheets/api-reference.css",
+  "assets/stylesheets/colours.css",
+  "assets/stylesheets/theme.css",
+  "assets/stylesheets/code.css",
+]
 
 # With the `extra_javascript` option you can add your own JavaScript to your
 # project to customize the behavior according to your needs.
@@ -332,12 +338,12 @@ code = "JetBrains Mono"
 # - https://zensical.org/docs/setup/colors/
 # ----------------------------------------------------------------------------
 [[project.theme.palette]]
-scheme = "default"
+scheme = "numluau-light"
 toggle.icon = "lucide/sun"
 toggle.name = "Switch to dark mode"
 
 [[project.theme.palette]]
-scheme = "slate"
+scheme = "numluau-dark"
 toggle.icon = "lucide/moon"
 toggle.name = "Switch to light mode"
 

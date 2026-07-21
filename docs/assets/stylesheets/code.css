@@ -1,0 +1,21 @@
+* {
+    --md-code-fg-color:                var(--doc-text);
+	--md-code-bg-color:                var(--doc-bg);
+
+	--md-code-hl-color:                var(--doc-accent-a20);
+
+	--md-code-hl-special-color:        var(--doc-red-2);
+	--md-code-hl-function-color:       var(--doc-red-2);
+	--md-code-hl-constant-color:       var(--doc-red-2);
+
+	--md-code-hl-name-color:           var(--doc-grey-3);
+	--md-code-hl-operator-color:       var(--doc-grey-5);
+	--md-code-hl-punctuation-color:    var(--doc-grey-5);
+	--md-code-hl-comment-color:        var(--doc-grey-5);
+	--md-code-hl-generic-color:        var(--doc-green);
+	--md-code-hl-variable-color:       var(--doc-text);
+
+    --md-code-hl-number-color:         var(--doc-purple-3);
+    --md-code-hl-keyword-color:        var(--doc-red-2);
+	--md-code-hl-string-color:         var(--doc-purple-3);
+}

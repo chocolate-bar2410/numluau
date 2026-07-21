@@ -7,7 +7,6 @@
     padding: 0 0rem;
 }
 
-/* navigation */
 
 .md-grid {
     padding: 0 1.95rem;
@@ -15,9 +14,13 @@
     min-width: flex;
 }
 
+
 .md-content {
     padding: 0 5rem;
 }
+
+/* navigation */
+
 
 .md-sidebar--primary {
     padding: 1rem 0.7rem;
