@@ -10,6 +10,7 @@ This section will give you a decent understanding of how you can use numluau for
 
 ## what you need to know
 
-- these tutorials assume
-  - you're familar with luau scripting
-  - you're atleast somewhat familiar with math concepts
+these tutorials assume
+
+- you're familar with luau scripting
+- you're atleast somewhat familiar with math concepts
