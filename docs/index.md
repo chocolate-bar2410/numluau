@@ -137,7 +137,7 @@ Simply slice the array just by indexing.
 
 <h2> Interested? </h2>
 
-If you want a more indepth tutorial <a href="./tutorials"> Theres a comprehensive beginners tutorial </a> complete with examples and code.
+If you want a more indepth tutorial Theres a comprehensive <a href="./tutorials"> beginner's tutorial </a> complete with examples and code.
 
 </section>
 </div>
