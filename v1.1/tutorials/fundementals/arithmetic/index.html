@@ -406,8 +406,6 @@ Use the version switcher to switch to a current version of numluau.
         
   
   
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-rocket" viewBox="0 0 24 24"><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09"/><path d="M9 12a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.4 22.4 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 .05 5 .05"/></svg>
-  
   <span class="md-ellipsis">
     
   
@@ -1773,7 +1771,6 @@ This process is called <strong>broadcasting</strong>.</p>
 <div class="admonition danger">
 <p class="admonition-title">Danger</p>
 <p>Doing a operation between arrays that dont follow these rules will produce a broadcasting error.</p>
-</div>
 <p><div class="language-luau highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="kd">local</span><span class="w"> </span><span class="nv">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">numluau</span><span class="p">.</span><span class="nf">array</span><span class="p">({</span>
 </span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="w">    </span><span class="p">{</span><span class="mf">1</span><span class="p">,</span><span class="mf">2</span><span class="p">,</span><span class="mf">3</span><span class="p">},</span>
 </span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="w">    </span><span class="p">{</span><span class="mf">4</span><span class="p">,</span><span class="mf">5</span><span class="p">,</span><span class="mf">6</span><span class="p">},</span>
@@ -1789,6 +1786,7 @@ This process is called <strong>broadcasting</strong>.</p>
 </span></code></pre></div>
 <div class="language-text highlight"><span class="filename">output error</span><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>Error with broadcasting: Tried to broadcast incompatible arrays
 </span></code></pre></div></p>
+</div>
 <p>If the two arrays have different dimensions, the missing dimensions are filled in with ones.</p>
 <p><div class="language-luau highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="kd">local</span><span class="w"> </span><span class="nv">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">numluau</span><span class="p">.</span><span class="nf">array</span><span class="p">({</span><span class="mf">2</span><span class="p">,</span><span class="mf">5</span><span class="p">})</span>
 </span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="kd">local</span><span class="w"> </span><span class="nv">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">numluau</span><span class="p">.</span><span class="nf">array</span><span class="p">({</span>

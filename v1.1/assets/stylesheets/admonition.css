@@ -57,3 +57,7 @@
 [data-md-color-scheme="numluau-dark"] .md-typeset .admonition.details {
 	--md-code-bg-color: var(--doc-bg);
 }
+
+[data-md-color-scheme="numluau-light"] .md-typeset .admonition.details {
+	--md-code-bg-color: var(--doc-bg);
+}
