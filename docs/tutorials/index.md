@@ -1,5 +1,5 @@
 ---
-icon: lucide/rocket
+icon: octicons/repo-24
 title: tutorials
 description: the tutorial entry page
 ---

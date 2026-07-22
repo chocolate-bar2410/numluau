@@ -1,4 +1,5 @@
 ---
+icon: octicons/beaker-24
 title: API reference
 description: API reference home page
 ---
