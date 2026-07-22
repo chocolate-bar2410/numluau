@@ -22,6 +22,10 @@
 	border-bottom-color: var(--doc-stroke) !important;
 }
 
+.md-typeset a {
+	text-decoration: none;
+}
+
 .js .md-typeset .tabbed-labels::before {
 	background-color: transparent;
 	height: 100%;
