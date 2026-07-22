@@ -68,6 +68,8 @@
     
       <link rel="stylesheet" href="../../assets/stylesheets/code.css">
     
+      <link rel="stylesheet" href="../../assets/stylesheets/paragraph.css">
+    
     <script>__md_scope=new URL("../..",location),__md_scope.pathname.endsWith("/")||(__md_scope=new URL(__md_scope.pathname+"/",location)),__md_hash=e=>[...e].reduce(((e,t)=>(e<<5)-e+t.charCodeAt(0)),0),__md_get=(e,t=localStorage,_=__md_scope)=>JSON.parse(t.getItem(_.pathname+"."+e)),__md_set=(e,t,_=localStorage,a=__md_scope)=>{try{_.setItem(a.pathname+"."+e,JSON.stringify(t))}catch(e){}},document.documentElement.setAttribute("data-platform",navigator.platform)</script>
     
       
@@ -1771,12 +1773,14 @@ Astronomers would need <code>poission</code> distributions for counting photons 
 <h2 id="bit-generators">bit generators<a class="headerlink" href="#bit-generators" title="Permanent link">&para;</a></h2>
 <p>By default numluau uses the <code>PCGXSH</code> generator, a 32bit version of the PCG64 random generator.
 But this can be swapped out for other <code>bit generators</code> numluau provides.</p>
-<p>generators that are provided:
-- XOSHIRO128
-- SFC32
-- Philox
-- JSF32
-- PCGXSH (default)</p>
+<p>generators that are provided:</p>
+<ul>
+<li>XOSHIRO128</li>
+<li>SFC32</li>
+<li>Philox</li>
+<li>JSF32</li>
+<li>PCGXSH (default)</li>
+</ul>
 <div class="language-luau highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="kd">local</span><span class="w"> </span><span class="nv">bit_gen</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">numluau</span><span class="p">.</span><span class="nv">random</span><span class="p">.</span><span class="nf">XOSHIRO128</span><span class="p">()</span>
 </span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="kd">local</span><span class="w"> </span><span class="nv">rng</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">numluau</span><span class="p">.</span><span class="nv">random</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="nv">bit_gen</span><span class="p">)</span>
 </span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>
@@ -1835,7 +1839,7 @@ shuffle is for shuffling implace, while permutation create a shuffled copy of a 
 <h3 id="choosing">Choosing<a class="headerlink" href="#choosing" title="Permanent link">&para;</a></h3>
 <p><code>rng:choice()</code> allows you to randomly pick items out of another array.</p>
 <div class="language-luau highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="kd">local</span><span class="w"> </span><span class="nv">rng</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">numluau</span><span class="p">.</span><span class="nv">random</span><span class="p">.</span><span class="nf">default_rng</span><span class="p">()</span>
-</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="kd">local</span><span class="w"> </span><span class="nv">fruits</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">numluau</span><span class="p">.</span><span class="nf">array</span><span class="p">({</span><span class="err">🍎</span><span class="p">,</span><span class="err">🍊</span><span class="p">,</span><span class="err">🥥</span><span class="p">,</span><span class="err">🍌</span><span class="p">,</span><span class="err">🍍</span><span class="p">})</span>
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="kd">local</span><span class="w"> </span><span class="nv">fruits</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">numluau</span><span class="p">.</span><span class="nf">array</span><span class="p">({</span><span class="s2">&quot;🍎&quot;</span><span class="p">,</span><span class="s2">&quot;🍊&quot;</span><span class="p">,</span><span class="s2">&quot;🥥&quot;</span><span class="p">,</span><span class="s2">&quot;🍌&quot;</span><span class="p">,</span><span class="s2">&quot;🍍&quot;</span><span class="p">})</span>
 </span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>
 </span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="c1">-- a single random fruit</span>
 </span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a><span class="kd">local</span><span class="w"> </span><span class="nv">single_fruit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">rng</span><span class="p">:</span><span class="nc">choice</span><span class="p">(</span><span class="nv">fruits</span><span class="p">)</span>
