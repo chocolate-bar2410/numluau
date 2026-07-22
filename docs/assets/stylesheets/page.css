@@ -39,3 +39,28 @@
     padding: 0.2rem 0rem;
     border-radius: 0px;
 }
+
+/* footer */
+
+
+.md-footer__button {
+    transition: transform 0.2s ease-in;
+}
+
+.md-footer__link--next:hover .md-footer__button.md-icon {
+	transform: translateX(0.5rem);
+}
+
+.md-footer__link--prev:hover .md-footer__button.md-icon {
+	transform: translateX(-0.5rem);
+}
+
+.md-footer-meta {
+    background-color: var(--md-default-bg);
+}
+
+/* misc */
+::selection {
+	background-color: var(--doc-accent);
+	color: var(--doc-text);
+}
