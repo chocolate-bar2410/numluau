@@ -17,6 +17,9 @@
     --md-primary-bg-color--light:       var(--doc-text);
     --md-primary-bg-color--dark:        var(--doc-text);
 
+    --md-accent-fg-color--transparent:  var(--doc-accent-transparent);
+
+
     --md-typeset-color:                 var(--md-default-fg-color);
     --md-typeset-a-color:               var(--md-primary-fg-color);
     --md-typeset-mark-color:            var(--doc-accent-transparent);
