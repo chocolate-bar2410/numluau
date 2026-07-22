@@ -1,0 +1,57 @@
+:root {
+    --doc-grey-1: hsl(0,0%,5%);
+    --doc-grey-2: hsl(0,0%,10%);
+    --doc-grey-3: hsl(0,0%,20%);
+    --doc-grey-4: hsl(0,0%,25%);
+    --doc-grey-5: hsl(0,0%,50%);
+
+    --doc-grey-6: hsl(0,0%,90%);
+    --doc-grey-7: hsl(0,0%,95%);
+    --doc-grey-8: hsl(0,0%,100%);
+
+    --doc-purple-1: oklch(0.4644 0.2092 278.28);
+    --doc-purple-2: oklch(0.5415 0.2026 285.76);
+    --doc-purple-3: oklch(0.6128 0.1751 300.71);
+
+    --doc-purple-a50: oklch(0.4644 0.2092 278.28 / 0.5);
+
+    --doc-red-1: oklch(0.5682 0.2201 11.22);
+    --doc-red-2: oklch(0.6306 0.1806 12.28);
+    --doc-red-3: oklch(0.6988 0.1696 17.63);
+
+    --doc-red-1: oklch(0.5682 0.2201 11.22 / 0.5);
+
+    --doc-green: oklch(0.6988 0.1371 170.39);
+}
+
+[data-md-color-scheme="numluau-dark"] {
+    --doc-bg-dark: var(--doc-grey-1);
+    --doc-bg: var(--doc-grey-2);
+    --doc-bg-light: var(--doc-grey-3);
+
+    --doc-text: var(--doc-grey-7);
+    --doc-text-muted: var(--doc-grey-6);
+    --doc-text-muted2: var(--doc-grey-5);
+
+    --doc-accent-dark: var(--doc-purple-1);
+    --doc-accent: var(--doc-purple-2);
+    --doc-accent-light: var(--doc-purple-3);
+
+    --doc-accent-transparent: var(--doc-purple-a50);
+}
+
+[data-md-color-scheme="numluau-light"] {
+    --doc-bg-dark: var(--doc-grey-6);
+    --doc-bg: var(--doc-grey-7);
+    --doc-bg-light: var(--doc-grey-8);
+
+    --doc-text: var(--doc-grey-1);
+    --doc-text-muted: var(--doc-grey-2);
+    --doc-text-muted2: var(--doc-grey-5);
+
+    --doc-accent-dark: var(--doc-red-1);
+    --doc-accent: var(--doc-red-2);
+    --doc-accent-light: var(--doc-red-3);
+
+    --doc-accent-transparent: var(--doc-red-a50);
+}
