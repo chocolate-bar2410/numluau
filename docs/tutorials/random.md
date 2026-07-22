@@ -69,6 +69,7 @@ By default numluau uses the `PCGXSH` generator, a 32bit version of the PCG64 ran
 But this can be swapped out for other `bit generators` numluau provides.
 
 generators that are provided:
+
 - XOSHIRO128
 - SFC32
 - Philox
@@ -142,7 +143,7 @@ array([
 
 ```luau
 local rng = numluau.random.default_rng()
-local fruits = numluau.array({🍎,🍊,🥥,🍌,🍍})
+local fruits = numluau.array({"🍎","🍊","🥥","🍌","🍍"})
 
 -- a single random fruit
 local single_fruit = rng:choice(fruits)
