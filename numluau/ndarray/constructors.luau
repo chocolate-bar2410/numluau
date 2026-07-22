@@ -1,3 +1,4 @@
+--!native
 local module = {}
 local types = require("../types")
 local FromTable = require("./FromTable")

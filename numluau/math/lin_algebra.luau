@@ -1,3 +1,4 @@
+--!native
 local module = {}
 local types = require("../types")
 local ndArray_utils = require("../utility/ndarray")
@@ -5,9 +6,10 @@ local ndArray_utils = require("../utility/ndarray")
 local exceptions = require("../Exceptions")
 local ndarray = require("../ndarray/ndarray")
 
-local aggregations = require("./aggregations")
-
 local constructors = require("../ndarray/constructors")
+
+local abs = math.abs
+local sqrt = math.sqrt
 
 --- the linear algebra submodule for numluau.
 ---@class linalg
@@ -120,9 +122,9 @@ module.lu = function(matrix: types.ndArray<number>)
 
 	for k = 1, n do
 		local pivot_row = k
-		local max_value = math.abs(U[k][k])
+		local max_value = abs(U[k][k])
 		for i = k + 1, n do
-			local value = math.abs(U[i][k])
+			local value = abs(U[i][k])
 			if value <= max_value then continue end
 			max_value = value
 			pivot_row = i
@@ -232,10 +234,15 @@ module.dot = function(A: types.ndArray<number>, B: types.ndArray<number>)
 		exceptions.FormatException("LinAlg", "both ndArrays must have the same size when doing dot product")
 	end
 
-	local product = A * B
-	local result = aggregations.sum(product)
+	local result = 0
 
-	return result
+	for i = 1, #A do
+		local indexA = A.Offset + i
+		local indexB = B.Offset + 1
+		result += A.Buffer[indexA] * B.Buffer[indexB]
+	end
+
+	return ndarray(result, {}, {}, 0, A.dtype)
 end
 
 --- returns the cross product between A and B
@@ -289,7 +296,7 @@ module.qr = function(matrix: types.ndArray<number>)
 
 	for k = 1, n - 1 do
 		local dot_xx = safe_col_dot(R, k, k)
-		local alpha = math.sqrt(dot_xx)
+		local alpha = sqrt(dot_xx)
 
 		if R[k][k] < 0 then
 			alpha *= -1
@@ -352,8 +359,8 @@ module.eigenval = function(matrix: types.ndArray<number>)
 		local mean = (matrix[1][1] + matrix[2][2]) / 2
 		local determinant = matrix[1][1] * matrix[2][2] - matrix[1][2] * matrix[2][1]
 
-		local v1 = mean + math.sqrt(mean * mean - determinant)
-		local v2 = mean - math.sqrt(mean * mean - determinant)
+		local v1 = mean + sqrt(mean * mean - determinant)
+		local v2 = mean - sqrt(mean * mean - determinant)
 
 		return ndarray({ v1, v2 }, { 2 }, { 1 }, 0, matrix.dtype)
 	end
@@ -396,31 +403,31 @@ module.eig = function(matrix: types.ndArray<number>)
 		local mean = (matrix[1][1] + matrix[2][2]) / 2
 		local determinant = matrix[1][1] * matrix[2][2] - matrix[1][2] * matrix[2][1]
 
-		local v1 = mean + math.sqrt(mean * mean - determinant)
-		local v2 = mean - math.sqrt(mean * mean - determinant)
+		local v1 = mean + sqrt(mean * mean - determinant)
+		local v2 = mean - sqrt(mean * mean - determinant)
 
 		local fuzzy_factor = 1e-12
 
-		local ev1_x = if math.abs(matrix[1][2]) > fuzzy_factor
+		local ev1_x = if abs(matrix[1][2]) > fuzzy_factor
 			then 1
-			elseif math.abs(matrix[2][1]) > fuzzy_factor then -(matrix[2][2] - v1) / matrix[2][1]
+			elseif abs(matrix[2][1]) > fuzzy_factor then -(matrix[2][2] - v1) / matrix[2][1]
 			else 1
-		local ev1_y = if math.abs(matrix[1][2]) > fuzzy_factor
+		local ev1_y = if abs(matrix[1][2]) > fuzzy_factor
 			then -(matrix[1][1] - v1) / matrix[1][2]
-			elseif math.abs(matrix[2][1]) > fuzzy_factor then 1
+			elseif abs(matrix[2][1]) > fuzzy_factor then 1
 			else 0
 
-		local ev2_x = if math.abs(matrix[1][2]) > fuzzy_factor
+		local ev2_x = if abs(matrix[1][2]) > fuzzy_factor
 			then 1
-			elseif math.abs(matrix[2][1]) > fuzzy_factor then -(matrix[2][2] - v2) / matrix[2][1]
+			elseif abs(matrix[2][1]) > fuzzy_factor then -(matrix[2][2] - v2) / matrix[2][1]
 			else 1
-		local ev2_y = if math.abs(matrix[1][2]) > fuzzy_factor
+		local ev2_y = if abs(matrix[1][2]) > fuzzy_factor
 			then -(matrix[1][1] - v2) / matrix[1][2]
-			elseif math.abs(matrix[2][1]) > fuzzy_factor then 1
+			elseif abs(matrix[2][1]) > fuzzy_factor then 1
 			else 0
 
-		local ev1_length = math.sqrt(ev1_x ^ 2 + ev1_y ^ 2)
-		local ev2_length = math.sqrt(ev2_x ^ 2 + ev2_y ^ 2)
+		local ev1_length = sqrt(ev1_x ^ 2 + ev1_y ^ 2)
+		local ev2_length = sqrt(ev2_x ^ 2 + ev2_y ^ 2)
 
 		ev1_x /= ev1_length
 		ev1_y /= ev1_length
@@ -537,12 +544,12 @@ module.norm = function(matrix: types.ndArray<number>, axis: number, order: numbe
 
 			for i = 0, axis_shape - 1 do
 				local index = base + (i * axis_stride)
-				sum_of_abs += math.abs(matrix.Buffer[index + 1])
+				sum_of_abs += abs(matrix.Buffer[index + 1])
 			end
 
 			if sum_of_abs == 0 then return end
 
-			local length = math.sqrt(sum_of_abs)
+			local length = sqrt(sum_of_abs)
 
 			table.insert(data, length)
 		end)
@@ -567,7 +574,7 @@ module.norm = function(matrix: types.ndArray<number>, axis: number, order: numbe
 
 			if sum_of_squares == 0 then return end
 
-			local length = math.sqrt(sum_of_squares)
+			local length = sqrt(sum_of_squares)
 
 			table.insert(data, length)
 		end)
@@ -595,7 +602,7 @@ module.svd = function(
 	local singular_values = eigenvalues_r:copy()
 
 	for i, v in singular_values do
-		singular_values[i] = math.sqrt(math.max(v, 0))
+		singular_values[i] = sqrt(math.max(v, 0))
 	end
 
 	local indices_l = table.create(#eigenvalues_l)
@@ -657,7 +664,7 @@ module.lstsq = function(x: types.ndArray<number>, y: types.ndArray<number>, degr
 	for i = 1, order do
 		local sig_value = sigma.Buffer[i]
 
-		local inverse_sigma = if math.abs(sig_value) > fuzzy then 1 / sig_value else 0
+		local inverse_sigma = if abs(sig_value) > fuzzy then 1 / sig_value else 0
 
 		scaled_coef.Buffer[i] = inverse_sigma * Ut_y.Buffer[i]
 	end

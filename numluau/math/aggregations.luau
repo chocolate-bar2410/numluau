@@ -1,3 +1,4 @@
+--!native
 local module = {}
 local ndArray_utils = require("../utility/ndarray")
 local types = require("../types")

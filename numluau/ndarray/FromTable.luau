@@ -1,3 +1,4 @@
+--!native
 local utils = require("../utility/ndarray")
 local types = require("../types")
 

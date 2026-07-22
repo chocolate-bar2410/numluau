@@ -1,3 +1,4 @@
+--!native
 local schema = {}
 local meta = {}
 

@@ -1,15 +1,23 @@
+--!native
 --!strict
 local module = {}
 local GOLD = 0x9E3779B9
 local SILVER = 0xBB67AE85
 
+local round = math.round
+local bxor = bit32.bxor
+local rshift = bit32.rshift
+local band = bit32.band
+local lrotate = bit32.lrotate
+local lshift = bit32.lshift
+local rrotate = bit32.rrotate
 -- utility function to start up seeds
 local splitmix32 = function(seed: number)
 	local result = seed + GOLD
-	result = bit32.bxor(result, bit32.rshift(result, 16)) * 0x85EBCA6B
-	result = bit32.bxor(result, bit32.rshift(result, 13)) * 0xC2B2AE35
+	result = bxor(result, rshift(result, 16)) * 0x85EBCA6B
+	result = bxor(result, rshift(result, 13)) * 0xC2B2AE35
 
-	return bit32.bxor(result, bit32.rshift(result, 16))
+	return bxor(result, rshift(result, 16))
 end
 
 -- this uses xoshiro128**
@@ -19,24 +27,24 @@ end
 ---@param seed number
 ---@return () -> number
 module.XOSHIRO128 = function(seed: number): () -> number
-	seed = seed or math.round(os.clock())
+	seed = seed or round(os.clock())
 	local s1 = seed
 	local s2 = splitmix32(seed)
 	local s3 = splitmix32(seed + GOLD)
 	local s4 = splitmix32(seed + (GOLD * 2))
 
 	return function()
-		local result = bit32.band((bit32.lrotate((s2 * 5), 7) * 9), 0xFFFFFFFF)
+		local result = band((lrotate((s2 * 5), 7) * 9), 0xFFFFFFFF)
 
-		local temp = bit32.lshift(s2, 9)
+		local temp = lshift(s2, 9)
 
-		s3 = bit32.bxor(s3, s1)
-		s4 = bit32.bxor(s4, s2)
-		s2 = bit32.bxor(s2, s3)
-		s1 = bit32.bxor(s1, s4)
+		s3 = bxor(s3, s1)
+		s4 = bxor(s4, s2)
+		s2 = bxor(s2, s3)
+		s1 = bxor(s1, s4)
 
-		s3 = bit32.bxor(s3, temp)
-		s4 = bit32.lrotate(s4, 11)
+		s3 = bxor(s3, temp)
+		s4 = lrotate(s4, 11)
 
 		return result
 	end
@@ -49,7 +57,7 @@ end
 ---@param seed number
 ---@return () -> number
 module.SFC32 = function(seed: number): () -> number
-	seed = seed or math.round(os.clock())
+	seed = seed or round(os.clock())
 	local a = splitmix32(seed)
 	local b = splitmix32(seed + GOLD)
 	local c = splitmix32(seed + SILVER)
@@ -57,12 +65,12 @@ module.SFC32 = function(seed: number): () -> number
 	local counter = 1
 
 	return function()
-		local result = bit32.band(a + b + counter, 0xFFFFFFFF)
-		counter = bit32.band(counter + 1, 0xFFFFFFFF)
+		local result = band(a + b + counter, 0xFFFFFFFF)
+		counter = band(counter + 1, 0xFFFFFFFF)
 
-		a = bit32.bxor(b, bit32.rshift(b, 9))
-		b = bit32.band(c + bit32.rshift(b, 3), 0xFFFFFFFF)
-		c = bit32.band(bit32.lrotate(c, 21) + result, 0xFFFFFFFF)
+		a = bxor(b, rshift(b, 9))
+		b = band(c + rshift(b, 3), 0xFFFFFFFF)
+		c = band(lrotate(c, 21) + result, 0xFFFFFFFF)
 
 		return result
 	end
@@ -75,7 +83,7 @@ end
 ---@param seed number
 ---@return () -> number
 module.Philox = function(seed: number): () -> number
-	seed = seed or math.round(os.clock())
+	seed = seed or round(os.clock())
 	local key = seed
 	local counter = 0
 	local _buffer = 0
@@ -89,17 +97,17 @@ module.Philox = function(seed: number): () -> number
 
 		local c0 = counter
 		local c1 = 0
-		counter = bit32.band(counter + 1, 0xFFFFFFFF)
+		counter = band(counter + 1, 0xFFFFFFFF)
 
 		local k = key
 		for i = 1, 10 do
 			local prod = c0 * 0xED5AD4BB
-			local low = bit32.band(prod, 0xFFFFFFFF)
+			local low = band(prod, 0xFFFFFFFF)
 			local high = (prod // 0x100000000) % 0x100000000
 
-			c0 = bit32.bxor(bit32.bxor(high, c1), k)
+			c0 = bxor(bxor(high, c1), k)
 			c1 = low
-			k = bit32.band(k + GOLD, 0xFFFFFFFF)
+			k = band(k + GOLD, 0xFFFFFFFF)
 		end
 
 		_buffer = c1
@@ -116,7 +124,7 @@ end
 ---@param seed number
 ---@return () -> number
 module.JSF32 = function(seed: number): () -> number
-	seed = seed or math.round(os.clock())
+	seed = seed or round(os.clock())
 
 	local a = 0xf1ea5eed
 	local b = splitmix32(seed)
@@ -125,19 +133,19 @@ module.JSF32 = function(seed: number): () -> number
 
 	-- to wash out the initial seeding
 	for i = 1, 20 do
-		local e = bit32.band(a - bit32.lrotate(b, 27), 0xFFFFFFFF)
-		a = bit32.bxor(b, bit32.lrotate(c, 17))
-		b = bit32.band(c + d, 0xFFFFFFFF)
-		c = bit32.band(d + e, 0xFFFFFFFF)
-		d = bit32.band(e + a, 0xFFFFFFFF)
+		local e = band(a - lrotate(b, 27), 0xFFFFFFFF)
+		a = bxor(b, lrotate(c, 17))
+		b = band(c + d, 0xFFFFFFFF)
+		c = band(d + e, 0xFFFFFFFF)
+		d = band(e + a, 0xFFFFFFFF)
 	end
 
 	return function()
-		local e = bit32.band(a - bit32.lrotate(b, 27), 0xFFFFFFFF)
-		a = bit32.bxor(b, bit32.lrotate(c, 17))
-		b = bit32.band(c + d, 0xFFFFFFFF)
-		c = bit32.band(d + e, 0xFFFFFFFF)
-		d = bit32.band(e + a, 0xFFFFFFFF)
+		local e = band(a - lrotate(b, 27), 0xFFFFFFFF)
+		a = bxor(b, lrotate(c, 17))
+		b = band(c + d, 0xFFFFFFFF)
+		c = band(d + e, 0xFFFFFFFF)
+		d = band(e + a, 0xFFFFFFFF)
 
 		return d
 	end
@@ -150,24 +158,24 @@ end
 ---@param seed number
 ---@return () -> number
 module.PCGXSH = function(seed: number): () -> number
-	seed = seed or math.round(os.clock())
+	seed = seed or round(os.clock())
 	local state = 0
 
 	--PCG32 constants
 	local MULTIPLIER: number = 747796405
 	local INCREMENT: number = 2891336453
 
-	state = bit32.band(state * 747796405 + INCREMENT, 0xFFFFFFFF)
+	state = band(state * 747796405 + INCREMENT, 0xFFFFFFFF)
 	state += seed
-	state = bit32.band(state * 747796405 + INCREMENT, 0xFFFFFFFF)
+	state = band(state * 747796405 + INCREMENT, 0xFFFFFFFF)
 
 	return function()
-		local newstate = bit32.band(state * MULTIPLIER + INCREMENT, 0xFFFFFFFF)
+		local newstate = band(state * MULTIPLIER + INCREMENT, 0xFFFFFFFF)
 
-		local xorshift = bit32.rshift(bit32.bxor(bit32.rshift(state, 18), state), 27)
-		local rot = bit32.rshift(state, 27)
+		local xorshift = rshift(bxor(rshift(state, 18), state), 27)
+		local rot = rshift(state, 27)
 
-		local result = bit32.rrotate(xorshift, rot)
+		local result = rrotate(xorshift, rot)
 
 		state = newstate
 		return result

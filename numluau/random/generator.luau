@@ -1,3 +1,4 @@
+--!native
 local types = require("../types")
 local ndArray = require("../ndarray/ndarray")
 
@@ -12,6 +13,16 @@ local math_util = require("../utility/math")
 local interface = {}
 local schema = {}
 local meta = { __index = schema }
+
+local log = math.log
+local max = math.max
+local exp = math.exp
+local sqrt = math.sqrt
+local abs = math.abs
+local floor = math.floor
+local min = math.min
+local clamp = math.clamp
+local round = math.round
 
 -- luau numbers can technically hold up to 2^53 bits
 -- but RNG algorithms rely on 32 bit outputs
@@ -164,8 +175,8 @@ local ziggurat_normal = function(BitGenerator: () -> number)
 			local y_tail
 
 			repeat
-				x_tail = -math.log(math.max(BitGenerator() / RNG_MAX, 0)) / r
-				y_tail = -math.log(math.max(BitGenerator() / RNG_MAX, 0))
+				x_tail = -log(max(BitGenerator() / RNG_MAX, 0)) / r
+				y_tail = -log(max(BitGenerator() / RNG_MAX, 0))
 			until y_tail + y_tail > x_tail * x_tail
 
 			local value = BitGenerator() / RNG_MAX > 0.5 and r + x_tail or -(r + x_tail)
@@ -176,7 +187,7 @@ local ziggurat_normal = function(BitGenerator: () -> number)
 		-- sees if y falls under the curve exp(-0.5x²)
 		local y_value = zig_normal.f[layer] + (zig_normal.f[layer + 1] - zig_normal.f[layer]) * BitGenerator() / RNG_MAX
 
-		if y_value >= math.exp(-0.5 * x_value ^ 2) then continue end
+		if y_value >= exp(-0.5 * x_value ^ 2) then continue end
 		local value = BitGenerator() / RNG_MAX > 0.5 and x_value or -x_value
 		return value
 	end
@@ -199,10 +210,10 @@ local ziggurat_exp = function(BitGenerator: () -> number)
 		if u < k_i then return x_value end
 
 		-- slow path
-		if BitGenerator() / RNG_MAX * zig_exp.f[layer] < math.exp(-x_value) then return x_value end
+		if BitGenerator() / RNG_MAX * zig_exp.f[layer] < exp(-x_value) then return x_value end
 
 		-- tail handling
-		if layer == 1 then return zig_exp.x[1] - math.log(math.max(BitGenerator() / RNG_MAX, 0)) end
+		if layer == 1 then return zig_exp.x[1] - log(max(BitGenerator() / RNG_MAX, 0)) end
 	end
 end
 
@@ -257,7 +268,7 @@ schema.lognormal = function(self: types.Generator, mean: number, std_dev: number
 
 	-- using zigguratt algorithm
 	for i = 1, size do
-		data[i] = math.exp(mean + std_dev * ziggurat_normal(self.BitGenerator))
+		data[i] = exp(mean + std_dev * ziggurat_normal(self.BitGenerator))
 	end
 
 	return ndArray(data, shape, strides, 0, "number")
@@ -322,7 +333,7 @@ schema.gamma = function(self: types.Generator, alpha: number, scale: number, sha
 	local strides = ndarray_utils.ComputeStrides(shape)
 
 	local d = alpha - (1 / 3)
-	local c = 1 / math.sqrt(9 * d)
+	local c = 1 / sqrt(9 * d)
 
 	for i = 1, size do
 		while true do
@@ -340,7 +351,7 @@ schema.gamma = function(self: types.Generator, alpha: number, scale: number, sha
 				break
 			end
 
-			if math.log(U) < (normal_value ^ 2) / 2 + d * (1 - V + math.log(V)) then
+			if log(U) < (normal_value ^ 2) / 2 + d * (1 - V + log(V)) then
 				data[i] = scale * d * V
 				break
 			end
@@ -424,9 +435,9 @@ schema.poisson = function(self: types.Generator, lambda: number, shape: { number
 	local data = table.create(size, 0)
 	local strides = ndarray_utils.ComputeStrides(shape)
 
-	local L = math.exp(-lambda)
+	local L = exp(-lambda)
 
-	local slam = math.sqrt(lambda)
+	local slam = sqrt(lambda)
 	local b = 0.931 + 2.53 * slam
 	local a = -0.059 + 0.02483 * b
 
@@ -453,18 +464,18 @@ schema.poisson = function(self: types.Generator, lambda: number, shape: { number
 				local u = ((self.BitGenerator() + 0.5) / RNG_MAX) - 0.5
 				local v = (self.BitGenerator() / RNG_MAX)
 
-				local us = 0.5 - math.abs(u)
+				local us = 0.5 - abs(u)
 
 				if us == 0 then continue end
 				if u > 1 - 1.12 * us * us then continue end
 
-				x = math.floor((2 * a / us + b) * u + lambda + 0.43)
+				x = floor((2 * a / us + b) * u + lambda + 0.43)
 
 				if v <= vr then break end
 
-				local logarithmic_prob = -lambda + x * math.log(lambda) - math_util.log_gamma(x)
+				local logarithmic_prob = -lambda + x * log(lambda) - math_util.log_gamma(x)
 
-				if logarithmic_prob >= math.log(v) then break end
+				if logarithmic_prob >= log(v) then break end
 			end
 
 			data[i] = x
@@ -480,11 +491,11 @@ local function BTPE(bit_generator: () -> number, trial_num: number, probability)
 	local mean = trial_num * probability
 
 	-- numpy constants
-	local r = math.min(probability, (1 - probability))
+	local r = min(probability, (1 - probability))
 	local q = 1 - r
 
 	local fm = trial_num * r + r
-	local m = math.floor(fm)
+	local m = floor(fm)
 	local xm = m + 0.5
 
 	local s = r / q
@@ -493,8 +504,7 @@ local function BTPE(bit_generator: () -> number, trial_num: number, probability)
 
 	local c = 0.134 + 20.5 / (15.3 + mean)
 
-	local p1 = math.floor(2.195 * math.sqrt(trial_num * probability * (1 - probability)) - 4.6 * (1 - probability))
-		+ 0.5
+	local p1 = floor(2.195 * sqrt(trial_num * probability * (1 - probability)) - 4.6 * (1 - probability)) + 0.5
 	local p2 = p1 * (1 + 2 * c)
 
 	local xl = xm - p1
@@ -517,22 +527,22 @@ local function BTPE(bit_generator: () -> number, trial_num: number, probability)
 		local k
 
 		if U <= p1 then
-			k = math.floor(xm - p1 * V + U)
+			k = floor(xm - p1 * V + U)
 		elseif U <= p2 then
 			local x = xl + (U - p1) / c
-			V = V * c + 1 - math.abs(mean - x + 0.5) / p1
+			V = V * c + 1 - abs(mean - x + 0.5) / p1
 
 			if V > 1 then continue end
 
-			k = math.floor(x)
+			k = floor(x)
 		elseif U <= p3 then
-			k = math.floor(xl + math.log(V) / laml)
+			k = floor(xl + log(V) / laml)
 
 			if (k < 0) or (V == 0.0) then continue end
 
 			V = (U - p2) * laml
 		else
-			k = math.floor(xr - math.log(V) / lamr)
+			k = floor(xr - log(V) / lamr)
 
 			if (k > trial_num) or (V == 0.0) then continue end
 
@@ -555,13 +565,13 @@ local function BTPE(bit_generator: () -> number, trial_num: number, probability)
 
 		if V <= F then return k end
 
-		local k_abs = math.abs(k - m)
+		local k_abs = abs(k - m)
 
 		if k_abs < nrq / 2 then
 			local rho = (k_abs / nrq) * ((k_abs * (k_abs / 3 + 0.625) + 1 / 6) / nrq + 0.5)
 
 			local t = -(k_abs * k_abs) / (2 * nrq)
-			local A = math.log(V)
+			local A = log(V)
 
 			if A > (t - rho) then return k end
 
@@ -585,7 +595,7 @@ end
 ---@param shape {number}
 ---@return ndArray
 schema.binomial = function(self: types.Generator, trial_num: number, probability: number, shape: { number })
-	trial_num = math.floor(trial_num or 1)
+	trial_num = floor(trial_num or 1)
 	shape = shape or { 1 }
 
 	local valid_shape, err_msg = ndarray_utils.VerifyShape(shape)
@@ -621,10 +631,10 @@ schema.binomial = function(self: types.Generator, trial_num: number, probability
 			data[i] = BTPE(self.BitGenerator, trial_num, probability)
 		end
 	else
-		local normal = self:normal(trial_num, math.sqrt(variance), shape) -- centeral limit theorem
+		local normal = self:normal(trial_num, sqrt(variance), shape) -- centeral limit theorem
 
 		for i, v in normal do
-			normal.Buffer[i] = math.clamp(math.round(v), 0, trial_num)
+			normal.Buffer[i] = clamp(round(v), 0, trial_num)
 		end
 
 		return normal
