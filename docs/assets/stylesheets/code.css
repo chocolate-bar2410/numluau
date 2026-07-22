@@ -2,6 +2,9 @@
     --md-code-fg-color:                var(--doc-text);
 	--md-code-bg-color:                var(--doc-bg);
 
+	--md-code-bg-color--light:		   var(--doc-bg);
+	--md-code-bg-color--lighter:	   var(--doc-bg);
+
 	--md-code-hl-color:                var(--doc-accent-a20);
 
 	--md-code-hl-special-color:        var(--doc-red-2);
@@ -17,5 +20,29 @@
 
     --md-code-hl-number-color:         var(--doc-purple-3);
     --md-code-hl-keyword-color:        var(--doc-red-2);
-	--md-code-hl-string-color:         var(--doc-purple-3);
+	--md-code-hl-string-color:         var(--doc-green);
+
+	--doc-line-numbers: 			   var(--doc-grey-4)
+}
+
+.md-typeset code {
+	border-radius: 0.25rem;
+}
+
+
+
+.highlight > pre,
+.highlighttable {
+	box-shadow: var(--md-shadow-z1);
+	border-radius: 0.25rem;
+}
+
+.tabbed-set .highlight > pre {
+	box-shadow: none;
+}
+
+code:not(pre code, .highlight) {
+	background-color: var(--doc-bg) !important;
+	color: inherit !important;
+	box-shadow: var(--md-shadow-z1);
 }

@@ -9,6 +9,9 @@
     --doc-grey-7: hsl(0,0%,95%);
     --doc-grey-8: hsl(0,0%,100%);
 
+    --doc-grey-1-80: hsla(0,0%,5%,80%);
+    --doc-grey-7-80: hsla(0,0%,95%,80%);
+
     --doc-purple-1: oklch(0.4644 0.2092 278.28);
     --doc-purple-2: oklch(0.5415 0.2026 285.76);
     --doc-purple-3: oklch(0.6128 0.1751 300.71);
@@ -38,6 +41,9 @@
     --doc-accent-light: var(--doc-purple-3);
 
     --doc-accent-transparent: var(--doc-purple-a50);
+
+    --doc-stroke: hsla(240,5%,100%,15%);
+    --doc-smoke: var(--doc-grey-1-80);
 }
 
 [data-md-color-scheme="numluau-light"] {
@@ -54,4 +60,7 @@
     --doc-accent-light: var(--doc-red-3);
 
     --doc-accent-transparent: var(--doc-red-a50);
+
+    --doc-stroke: hsla(0,0%,0%,15%);
+    --doc-smoke: var(--doc-grey-7-80);
 }

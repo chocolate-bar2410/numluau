@@ -103,6 +103,7 @@ extra_css = [
   "assets/stylesheets/colours.css",
   "assets/stylesheets/theme.css",
   "assets/stylesheets/code.css",
+  "assets/stylesheets/paragraph.css",
 ]
 
 # With the `extra_javascript` option you can add your own JavaScript to your
