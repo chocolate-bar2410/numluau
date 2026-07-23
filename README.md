@@ -1,4 +1,4 @@
-<img align = left src="./gh-assets/numluau-dark-banner#gh-dark-mode-only.svg" alt="numluau"><img align = left src="./gh-assets/numluau-dark-banner#gh-light-mode-only.svg" alt="numluau">
+<img align="left" src="./gh-assets/numluau-dark-banner#gh-dark-mode-only.svg" alt="numluau"><img align="left" src="./gh-assets/numluau-dark-banner#gh-light-mode-only.svg" alt="numluau">
 
 
 # Numerical luau for all your scientific urges
