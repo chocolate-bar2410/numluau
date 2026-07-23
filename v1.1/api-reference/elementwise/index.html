@@ -6,40 +6,40 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="examples home page">
+        <meta name="description" content="A scientific computing library for luau">
       
       
         <meta name="author" content="<chocolate_bar2410>">
       
       
       
-        <link rel="prev" href="../tutorials/polynomial/">
+        <link rel="prev" href="../numluau/">
       
       
-        <link rel="next" href="./integration/">
+        <link rel="next" href="../ndArray/">
       
       
         
       
       
-      <link rel="icon" href="../assets/images/favicon.png">
+      <link rel="icon" href="../../assets/images/favicon.png">
       <meta name="generator" content="zensical-0.0.51">
     
     
       
-        <title>examples - numluau</title>
+        <title>element-wise math - numluau</title>
       
     
     
       
         
       
-      <link rel="stylesheet" href="../assets/stylesheets/modern/main.62c9b9cc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/modern/main.62c9b9cc.min.css">
       
         
           
         
-        <link rel="stylesheet" href="../assets/stylesheets/modern/palette.dfe2e883.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/modern/palette.dfe2e883.min.css">
       
       
 
@@ -58,21 +58,21 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/page.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/page.css">
     
-      <link rel="stylesheet" href="../assets/stylesheets/api-reference.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/api-reference.css">
     
-      <link rel="stylesheet" href="../assets/stylesheets/colours.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/colours.css">
     
-      <link rel="stylesheet" href="../assets/stylesheets/theme.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/theme.css">
     
-      <link rel="stylesheet" href="../assets/stylesheets/code.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/code.css">
     
-      <link rel="stylesheet" href="../assets/stylesheets/paragraph.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/paragraph.css">
     
-      <link rel="stylesheet" href="../assets/stylesheets/admonition.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/admonition.css">
     
-    <script>__md_scope=new URL("..",location),__md_scope.pathname.endsWith("/")||(__md_scope=new URL(__md_scope.pathname+"/",location)),__md_hash=e=>[...e].reduce(((e,t)=>(e<<5)-e+t.charCodeAt(0)),0),__md_get=(e,t=localStorage,_=__md_scope)=>JSON.parse(t.getItem(_.pathname+"."+e)),__md_set=(e,t,_=localStorage,a=__md_scope)=>{try{_.setItem(a.pathname+"."+e,JSON.stringify(t))}catch(e){}},document.documentElement.setAttribute("data-platform",navigator.platform)</script>
+    <script>__md_scope=new URL("../..",location),__md_scope.pathname.endsWith("/")||(__md_scope=new URL(__md_scope.pathname+"/",location)),__md_hash=e=>[...e].reduce(((e,t)=>(e<<5)-e+t.charCodeAt(0)),0),__md_get=(e,t=localStorage,_=__md_scope)=>JSON.parse(t.getItem(_.pathname+"."+e)),__md_set=(e,t,_=localStorage,a=__md_scope)=>{try{_.setItem(a.pathname+"."+e,JSON.stringify(t))}catch(e){}},document.documentElement.setAttribute("data-platform",navigator.platform)</script>
     
       
 
@@ -96,7 +96,8 @@
     <label class="md-overlay" for="__drawer" aria-label="Navigation"></label>
     <div data-md-component="skip">
       
-        <a href="#__skip" class="md-skip">
+        
+        <a href="#element-wise-math" class="md-skip">
           Skip to content
         </a>
       
@@ -133,7 +134,7 @@ Use the version switcher to switch to a current version of numluau.
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="./.." title="numluau" class="md-header__button md-logo" aria-label="numluau" data-md-component="logo">
+    <a href="../.." title="numluau" class="md-header__button md-logo" aria-label="numluau" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-book-open" viewBox="0 0 24 24"><path d="M12 7v14M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg>
@@ -153,7 +154,7 @@ Use the version switcher to switch to a current version of numluau.
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              examples
+              element-wise math
             
           </span>
         </div>
@@ -237,7 +238,7 @@ Use the version switcher to switch to a current version of numluau.
   
   
     <li class="md-tabs__item">
-      <a href="./.." class="md-tabs__link">
+      <a href="../.." class="md-tabs__link">
         
   
   home
@@ -270,7 +271,7 @@ Use the version switcher to switch to a current version of numluau.
     
     
       <li class="md-tabs__item">
-        <a href="../tutorials/" class="md-tabs__link">
+        <a href="../../tutorials/" class="md-tabs__link">
           
   
   tutorials
@@ -285,8 +286,6 @@ Use the version switcher to switch to a current version of numluau.
   
   
   
-    
-  
   
     
       
@@ -303,8 +302,8 @@ Use the version switcher to switch to a current version of numluau.
     
     
     
-      <li class="md-tabs__item md-tabs__item--active">
-        <a href="././" class="md-tabs__link">
+      <li class="md-tabs__item">
+        <a href="../../examples/" class="md-tabs__link">
           
   
   examples
@@ -319,6 +318,8 @@ Use the version switcher to switch to a current version of numluau.
   
   
   
+    
+  
   
     
       
@@ -339,8 +340,8 @@ Use the version switcher to switch to a current version of numluau.
     
     
     
-      <li class="md-tabs__item">
-        <a href="../api-reference/" class="md-tabs__link">
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
           
   
   API reference
@@ -373,7 +374,7 @@ Use the version switcher to switch to a current version of numluau.
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="./.." title="numluau" class="md-nav__button md-logo" aria-label="numluau" data-md-component="logo">
+    <a href="../.." title="numluau" class="md-nav__button md-logo" aria-label="numluau" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-book-open" viewBox="0 0 24 24"><path d="M12 7v14M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg>
@@ -403,7 +404,7 @@ Use the version switcher to switch to a current version of numluau.
   
   
     <li class="md-nav__item">
-      <a href="./.." class="md-nav__link">
+      <a href="../.." class="md-nav__link">
         
   
   
@@ -458,7 +459,7 @@ Use the version switcher to switch to a current version of numluau.
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../tutorials/" class="md-nav__link ">
+            <a href="../../tutorials/" class="md-nav__link ">
               
   
   
@@ -502,7 +503,7 @@ Use the version switcher to switch to a current version of numluau.
   
   
     <li class="md-nav__item">
-      <a href="../tutorials/install_guide/" class="md-nav__link">
+      <a href="../../tutorials/install_guide/" class="md-nav__link">
         
   
   
@@ -591,7 +592,7 @@ Use the version switcher to switch to a current version of numluau.
   
   
     <li class="md-nav__item">
-      <a href="../tutorials/fundementals/ndarrays/" class="md-nav__link">
+      <a href="../../tutorials/fundementals/ndarrays/" class="md-nav__link">
         
   
   
@@ -618,7 +619,7 @@ Use the version switcher to switch to a current version of numluau.
   
   
     <li class="md-nav__item">
-      <a href="../tutorials/fundementals/index_slicing/" class="md-nav__link">
+      <a href="../../tutorials/fundementals/index_slicing/" class="md-nav__link">
         
   
   
@@ -645,7 +646,7 @@ Use the version switcher to switch to a current version of numluau.
   
   
     <li class="md-nav__item">
-      <a href="../tutorials/fundementals/arithmetic/" class="md-nav__link">
+      <a href="../../tutorials/fundementals/arithmetic/" class="md-nav__link">
         
   
   
@@ -672,7 +673,7 @@ Use the version switcher to switch to a current version of numluau.
   
   
     <li class="md-nav__item">
-      <a href="../tutorials/fundementals/filtering/" class="md-nav__link">
+      <a href="../../tutorials/fundementals/filtering/" class="md-nav__link">
         
   
   
@@ -763,7 +764,7 @@ Use the version switcher to switch to a current version of numluau.
   
   
     <li class="md-nav__item">
-      <a href="../tutorials/random/" class="md-nav__link">
+      <a href="../../tutorials/random/" class="md-nav__link">
         
   
   
@@ -792,7 +793,7 @@ Use the version switcher to switch to a current version of numluau.
   
   
     <li class="md-nav__item">
-      <a href="../tutorials/polynomial/" class="md-nav__link">
+      <a href="../../tutorials/polynomial/" class="md-nav__link">
         
   
   
@@ -833,8 +834,6 @@ Use the version switcher to switch to a current version of numluau.
       
   
   
-    
-  
   
   
     
@@ -852,23 +851,20 @@ Use the version switcher to switch to a current version of numluau.
     
     
       
-        
-        
-      
       
         
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="././" class="md-nav__link md-nav__link--active">
+            <a href="../../examples/" class="md-nav__link ">
               
   
   
@@ -887,13 +883,13 @@ Use the version switcher to switch to a current version of numluau.
             </a>
             
               
-              <label class="md-nav__link md-nav__link--active" for="__nav_3" id="__nav_3_label" tabindex="">
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="0">
                 <span class="md-nav__icon md-icon"></span>
               </label>
             
           </div>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_3">
             <span class="md-nav__icon md-icon"></span>
             
@@ -912,7 +908,7 @@ Use the version switcher to switch to a current version of numluau.
   
   
     <li class="md-nav__item">
-      <a href="./integration/" class="md-nav__link">
+      <a href="../../examples/integration/" class="md-nav__link">
         
   
   
@@ -941,7 +937,7 @@ Use the version switcher to switch to a current version of numluau.
   
   
     <li class="md-nav__item">
-      <a href="./voltage/" class="md-nav__link">
+      <a href="../../examples/voltage/" class="md-nav__link">
         
   
   
@@ -974,6 +970,8 @@ Use the version switcher to switch to a current version of numluau.
       
   
   
+    
+  
   
   
     
@@ -995,20 +993,23 @@ Use the version switcher to switch to a current version of numluau.
     
     
       
+        
+        
+      
       
         
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../api-reference/" class="md-nav__link ">
+            <a href="../" class="md-nav__link ">
               
   
   
@@ -1027,13 +1028,13 @@ Use the version switcher to switch to a current version of numluau.
             </a>
             
               
-              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="0">
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="">
                 <span class="md-nav__icon md-icon"></span>
               </label>
             
           </div>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_4">
             <span class="md-nav__icon md-icon"></span>
             
@@ -1052,7 +1053,7 @@ Use the version switcher to switch to a current version of numluau.
   
   
     <li class="md-nav__item">
-      <a href="../api-reference/numluau/" class="md-nav__link">
+      <a href="../numluau/" class="md-nav__link">
         
   
   
@@ -1078,10 +1079,38 @@ Use the version switcher to switch to a current version of numluau.
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../api-reference/elementwise/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M0 3.75C0 2.784.784 2 1.75 2h12.5c.966 0 1.75.784 1.75 1.75v8.5A1.75 1.75 0 0 1 14.25 14H1.75A1.75 1.75 0 0 1 0 12.25Zm1.75-.25a.25.25 0 0 0-.25.25v8.5c0 .138.112.25.25.25h12.5a.25.25 0 0 0 .25-.25v-8.5a.25.25 0 0 0-.25-.25ZM3.5 6.25a.75.75 0 0 1 .75-.75h7a.75.75 0 0 1 0 1.5h-7a.75.75 0 0 1-.75-.75m.75 2.25h4a.75.75 0 0 1 0 1.5h-4a.75.75 0 0 1 0-1.5"/></svg>
+  
+  <span class="md-ellipsis">
+    
+  
+  element-wise math
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="././" class="md-nav__link md-nav__link--active">
         
   
   
@@ -1098,6 +1127,49 @@ Use the version switcher to switch to a current version of numluau.
   
 
       </a>
+      
+        
+
+
+<nav class="md-nav md-nav--secondary" aria-label="On this page">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      On this page
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#supported-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Supported functions
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Parameters
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -1124,17 +1196,20 @@ Use the version switcher to switch to a current version of numluau.
       
       
         
+          
+          
+        
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
         
         
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_4" >
         
           
-          <label class="md-nav__link" for="__nav_4_4" id="__nav_4_4_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_4_4" id="__nav_4_4_label" tabindex="">
             
   
   
@@ -1168,7 +1243,7 @@ Use the version switcher to switch to a current version of numluau.
   
   
     <li class="md-nav__item">
-      <a href="../api-reference/ndArray/" class="md-nav__link">
+      <a href="../ndArray/" class="md-nav__link">
         
   
   
@@ -1197,7 +1272,7 @@ Use the version switcher to switch to a current version of numluau.
   
   
     <li class="md-nav__item">
-      <a href="../api-reference/Generator/" class="md-nav__link">
+      <a href="../Generator/" class="md-nav__link">
         
   
   
@@ -1226,7 +1301,7 @@ Use the version switcher to switch to a current version of numluau.
   
   
     <li class="md-nav__item">
-      <a href="../api-reference/polynomial/" class="md-nav__link">
+      <a href="../polynomial/" class="md-nav__link">
         
   
   
@@ -1277,17 +1352,20 @@ Use the version switcher to switch to a current version of numluau.
       
       
         
+          
+          
+        
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
         
         
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_5" >
         
           
-          <label class="md-nav__link" for="__nav_4_5" id="__nav_4_5_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_4_5" id="__nav_4_5_label" tabindex="">
             
   
   
@@ -1321,7 +1399,7 @@ Use the version switcher to switch to a current version of numluau.
   
   
     <li class="md-nav__item">
-      <a href="../api-reference/linalg/" class="md-nav__link">
+      <a href="../linalg/" class="md-nav__link">
         
   
   
@@ -1350,7 +1428,7 @@ Use the version switcher to switch to a current version of numluau.
   
   
     <li class="md-nav__item">
-      <a href="../api-reference/random/" class="md-nav__link">
+      <a href="../random/" class="md-nav__link">
         
   
   
@@ -1379,7 +1457,7 @@ Use the version switcher to switch to a current version of numluau.
   
   
     <li class="md-nav__item">
-      <a href="../api-reference/polynomial_inter/" class="md-nav__link">
+      <a href="../polynomial_inter/" class="md-nav__link">
         
   
   
@@ -1430,6 +1508,13 @@ Use the version switcher to switch to a current version of numluau.
                     
                     
                     
+                      
+                    
+                    
+                      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+                      <div class="md-sidebar-button__wrapper">
+                        <label class="md-sidebar-button" for="__toc"></label>
+                      </div>
                     
                   
                   <div class="md-sidebar__inner">
@@ -1440,6 +1525,38 @@ Use the version switcher to switch to a current version of numluau.
   
   
   
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      On this page
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#supported-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Supported functions
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Parameters
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
   
 </nav>
                   </div>
@@ -1464,7 +1581,7 @@ Use the version switcher to switch to a current version of numluau.
   
   
     <li class="md-path__item">
-      <a href="./.." class="md-path__link">
+      <a href="../.." class="md-path__link">
         
   
   <span class="md-ellipsis">
@@ -1491,16 +1608,20 @@ Use the version switcher to switch to a current version of numluau.
       
         
       
+        
+      
+        
+      
     
     
     
     
       <li class="md-path__item">
-        <a href="././" class="md-path__link">
+        <a href="../" class="md-path__link">
           
   
   <span class="md-ellipsis">
-    examples
+    API reference
   </span>
 
         </a>
@@ -1520,10 +1641,44 @@ Use the version switcher to switch to a current version of numluau.
   
 
 
-  <h1 id="__skip">examples</h1>
+<h1 class="tsukuyomi-api-header" id="element-wise-math"> 
+<span class="tsukuyomi-api-icon" markdown><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M0 4.75C0 3.784.784 3 1.75 3h20.5c.966 0 1.75.784 1.75 1.75v14.5A1.75 1.75 0 0 1 22.25 21H1.75A1.75 1.75 0 0 1 0 19.25Zm1.75-.25a.25.25 0 0 0-.25.25v14.5c0 .138.112.25.25.25h20.5a.25.25 0 0 0 .25-.25V4.75a.25.25 0 0 0-.25-.25Z"/><path d="M5 8.75A.75.75 0 0 1 5.75 8h11.5a.75.75 0 0 1 0 1.5H5.75A.75.75 0 0 1 5 8.75m0 4a.75.75 0 0 1 .75-.75h5.5a.75.75 0 0 1 0 1.5h-5.5a.75.75 0 0 1-.75-.75"/></svg></span></span> 
+<span class="tsukuyomi-api-name">element-wise math</span> 
+<a class="headerlink" href="#element-wise-math" title="Permanent link">&para;</a></h1>
+<div class="language-luau highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kr">function</span><span class="w"> </span><span class="nc">numluau</span><span class="p">.</span><span class="nf">abs</span><span class="p">(</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">    </span><span class="nv">Array</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="nc">types</span><span class="p">.</span><span class="nc">ndArray</span><span class="p">&lt;</span><span class="nc">number</span><span class="p">&gt;</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="nc">types</span><span class="p">.</span><span class="nc">ndArray</span><span class="p">&lt;</span><span class="nc">number</span><span class="p">&gt;</span>
+</span></code></pre></div>
+<p>The element-wise math functions apply one Luau <code>math</code> function to every value in
+an <code>ndArray&lt;number&gt;</code> and return the result as a new <code>ndArray&lt;number&gt;</code>.</p>
+<h2 id="supported-functions">Supported functions<a class="headerlink" href="#supported-functions" title="Permanent link">&para;</a></h2>
+<p>The following wrappers are available:</p>
+<p><code>abs</code>, <code>acos</code>, <code>asin</code>, <code>atan</code>, <code>ceil</code>, <code>cos</code>, <code>cosh</code>, <code>deg</code>, <code>exp</code>, <code>floor</code>,
+<code>log</code>, <code>log10</code>, <code>modf</code>, <code>rad</code>, <code>round</code>, <code>sign</code>, <code>sin</code>, <code>sinh</code>, <code>sqrt</code>, <code>tan</code>,
+and <code>tanh</code>.</p>
+<p><code>log2</code> is also available and applies <code>math.log(value, 2)</code> to each item.</p>
+<h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
+<h3> 
+Array<span class = "tsukuyomi-api-type"> : ndArray &lt;number&gt; </span> 
+</h3>
+<p>The numeric array the function is applied to.</p>
+<h2>
+Returns -><span class = "tsukuyomi-api-type"> ndArray &lt;number&gt; </span> 
+</h2>
 
-<p>Welcome to the example section of the documentation.
-This section will give you examples of how numluau would be used in a actual usecase.</p>
+<p>A new <code>ndArray&lt;number&gt;</code> containing the element-wise result. The input array is
+copied before values are transformed.</p>
+<h1 id="example">Example<a class="headerlink" href="#example" title="Permanent link">&para;</a></h1>
+<div class="language-luau highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kd">local</span><span class="w"> </span><span class="nv">numluau</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">require</span><span class="p">(</span><span class="s2">&quot;path.to.numluau&quot;</span><span class="p">)</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="kd">local</span><span class="w"> </span><span class="nv">input</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">numluau</span><span class="p">.</span><span class="nf">array</span><span class="p">({</span><span class="o">-</span><span class="mf">2.7</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span><span class="w"> </span><span class="mf">0</span><span class="p">,</span><span class="w"> </span><span class="mf">1.2</span><span class="p">,</span><span class="w"> </span><span class="mf">3.9</span><span class="p">})</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="kd">local</span><span class="w"> </span><span class="nv">absolute</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">numluau</span><span class="p">.</span><span class="nf">abs</span><span class="p">(</span><span class="nv">input</span><span class="p">)</span>
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="kd">local</span><span class="w"> </span><span class="nv">rounded</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">numluau</span><span class="p">.</span><span class="nf">round</span><span class="p">(</span><span class="nv">input</span><span class="p">)</span>
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="nf">print</span><span class="p">(</span><span class="nv">absolute</span><span class="p">)</span><span class="w"> </span><span class="c1">-- array([2.7 0.5 0 1.2 3.9])</span>
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="nf">print</span><span class="p">(</span><span class="nv">rounded</span><span class="p">)</span><span class="w"> </span><span class="c1">-- array([-3 -1 0 1 4])</span>
+</span></code></pre></div>
 
 
 
@@ -1566,7 +1721,7 @@ This section will give you examples of how numluau would be used in a actual use
       <nav class="md-footer__inner md-grid" aria-label="Footer" >
         
           
-          <a href="../tutorials/polynomial/" class="md-footer__link md-footer__link--prev" aria-label="Previous: polynomial">
+          <a href="../numluau/" class="md-footer__link md-footer__link--prev" aria-label="Previous: numluau">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-arrow-left" viewBox="0 0 24 24"><path d="m12 19-7-7 7-7M19 12H5"/></svg>
@@ -1576,20 +1731,20 @@ This section will give you examples of how numluau would be used in a actual use
                 Previous
               </span>
               <div class="md-ellipsis">
-                polynomial
+                numluau
               </div>
             </div>
           </a>
         
         
           
-          <a href="./integration/" class="md-footer__link md-footer__link--next" aria-label="Next: integration example">
+          <a href="../ndArray/" class="md-footer__link md-footer__link--next" aria-label="Next: ndArray">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                integration example
+                ndArray
               </div>
             </div>
             <div class="md-footer__button md-icon">
@@ -1631,12 +1786,12 @@ This section will give you examples of how numluau would be used in a actual use
     
       
       
-      <script id="__config" type="application/json">{"annotate":null,"base":"..","features":["announce.dismiss","content.code.annotate","content.code.copy","content.code.select","content.footnote.tooltips","content.tabs.link","content.tooltips","navigation.footer","navigation.indexes","navigation.instant","navigation.instant.prefetch","navigation.path","navigation.sections","navigation.tabs","navigation.top","navigation.tracking","search.highlight"],"search":"../assets/javascripts/workers/search.b6b7e04f.min.js","tags":null,"translations":{"clipboard.copied":"Copied to clipboard","clipboard.copy":"Copy to clipboard","search.result.more.one":"1 more on this page","search.result.more.other":"# more on this page","search.result.none":"No matching documents","search.result.one":"1 matching document","search.result.other":"# matching documents","search.result.placeholder":"Type to start searching","search.result.term.missing":"Missing","select.version":"Select version"},"version":{"default":"stable","provider":"mike"}}</script>
+      <script id="__config" type="application/json">{"annotate":null,"base":"../..","features":["announce.dismiss","content.code.annotate","content.code.copy","content.code.select","content.footnote.tooltips","content.tabs.link","content.tooltips","navigation.footer","navigation.indexes","navigation.instant","navigation.instant.prefetch","navigation.path","navigation.sections","navigation.tabs","navigation.top","navigation.tracking","search.highlight"],"search":"../../assets/javascripts/workers/search.b6b7e04f.min.js","tags":null,"translations":{"clipboard.copied":"Copied to clipboard","clipboard.copy":"Copy to clipboard","search.result.more.one":"1 more on this page","search.result.more.other":"# more on this page","search.result.none":"No matching documents","search.result.one":"1 matching document","search.result.other":"# matching documents","search.result.placeholder":"Type to start searching","search.result.term.missing":"Missing","select.version":"Select version"},"version":{"default":"stable","provider":"mike"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.d7f30b55.min.js"></script>
+      <script src="../../assets/javascripts/bundle.d7f30b55.min.js"></script>
       
-        <script src="../javascripts/mathjax.js"></script>
+        <script src="../../javascripts/mathjax.js"></script>
       
         <script src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
       
