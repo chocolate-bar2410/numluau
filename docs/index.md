@@ -103,8 +103,8 @@ when performing arithmetic between 2 arrays, numluau will automatically stretch 
     ```
 
 
-<h2 class="third">Index and slicing</h2>
-If you need to only access only a section of the array.<br>
+<h2 class="third">Slicing</h2>
+If you need to only access a section of the array.<br>
 Simply slice the array just by indexing.
 
 ---
