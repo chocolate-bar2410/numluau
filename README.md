@@ -1,4 +1,6 @@
-# numluau
+<img align = left src="./gh-assets/numluau-dark-banner#gh-dark-mode-only.svg" alt="numluau">
+<img align = left src="./gh-assets/numluau-dark-banner#gh-light-mode-only.svg" alt="numluau">
+# Numerical luau for all your scientific urges
 numluau (numerical luau) is a scientific computing library designed to bring vectorised operations, matrix utilities and scientific Computing in general to luau programmers.
 
 Create N-dimensional arrays & compute operations, aggregations, linear equations and so much more.
