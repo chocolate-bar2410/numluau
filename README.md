@@ -1,9 +1,9 @@
 <p align = "left">
-    <img src="./gh-assets/numluau-dark-banner#gh-dark-mode-only.svg" alt="numluau">
-    <img src="./gh-assets/numluau-dark-banner#gh-light-mode-only.svg" alt="numluau">
+    <img src="./gh-assets/numluau-dark-banner.svg#gh-dark-mode-only" alt="numluau">
+    <img src="./gh-assets/numluau-light-banner.svg#gh-light-mode-only" alt="numluau">
 </p>
 
-# Numerical luau for all your scientific urges
+## Numerical luau for all your scientific urges
 numluau (numerical luau) is a scientific computing library designed to bring vectorised operations, matrix utilities and scientific Computing in general to luau programmers.
 
 Create N-dimensional arrays & compute operations, aggregations, linear equations and so much more.
@@ -16,14 +16,14 @@ Features:
 documentation: https://chocolate-bar2410.github.io/numluau/latest/  
 tutorials: https://chocolate-bar2410.github.io/numluau/latest/tutorials/
 
-# installation
+## installation
 
 Its reccomended to install using pesde.
 ```
 pesde add chocolate_bar2410/numluau
 ```
 
-# example
+## example
 
 ```lua
 local numluau = require("path.to.numluau")
