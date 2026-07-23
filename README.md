@@ -1,6 +1,6 @@
 <p align = "left">
-    <img src="./gh-assets/numluau-dark-banner.svg#gh-dark-mode-only" alt="numluau">
-    <img src="./gh-assets/numluau-light-banner.svg#gh-light-mode-only" alt="numluau">
+    <img src="./gh-assets/numluau-dark-banner.svg#gh-dark-mode-only" alt="numluau" width=512 height=256>
+    <img src="./gh-assets/numluau-light-banner.svg#gh-light-mode-only" alt="numluau" width=512 height=256>
 </p>
 
 ## Numerical luau for all your scientific urges
