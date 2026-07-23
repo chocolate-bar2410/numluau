@@ -31,6 +31,14 @@
 	justify-content: center;
 }
 
+[data-md-color-scheme="numluau-dark"] #numluau-home-main::before{
+    background-image: url("../numluau-hero-dark.svg");
+}
+
+[data-md-color-scheme="numluau-light"] #numluau-home-main::before{
+    background-image: url("../numluau-hero-light.svg");
+}
+
 #numluau-home-main::before {
     content: "";
     position: absolute;
@@ -38,6 +46,22 @@
     bottom: 0;
     left: 0;
     right: 0;
+
+    background-repeat: no-repeat;
+    background-size: 177vh 100vh;
+    background-position: center right;
+
+    animation: home-fade-in-bg 0.5s ease 0.5s;
+    animation-fill-mode: forwards;
+}
+
+@keyframes home-fade-in-bg {
+    0%{
+        transform: translateY(-0.8rem);
+    }
+    100%{
+        transform: translateY(0rem);
+    }
 }
 
 #numluau-home-inner {
@@ -49,7 +73,7 @@
     #numluau-home-inner{
         translate: 0;
     }
-    #numluau-home-inner::before{
+    #numluau-home-main::before{
         filter: blur(2rem);
 		opacity: 0.5;
     }
@@ -190,10 +214,11 @@
     content: "3";
 }
 
-#numluau-home{
+#numluau-home {
+	animation: home-fade-in 0.5s ease 0.5s;
+	animation-fill-mode: forwards;
     opacity: 0;
-    animation: home-fade-in 0.5s ease 0.5s;
-    animation-fill-mode: forwards;
+    transform: translateY(-1rem);
 }
 
 @keyframes home-fade-in {
