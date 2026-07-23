@@ -273,12 +273,12 @@ module.cross = function(A: types.ndArray<number>, B: types.ndArray<number>)
 	}, { 3 }, { 1 }, 0, A.dtype)
 end
 
-local function safe_col_dot(matrix, col_idx, start_row)
+local function safe_col_dot(matrix: types.ndArray<number>, column_index: number, start_row: number)
 	local sum = 0
 	local n = matrix.Shape[1]
 
 	for i = start_row, n do
-		local val = matrix[i][col_idx]
+		local val = matrix[i][column_index]
 		sum += val * val
 	end
 
@@ -307,36 +307,41 @@ module.qr = function(matrix: types.ndArray<number>)
 		local v_len = n - k + 1
 
 		raw_v[1] = R[k][k] - alpha
+
+		local v_sum2 = raw_v[1] ^ 2
+
 		for i = 2, v_len do
 			raw_v[i] = R[k + i - 1][k]
+			v_sum2 += R[k + i - 1][k] ^ 2
 		end
 
-		local v = ndarray(raw_v, { v_len }, { 1 }, 0, matrix.dtype)
-		local v_norm = module.norm(v)
+		local v_norm = sqrt(v_sum2)
 
 		if v_norm ~= 0 then
-			v /= v_norm
+			for i = 1, #raw_v do
+				raw_v[i] /= v_norm
+			end
 		end
 
 		for j = k, n do
 			local dot = 0
 			for i = k, n do
-				dot += v.Buffer[i - k + 1] * R[i][j]
+				dot += raw_v[i - k + 1] * R[i][j]
 			end
 
 			for i = k, n do
-				R[i][j] -= 2 * v.Buffer[i - k + 1] * dot
+				R[i][j] -= 2 * raw_v[i - k + 1] * dot
 			end
 		end
 
 		for i = 1, n do
 			local dot = 0
 			for j = k, n do
-				dot += Q[i][j] * v.Buffer[j - k + 1]
+				dot += Q[i][j] * raw_v[j - k + 1]
 			end
 
 			for j = k, n do
-				Q[i][j] -= 2 * dot * v.Buffer[j - k + 1]
+				Q[i][j] -= 2 * dot * raw_v[j - k + 1]
 			end
 		end
 	end
