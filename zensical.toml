@@ -76,6 +76,7 @@ nav = [
   { "API reference" = [
     "api-reference/index.md",
     "api-reference/numluau.md",
+    "api-reference/elementwise.md",
     { "Objects" = [
       "api-reference/ndArray.md",
       "api-reference/Generator.md",
