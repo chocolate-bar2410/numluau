@@ -17,7 +17,7 @@ Where $v_{1} - v_{4}$ are voltages. <br>
 Find $v_{1},v_{2},v_{3},v_{4}$. <br>
 
 ```lua
-local numluau = require("../numluau/numluau")
+local numluau = require("../luau_packages/numluau")
 local A : numluau.ndArray<number> = numluau.array({
     {3, 2, 3, 10},
     {2,-2, 5,  8},
