@@ -236,10 +236,11 @@ module.dot = function(A: types.ndArray<number>, B: types.ndArray<number>)
 
 	local result = 0
 
+	local A_data = A:toflatlist()
+	local B_data = B:toflatlist()
+
 	for i = 1, #A do
-		local indexA = A.Offset + i
-		local indexB = B.Offset + 1
-		result += A.Buffer[indexA] * B.Buffer[indexB]
+		result += A_data[i] * B_data[i]
 	end
 
 	return ndarray(result, {}, {}, 0, A.dtype)
