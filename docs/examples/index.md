@@ -1,5 +1,5 @@
 ---
-icon: lucide/rocket
+icon: lucide/atom
 title: examples
 description: examples home page
 ---

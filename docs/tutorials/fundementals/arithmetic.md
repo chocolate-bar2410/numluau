@@ -1,5 +1,4 @@
 ---
-icon: lucide/rocket
 title: Arithmetic
 description: doing arithmetic on N-Dimensional arrays
 ---
@@ -79,23 +78,23 @@ print(a + b)
 !!! danger
     Doing a operation between arrays that dont follow these rules will produce a broadcasting error.
 
-```luau
-local a = numluau.array({
-    {1,2,3},
-    {4,5,6},
-})
-local b = numluau.array({
-    {0, 0, 0},
-    {10,10,10},
-    {20,20,20},
-    {30,30,30},
-})
+    ```luau
+    local a = numluau.array({
+        {1,2,3},
+        {4,5,6},
+    })
+    local b = numluau.array({
+        {0, 0, 0},
+        {10,10,10},
+        {20,20,20},
+        {30,30,30},
+    })
 
-print(a + b)
-```
-``` title="output error" 
-Error with broadcasting: Tried to broadcast incompatible arrays
-```
+    print(a + b)
+    ```
+    ``` title="output error" 
+    Error with broadcasting: Tried to broadcast incompatible arrays
+    ```
 
 If the two arrays have different dimensions, the missing dimensions are filled in with ones.
 

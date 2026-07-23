@@ -1,5 +1,4 @@
 ---
-icon: lucide/rocket
 title: Indexing and slicing
 description: Indexing and slicing arrays
 ---

@@ -1,4 +1,3 @@
---!strict
 local unit_tests = require("./unit_test")
 local numluau = require("../numluau")
 
@@ -37,4 +36,149 @@ unit_tests.Test("trignometry", function()
     unit_tests.AssertAproxEquals(cos_result.Buffer,{1,0,-1})
 end)
 
-unit_tests.PrintResults()
+unit_tests.Test("cummulative sum",function()
+    local x : numluau.ndArray<number> = numluau.arange(1,10)
+
+    unit_tests.AssertError(numluau.cumsum,x,"hello")
+    unit_tests.AssertError(numluau.cumsum,x,-1)
+    unit_tests.AssertError(numluau.cumsum,x,2)
+
+    unit_tests.AssertError(numluau.cumsum,"testing123")
+
+    local y : numluau.ndArray<number> = numluau.cumsum(x)
+    unit_tests.AssertEquals(y:toflatlist(), {1,3,6,10,15,21,28,36,45,55})
+
+    x = numluau.array({
+        {1,2},
+        {3,4}
+    })
+
+    y = numluau.cumsum(x)
+
+    unit_tests.AssertEquals(y:toflatlist(), {1,3,6,10})
+    unit_tests.AssertEquals(y.Shape, {2,2})
+    unit_tests.AssertEquals(y.Strides, {2,1})
+
+    y = numluau.cumsum(x,0)
+
+    unit_tests.AssertEquals(y:toflatlist(), {1,3,3,7})
+    unit_tests.AssertEquals(y.Shape, {2,2})
+    unit_tests.AssertEquals(y.Strides, {2,1})
+
+    y = numluau.cumsum(x,1)
+
+    unit_tests.AssertEquals(y:toflatlist(), {1,2,4,6})
+    unit_tests.AssertEquals(y.Shape, {2,2})
+    unit_tests.AssertEquals(y.Strides, {2,1})
+end)
+
+unit_tests.Test("cummulative product",function()
+    local x : numluau.ndArray<number> = numluau.arange(1,10)
+    local y : numluau.ndArray<number> = numluau.cumprod(x)
+    
+    unit_tests.AssertError(numluau.cumprod,x,"hello")
+    unit_tests.AssertError(numluau.cumprod,x,-1)
+    unit_tests.AssertError(numluau.cumprod,x,2)
+
+    unit_tests.AssertError(numluau.cumprod,"testing123")
+
+    unit_tests.AssertEquals(y:toflatlist(), {1,2,6,24,120,720,5040,40320,362880,3628800})
+
+    x = numluau.array({
+        {1,2},
+        {3,4}
+    })
+
+    y = numluau.cumprod(x)
+
+    unit_tests.AssertEquals(y:toflatlist(), {1,2,6,24})
+    unit_tests.AssertEquals(y.Shape, {2,2})
+    unit_tests.AssertEquals(y.Strides, {2,1})
+
+    y = numluau.cumprod(x,0)
+
+    unit_tests.AssertEquals(y:toflatlist(), {1,2,3,12})
+    unit_tests.AssertEquals(y.Shape, {2,2})
+    unit_tests.AssertEquals(y.Strides, {2,1})
+
+    y = numluau.cumprod(x,1)
+
+    unit_tests.AssertEquals(y:toflatlist(), {1,2,3,8})
+    unit_tests.AssertEquals(y.Shape, {2,2})
+    unit_tests.AssertEquals(y.Strides, {2,1})
+end)
+
+unit_tests.Test("difference",function()
+    local x : numluau.ndArray<number> = numluau.arange(1,10)
+    local y : numluau.ndArray<number> = numluau.diff(x)
+    
+    unit_tests.AssertError(numluau.diff,x,"hello")
+    unit_tests.AssertError(numluau.diff,x,-1)
+    unit_tests.AssertError(numluau.diff,x,2)
+
+    unit_tests.AssertError(numluau.diff,"testing123")
+
+    unit_tests.AssertEquals(y:toflatlist(), {1,1,1,1,1,1,1,1,1})
+
+    x = numluau.array({
+        {1,2},
+        {3,4}
+    })
+
+    y = numluau.diff(x,0)
+
+    unit_tests.AssertEquals(y:toflatlist(), {1,2})
+    unit_tests.AssertEquals(y.Shape, {2,1})
+    unit_tests.AssertEquals(y.Strides, {1,1})
+
+    y = numluau.diff(x,1)
+
+    unit_tests.AssertEquals(y:toflatlist(), {2,2})
+    unit_tests.AssertEquals(y.Shape, {1,2})
+    unit_tests.AssertEquals(y.Strides, {2,1})
+end)
+
+unit_tests.Test("gradient",function()
+    local x : numluau.ndArray<number> = numluau.arange(1,10)
+    local y : numluau.ndArray<number> = numluau.gradient(x)
+    
+    unit_tests.AssertError(numluau.gradient,x,"hello")
+    unit_tests.AssertError(numluau.gradient,x,1,"bye")
+    unit_tests.AssertError(numluau.gradient,x,1,-1)
+    unit_tests.AssertError(numluau.gradient,x,1,10)
+
+    unit_tests.AssertError(numluau.gradient,"testing123")
+
+    unit_tests.AssertEquals(y:toflatlist(), {1,1,1,1,1,1,1,1,1,1})
+
+    x = numluau.array({
+        {1,2},
+        {3,4}
+    })
+
+    y = numluau.gradient(x,1,0)
+
+    unit_tests.AssertEquals(y:toflatlist(), {1,1,1,1})
+    unit_tests.AssertEquals(y.Shape, {2,2})
+    unit_tests.AssertEquals(y.Strides, {2,1})
+
+    y = numluau.gradient(x,1)
+
+    unit_tests.AssertEquals(y:toflatlist(), {2,2,2,2})
+    unit_tests.AssertEquals(y.Shape, {2,2})
+    unit_tests.AssertEquals(y.Strides, {2,1})
+
+    local A = numluau.arange(1,9):reshape(3,3)
+    local B1,B2 = numluau.gradient(A)
+
+    unit_tests.AssertEquals(B1:toflatlist(), {3,3,3,3,3,3,3,3,3})
+    unit_tests.AssertEquals(B1.Shape, {3,3})
+    unit_tests.AssertEquals(B1.Strides, {3,1})
+
+    unit_tests.AssertEquals(B2:toflatlist(), {1,1,1,1,1,1,1,1,1})
+    unit_tests.AssertEquals(B2.Shape, {3,3})
+    unit_tests.AssertEquals(B2.Strides, {3,1})
+end)
+
+
+unit_tests.ProcessResults()

@@ -62,6 +62,11 @@ nav = [
       "tutorials/fundementals/arithmetic.md",
       "tutorials/fundementals/filtering.md",
     ] },
+    { "additional modules" = [
+      "tutorials/random.md",
+      "tutorials/polynomial.md",
+    ] },
+
   ] },
   { "examples" = [
     "examples/index.md",
@@ -70,49 +75,17 @@ nav = [
   ] },
   { "API reference" = [
     "api-reference/index.md",
-    "api-reference/ndArray.md",
-    { "General" = [
-      "api-reference/general/array.md",
-      "api-reference/general/arange.md",
-      "api-reference/general/linspace.md",
-      "api-reference/general/ones.md",
-      "api-reference/general/zeros.md",
-      "api-reference/general/where.md",
-      "api-reference/general/reshape.md",
-      "api-reference/general/flatten.md",
-      "api-reference/general/meshgrid.md",
-      "api-reference/general/_version.md",
+    "api-reference/numluau.md",
+    "api-reference/elementwise.md",
+    { "Objects" = [
+      "api-reference/ndArray.md",
+      "api-reference/Generator.md",
+      "api-reference/polynomial.md",
     ] },
-    { "Comparisons" = [
-      "api-reference/logical/greater.md",
-      "api-reference/logical/greater_equal.md",
-      "api-reference/logical/less.md",
-      "api-reference/logical/less_equal.md",
-      "api-reference/logical/equal.md",
-      "api-reference/logical/not_equal.md",
-    ] },
-    { "Logical" = [
-      "api-reference/logical/logical_and.md",
-      "api-reference/logical/logical_or.md",
-      "api-reference/logical/logical_xor.md",
-      "api-reference/logical/logical_not.md",
-    ] },
-    { "Calculus" = [
-      "api-reference/math/diff.md",
-      "api-reference/math/gradient.md",
-      "api-reference/math/cumsum.md",
-      "api-reference/math/cumprod.md",
-    ] },
-    { "linear algebra" = [
-      "api-reference/linear_algebra/matmul.md",
-      "api-reference/linear_algebra/dot.md",
-      "api-reference/linear_algebra/det.md",
-      "api-reference/linear_algebra/cross.md",
-      "api-reference/linear_algebra/eigenval.md",
-      "api-reference/linear_algebra/eig.md",
-      "api-reference/linear_algebra/QR.md",
-      "api-reference/linear_algebra/LU.md",
-      "api-reference/linear_algebra/solve.md",
+    { "sub modules" = [
+      "api-reference/linalg.md",
+      "api-reference/random.md",
+      "api-reference/polynomial_inter.md",
     ] },
   ] },
 ]
@@ -125,7 +98,15 @@ nav = [
 #
 # Read more: https://zensical.org/docs/customization/#additional-css
 #
-extra_css = ["stylesheets/extra.css"]
+extra_css = [
+  "assets/stylesheets/page.css",
+  "assets/stylesheets/api-reference.css",
+  "assets/stylesheets/colours.css",
+  "assets/stylesheets/theme.css",
+  "assets/stylesheets/code.css",
+  "assets/stylesheets/paragraph.css",
+  "assets/stylesheets/admonition.css",
+]
 
 # With the `extra_javascript` option you can add your own JavaScript to your
 # project to customize the behavior according to your needs.
@@ -133,7 +114,10 @@ extra_css = ["stylesheets/extra.css"]
 # The path provided should be relative to the "docs_dir".
 #
 # Read more: https://zensical.org/docs/customization/#additional-javascript
-#extra_javascript = ["javascripts/extra.js"]
+extra_javascript = [
+  "javascripts/mathjax.js",
+  "https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js",
+]
 
 # ----------------------------------------------------------------------------
 # Section for configuring theme options
@@ -151,7 +135,7 @@ extra_css = ["stylesheets/extra.css"]
 # Read more:
 # - https://zensical.org/docs/customization/#extending-the-theme
 #
-# custom_dir = "docs/overrides"
+custom_dir = "docs/assets/overrides"
 
 # With the "favicon" option you can set your own image to use as the icon
 # browsers will use in the browser title bar or tab bar. The path provided
@@ -357,12 +341,12 @@ code = "JetBrains Mono"
 # - https://zensical.org/docs/setup/colors/
 # ----------------------------------------------------------------------------
 [[project.theme.palette]]
-scheme = "default"
+scheme = "numluau-light"
 toggle.icon = "lucide/sun"
 toggle.name = "Switch to dark mode"
 
 [[project.theme.palette]]
-scheme = "slate"
+scheme = "numluau-dark"
 toggle.icon = "lucide/moon"
 toggle.name = "Switch to light mode"
 
@@ -376,6 +360,7 @@ toggle.name = "Switch to light mode"
 [project.extra.version]
 provider = "mike"
 default = "stable"
+
 
 # ----------------------------------------------------------------------------
 # In this section you can configure the Markdown extensions that are used when

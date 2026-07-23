@@ -1,13 +1,16 @@
-local ndArray = require("@self/ndarray/FromTable")
-local ndArray_utils = require("@self/ndarray/ndarray_utils")
-local math_utils = require("@self/math/math_utils")
+local FromTable = require("@self/ndarray/FromTable")
+local ndArray_utils = require("@self/utility/ndarray")
+local math_utils = require("@self/math/luau_math")
 local aggregations = require("@self/math/aggregations")
-local Exceptions = require("@self/Exceptions")
+local constructors = require("@self/ndarray/constructors")
 
 local comparison = require("@self/logical/comparison")
 local logical = require("@self/logical/logical")
 
 local calculus = require("@self/math/calculus")
+
+local table_utils = require("@self/utility/table")
+local poly_utils = require("@self/utility/poly")
 --[[
 to do:
     - linear algebra
@@ -21,8 +24,8 @@ to do:
         > gradient (derivative) --[done]
         > cummulative sum (integral) --[done]
         > cummulative product --[done]
-    - polynomial --[incomplete]
-    - random --[incomplete]
+    - random --[done]
+    - polynomial --[WIP]
     
 reference:
     - https://www.youtube.com/watch?v=VXU4LSAQDSc
@@ -32,178 +35,64 @@ reference:
 local types = require("@self/types")
 
 export type ndArray<T> = types.ndArray<T>
+export type Generator = types.Generator
+export type Polynomial = types.Polynomial
 
-local Merge = function(... : {})
-    local Result = {}
+--- The numluau library.
+---@class numluau
+---The version of numluau.
+---@prop version Version
 
-    for _,tab in {...} do
-        for i,v in tab do
-            Result[i] = v
-        end
-    end
-
-    return Result
-end
+--- A object that represents the version of numluau.
+---@class Version
+---@prop major number
+---@prop minor number
 
 local Base = {
-    array = ndArray,
-    arange = function(start : number,stop : number?) : ndArray<number>
-        local result = {}
+	array = FromTable,
 
-        if stop == nil then
-            stop = start
-            start = 1
-        end
+	linalg = require("@self/math/lin_algebra"),
+	random = require("@self/random"),
+	polynomial = require("@self/polynomial"),
+	version = { major = 1, minor = 1 } :: types.Version,
 
-        for i = start,stop :: number do table.insert(result,i) end
+	--- configures the prettyprint of the library.
+	--- |property	 | description 																			 | default value|
+	--- |------------|---------------------------------------------------------------------------------------|--------------|
+	--- | suppress   | suppresses small numbers 															 | false   		|
+	--- | precission | the precission of the numbers 														 | 8 d.p   		|
+	--- | threshold  | the number of values, a ndarray it can have per row before its tostring is truncated. | 100 	   		|
+	--- | edge items | the ammount of items that show up when a ndarray's tostring is truncated. 			 | 3 	   		|
+	--- | line width | the max ammount of characters before a ndarray's tostring is wrapped around. 		 | 75	   		|
+	---@within numluau
+	---@method set_printoptions
+	---@param args {suppress: boolean,precision: number,threshold: number,edgeitems: number,linewidth: number}
+	set_printoptions = function(args: {
+		suppress: boolean,
+		precision: number,
+		threshold: number,
+		edgeitems: number,
+		linewidth: number,
+	})
+		ndArray_utils.suppress = if args.suppress ~= nil then args.suppress else ndArray_utils.suppress
+		ndArray_utils.precision = if args.precision ~= nil then args.precision else ndArray_utils.precision
 
-        return ndArray(result)
-    end,
-    linspace = function(start : number,stop : number?,num : number?) : ndArray<number>
-        local result = {}
-        num = (num or 50)
+		ndArray_utils.edgeitems = if args.edgeitems ~= nil then args.edgeitems else ndArray_utils.edgeitems
+		ndArray_utils.threshold = if args.threshold ~= nil then args.threshold else ndArray_utils.threshold
+		ndArray_utils.linewidth = if args.linewidth ~= nil then args.linewidth else ndArray_utils.linewidth
 
-        if stop == nil then
-            stop = start
-            start = 1
-        end
-
-        if num == 1 then
-            return ndArray({start})
-        end
-
-        local denominator = num - 1
-
-        for i = 0,denominator do 
-            table.insert(result,start + i * ((stop - start) / denominator)) 
-        end
-
-        return ndArray(result)
-    end,
-    ones = function(... : number) : ndArray<number>
-        local shape = {...}
-        local size = 1
-
-        for i = 1,#shape do
-            size *= shape[i]
-        end
-
-        local result = table.create(size,1)
-
-        local Array : types.ndArray<any> = ndArray(result)
-        Array.Shape = shape
-        Array.Strides = ndArray_utils.ComputeStrides(shape)
-        Array.ndim = #shape
-
-        return Array
-    end,
-    zeros = function(... : number) : ndArray<number>
-        local shape = {...}
-        local result = {}
-
-        local size = 1
-
-        for i = 1,#shape do
-            size *= shape[i]
-        end
-
-        for i = 1,size do table.insert(result,0) end
-
-        local Array : types.ndArray<any> = ndArray(result)
-        Array.Shape = shape
-        Array.Strides = ndArray_utils.ComputeStrides(shape)
-        Array.ndim = #shape
-
-        return Array
-    end,
-    where = function(Mask : types.ndArray<boolean>,Target : types.ndArray<any>,FillValue : any) : types.ndArray<any>
-        if FillValue == nil then
-            Exceptions.FormatException("Array", "Fill Value must not be nil")
-            return
-        end
-
-        if #Mask.Buffer ~= #Target.Buffer then
-            Exceptions.FormatException("Array", "Mask array and Target array must be the same size")
-            return
-        end
-
-        local Result = {}
-        for i = 1,#Target.Buffer do
-            Result[#Result + 1] = Mask.Buffer[i] == false and FillValue or Target.Buffer[i]
-        end
-        Result = ndArray(Result)
-        Result.Shape = Target.Shape
-        Result.Strides = Target.Strides
-        Result.ndim = Target.ndim
-
-        return Result
-    end,
-    reshape = function(Target : types.ndArray<any>,Shape : {number}) : types.ndArray<any>
-
-        local Size = 1
-        for i = 1,#Shape do
-            Size *= Shape[i]
-        end
-
-        if #Target.Buffer ~= Size then
-            Exceptions.FormatException("Array",`Cannot reshape an array size {#Target.Buffer} into shape ({table.concat(Shape,",")})`)
-        end
-
-        local result = Target:copy()
-        result.Shape = Shape
-        result.Strides = ndArray_utils.ComputeStrides(Shape)
-        result.ndim = #Shape
-
-        return result
-    end,
-    flatten = function(Target) : types.ndArray<any>
-        local result = Target:copy()
-        result.Shape = {#Target.Buffer}
-        result.Strides = {1}
-        result.ndim = 1
-
-        return result
-    end,
-    meshgrid = function<T>(X : types.ndArray<T>,Y : types.ndArray<T>)
-        if X.ndim ~= 1 or Y.ndim ~= 1 then
-            Exceptions.Exception("Array","meshgrid inputs must have ndim = 1")
-        end
-        
-        local nx = #X.Buffer
-        local ny = #Y.Buffer
-
-        local buffer_x = table.create(nx * ny)
-        local buffer_y = table.create(nx * ny)
-
-        local index = 1
-        for r = 1, ny do
-            local y_val = Y.Buffer[r]
-            for c = 1, nx do
-                buffer_x[index] = X.Buffer[c]
-                buffer_y[index] = y_val
-                index += 1
-            end
-        end
-
-        local target_shape = {ny,nx}
-        local target_stride = {nx,1}
-
-        local x_grid = ndArray(buffer_x)
-        x_grid.Shape = target_shape
-        x_grid.Strides = target_stride
-        x_grid.ndim = 2
-
-        local y_grid = ndArray(buffer_y)
-        y_grid.Shape = target_shape
-        y_grid.Strides = target_stride
-        y_grid.ndim = 2
-
-        return x_grid,y_grid
-    end,
-    linalg = require("@self/math/lin_algebra"),
-    version = {major = 1, minor = 0} :: types.Version
+		poly_utils.suppress = if args.suppress ~= nil then args.suppress else poly_utils.suppress
+		poly_utils.precision = if args.precision ~= nil then args.precision else poly_utils.precision
+	end,
 }
 
-type out = typeof(Base) & typeof(math_utils) & typeof(aggregations) & typeof(comparison) & typeof(logical) & typeof(calculus)
+type out =
+	typeof(Base)
+	& typeof(math_utils)
+	& typeof(aggregations)
+	& typeof(comparison)
+	& typeof(logical)
+	& typeof(calculus)
+	& typeof(constructors)
 
-return Merge(Base,math_utils,aggregations,comparison,logical,calculus) :: out
+return table_utils.merge(Base, math_utils, aggregations, comparison, logical, calculus, constructors) :: out

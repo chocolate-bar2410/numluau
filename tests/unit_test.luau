@@ -3,6 +3,13 @@ local module = {}
 
 local tests : {test} = {} 
 
+local RESET = "\x1b[0m"
+local RED = "\x1b[91m"
+local GREEN = "\x1b[92m"
+
+local PASS = GREEN .. "[PASS]: %q\n" .. RESET
+local FAIL = RED .. "[FAIL]: %q \n        %s\n" .. RESET
+
 type test = {
     message : string,
     result : boolean,
@@ -29,8 +36,26 @@ local table_aprox_equals = function(A : {number},B : {number})
     return true
 end
 
-local tab_string = function<T>(A : {T})
-    return string.format("{%s}",table.concat(A,","))
+local stringable = function<T>(value : T) : boolean
+    if typeof(value) ~= "table" then return true end
+    local meta = getmetatable(value)
+
+    return meta.__tostring ~= nil
+end
+
+local function tab_string<T>(A : {T})
+    local result = ""
+
+    for _,v in A do
+        if stringable(v) then
+            result ..= tostring(v)
+        else
+            result ..= tab_string(v)
+        end
+        result ..= ", "
+    end
+
+    return string.format("{%s}",result)
 end
 
 module.Test = function(message : string,callback : () -> ())
@@ -43,7 +68,7 @@ module.Test = function(message : string,callback : () -> ())
     })
 end
 
-module.PrintResults = function()
+module.ProcessResults = function()
     local all_passed = true
     local tests_passed = 0
 
@@ -53,21 +78,20 @@ module.PrintResults = function()
         all_passed = test.result and all_passed 
         
         if test.result then
-            result ..= ("[PASS]: %q\n"):format(test.message)
+            result ..= (PASS):format(test.message)
             tests_passed += 1
         else
             local error_message : string = test.error_message :: string
             error_message = string.match(error_message, ":%d+: (.*)") :: string
-            result ..= ("[FAIL]: %q \n        %s\n"):format(test.message,error_message)
+            result ..= (FAIL):format(test.message,error_message)
         end
     end
 
     if all_passed then
         print(result .. "\nall tests passed")
     else
-        print(result .. ("\n%d/%d tests passed"):format(tests_passed,#tests))
+        error(result .. ("\n%d/%d tests passed"):format(tests_passed,#tests))
     end
-
 end
 
 module.AssertEquals = function(A,B)
@@ -114,6 +138,12 @@ end
 module.AssertFalse = function(Condition)
     if not Condition then return end
     error("Condition is true")
+end
+
+module.AssertError = function(callback,...)
+    local result = pcall(callback,...)
+    if result == false then return end
+    error("callback function did not error")
 end
 
 return module
