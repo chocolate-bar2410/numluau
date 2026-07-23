@@ -13,8 +13,7 @@ Features:
 - Linear algebra capabilities.
 - Sophisticated broadcasting functions.
 
-documentation: https://chocolate-bar2410.github.io/numluau/latest/  
-tutorials: https://chocolate-bar2410.github.io/numluau/latest/tutorials/
+documentation: https://chocolate-bar2410.github.io/numluau
 
 ## installation
 
