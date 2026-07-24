@@ -39,6 +39,11 @@ zensical serve
 - **Runtime agnostic:** Code is expected to be entirely runtime agnostic so that it remains available to every developer.
     - avoid using runtime specific features such as FFI or file reading within the core library.
 
+- **Naming conventions:**
+    - private properties should use PascalCase.
+    - public properties should use flatcase.
+    - methods, functions and variables should use snake_case.
+
 ## AI usage policy
 As this is a math/science library, AI usage is restricted to protect the safety, reliability and correctness of the codebase.
 Generative AI lacks intent, cannot gaurantee numerical stability and is highly prone to hallucinations.
