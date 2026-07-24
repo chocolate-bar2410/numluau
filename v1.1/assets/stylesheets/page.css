@@ -7,16 +7,24 @@
     padding: 0 0rem;
 }
 
-
 .md-grid {
     padding: 0 1.95rem;
     max-width: initial;
     min-width: flex;
 }
 
-
 .md-content {
-    padding: 0 5rem;
+    padding: 0 5vh;
+}
+
+@media screen and (max-width: 80em){
+    .md-grid {
+        padding: 0 0rem;
+    }
+
+    .md-content {
+        padding: 0 0rem;
+    }
 }
 
 /* navigation */
