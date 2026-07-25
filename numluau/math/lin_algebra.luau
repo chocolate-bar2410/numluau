@@ -38,26 +38,27 @@ export type interface = {
 ---@return ndArray
 module.matmul = function(A: types.ndArray<number>, B: types.ndArray<number>)
 	if A.ndim == 2 and B.ndim == 1 then
-		local A_row = A.Shape[1]
-		local A_column = A.Shape[2]
+		local A_width: number = A.Shape[1]
+		local A_height: number = A.Shape[2]
 
-		local B_len = B.Shape[1]
+		local B_len: number = B.Shape[1]
 
-		if B_len ~= A_column then
+		if B_len ~= A_height then
 			exceptions.FormatException(
 				"Value",
 				"matrix vector multiplication requires vector length = matrix column length"
 			)
 		end
 
-		local Shape = { A_row }
-		local Strides = ndArray_utils.ComputeStrides(Shape)
+		local Shape: { number } = { A_width }
+		local Strides: { number } = ndArray_utils.ComputeStrides(Shape)
 
-		local result = ndarray(table.create(A_row, 0), Shape, Strides, 0, A.dtype)
+		local result: types.ndArray<number> = ndarray(table.create(A_width, 0), Shape, Strides, 0, A.dtype)
 
-		for i = 1, A_row do
-			for j = 1, A_column do
-				result[i] += A[i][j] * B[j]
+		for i = 1, A_width do
+			local row_A: types.ndArray<number> = A[i]
+			for j = 1, A_height do
+				result[i] += row_A[j] * B[j]
 			end
 		end
 
@@ -68,27 +69,34 @@ module.matmul = function(A: types.ndArray<number>, B: types.ndArray<number>)
 		exceptions.FormatException("Value", "matrix multiplication needs A.ndim = B.ndim")
 	end
 
-	local A_row = A.Shape[1]
-	local A_column = A.Shape[2]
+	local A_width: number = A.Shape[1]
+	local A_height: number = A.Shape[2]
 
-	local B_row = B.Shape[1]
-	local B_column = B.Shape[2]
+	local B_width: number = B.Shape[1]
+	local B_height: number = B.Shape[2]
 
-	if A_column ~= B_row then
+	if A_height ~= B_width then
 		exceptions.FormatException("Value", "matrix multiplication needs A's column length = B's row length")
 	end
 
-	local Shape = { A_row, B_column }
-	local Strides = ndArray_utils.ComputeStrides(Shape)
+	local Shape: { number } = { A_width, B_height }
+	local Strides: { number } = ndArray_utils.ComputeStrides(Shape)
 
-	local result = ndarray(table.create(A_row * B_column, 0), Shape, Strides, 0, A.dtype)
+	local result: types.ndArray<number> = ndarray(table.create(A_width * B_height, 0), Shape, Strides, 0, A.dtype)
 
-	for i = 1, A_row do
-		for j = 1, B_column do
-			local sum = 0
-			for k = 1, B_row do
-				sum += A[i][k] * B[k][j]
+	-- apparently tranposing B improves cache locality
+	local Bt: types.ndArray<number> = B:transpose()
+
+	for i = 1, A_width do
+		local row_A: types.ndArray<number> = A[i]
+
+		for j = 1, B_height do
+			local row_Bt: types.ndArray<number> = Bt[j]
+			local sum: number = 0
+			for k = 1, B_width do
+				sum += row_A[k] * row_Bt[k]
 			end
+
 			result[i][j] = sum
 		end
 	end
@@ -599,8 +607,10 @@ end
 module.svd = function(
 	matrix: types.ndArray<number>
 ): (types.ndArray<number>, types.ndArray<number>, types.ndArray<number>)
-	local sym_l = module.matmul(matrix, matrix:transpose())
-	local sym_r = module.matmul(matrix:transpose(), matrix)
+	local matrix_t = matrix:transpose()
+
+	local sym_l = module.matmul(matrix, matrix_t)
+	local sym_r = module.matmul(matrix_t, matrix)
 
 	local eigenvalues_l, U = module.eig(sym_l)
 	local eigenvalues_r, V = module.eig(sym_r)
