@@ -11,11 +11,5 @@ includes = ["pesde.toml", "README.md", "LICENSE", "numluau/**"]
 environment = "luau"
 lib = "numluau/init.luau"
 
-[engines]
-pesde = "^0.7.1"
-lune = "^0.10.4"
-
 [indices]
 default = "https://github.com/pesde-pkg/index"
-
-[dependencies]
