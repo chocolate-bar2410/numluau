@@ -385,12 +385,24 @@ module.eigenval = function(matrix: types.ndArray<number>)
 	local Q: types.ndArray<number>
 	local R: types.ndArray<number>
 
-	local iterations = 50
+	local tolerance = 1e-12
 
-	for i = 1, iterations do
+	local max_iterations = 200
+	local iterations = 0
+
+	repeat
 		Q, R = module.qr(Ak)
 		Ak = module.matmul(R, Q)
-	end
+
+		local maximum = -math.huge
+		for i = 2, matrix.Shape[2] do
+			local Ak_row = Ak[i]
+			for k = 1, i - 1 do
+				maximum = math.max(abs(Ak_row[k]), maximum)
+			end
+		end
+		iterations += 1
+	until maximum < tolerance or iterations >= max_iterations
 
 	local result = {}
 	for i = 1, n do
@@ -456,22 +468,32 @@ module.eig = function(matrix: types.ndArray<number>)
 	-- QR decomposition
 	local n: number = matrix.Shape[1]
 	local Ak = matrix:copy()
-	local Q: types.ndArray<number>
-	local R: types.ndArray<number>
+	local Q: types.ndArray<number>, R: types.ndArray<number> = module.qr(Ak)
 
-	local eigen_vectors
-	local iterations = 50
+	local eigen_vectors = Q
+	local tolerance = 1e-12
 
-	for i = 1, iterations do
+	local max_iterations = 200
+	local iterations = 0
+
+	repeat
 		Q, R = module.qr(Ak)
 		Ak = module.matmul(R, Q)
 
-		if i == 1 then
-			eigen_vectors = Q
-		else
-			eigen_vectors = module.matmul(eigen_vectors, Q)
+		eigen_vectors = module.matmul(eigen_vectors, Q)
+
+		local maximum = -math.huge
+
+		for i = 2, matrix.Shape[2] do
+			local Ak_row = Ak[i]
+			for k = 1, i - 1 do
+				maximum = math.max(abs(Ak_row[k]), maximum)
+			end
 		end
-	end
+
+		iterations += 1
+
+	until maximum < tolerance or iterations >= max_iterations
 
 	local result = {}
 	for i = 1, n do
