@@ -13,19 +13,6 @@ local table_utils = require("@self/utility/table")
 local poly_utils = require("@self/utility/poly")
 --[[
 to do:
-    - linear algebra
-        > matrix multiplication --[done]
-        > determinant --[done]
-        > dot/cross product --[done]
-        > transpose --[done]
-        > eigen values --[done]
-        > solve systems of equations --[done]
-    - calculus
-        > gradient (derivative) --[done]
-        > cummulative sum (integral) --[done]
-        > cummulative product --[done]
-    - random --[done]
-    - polynomial --[WIP]
     
 reference:
     - https://www.youtube.com/watch?v=VXU4LSAQDSc
