@@ -281,18 +281,6 @@ module.cross = function(A: types.ndArray<number>, B: types.ndArray<number>)
 	}, { 3 }, { 1 }, 0, A.dtype)
 end
 
-local function safe_col_dot(matrix: types.ndArray<number>, column_index: number, start_row: number)
-	local sum = 0
-	local n = matrix.Shape[1]
-
-	for i = start_row, n do
-		local val = matrix[i][column_index]
-		sum += val * val
-	end
-
-	return sum
-end
-
 --- Performs a QR decomposition on the matrix, returning a orthogonal matrix Q and a upper triangular matrix R.
 ---@within linalg
 ---@method qr
@@ -304,12 +292,10 @@ module.qr = function(matrix: types.ndArray<number>)
 	local R: types.ndArray<number> = matrix:copy()
 
 	for k = 1, n - 1 do
-		local dot_xx = safe_col_dot(R, k, k)
-		local alpha = sqrt(dot_xx)
+		local alpha = module.norm(R[`{k}:,{k}`]):item()
+		if R[k][k] == 0 then continue end
 
-		if R[k][k] < 0 then
-			alpha *= -1
-		end
+		if R[k][k] > 0 then alpha = -alpha end
 
 		local raw_v = {}
 		local v_len = n - k + 1
@@ -344,13 +330,32 @@ module.qr = function(matrix: types.ndArray<number>)
 
 		for i = 1, n do
 			local dot = 0
+			local Q_row = Q[i]
 			for j = k, n do
-				dot += Q[i][j] * raw_v[j - k + 1]
+				dot += Q_row[j] * raw_v[j - k + 1]
 			end
 
 			for j = k, n do
-				Q[i][j] -= 2 * dot * raw_v[j - k + 1]
+				Q_row[j] -= 2 * dot * raw_v[j - k + 1]
 			end
+		end
+	end
+
+	for i = 2, matrix.Shape[2] do
+		local R_row = R[i]
+		for k = 1, i - 1 do
+			R_row[k] = 0
+		end
+	end
+
+	for k = 1, n do
+		local R_row = R[k]
+		if R_row[k] >= 0 then continue end
+
+		R_row[`{k} : {n}`] = -R_row[`{k} : {n}`]
+
+		for i = 1, n do
+			Q[i][k] = -Q[i][k]
 		end
 	end
 
@@ -385,24 +390,32 @@ module.eigenval = function(matrix: types.ndArray<number>)
 	local Q: types.ndArray<number>
 	local R: types.ndArray<number>
 
-	local tolerance = 1e-12
+	local tolerance = 1e-16
 
-	local max_iterations = 200
+	local max_iterations = 1000
 	local iterations = 0
 
-	repeat
-		Q, R = module.qr(Ak)
-		Ak = module.matmul(R, Q)
+	local diff = 1
+	local maximum = -math.huge
 
-		local maximum = -math.huge
-		for i = 2, matrix.Shape[2] do
-			local Ak_row = Ak[i]
-			for k = 1, i - 1 do
-				maximum = math.max(abs(Ak_row[k]), maximum)
-			end
-		end
+	repeat
+		local identity = Ak:eye():reshape(n, n)
+		local shift = identity * Ak[-1][-1]
+
+		Q, R = module.qr(Ak - shift)
+		Ak = module.matmul(R, Q) + shift
+
 		iterations += 1
-	until maximum < tolerance or iterations >= max_iterations
+
+		local new_max = -math.huge
+		for i = 1, n do
+			new_max = math.max(Ak[i][i], new_max)
+		end
+
+		diff = abs(maximum - new_max)
+		maximum = new_max
+
+	until diff < tolerance or iterations >= max_iterations
 
 	local result = {}
 	for i = 1, n do
@@ -467,33 +480,37 @@ module.eig = function(matrix: types.ndArray<number>)
 
 	-- QR decomposition
 	local n: number = matrix.Shape[1]
-	local Ak = matrix:copy()
+	local Ak: types.ndArray<number> = matrix:copy()
 	local Q: types.ndArray<number>, R: types.ndArray<number> = module.qr(Ak)
 
 	local eigen_vectors = Q
-	local tolerance = 1e-12
+	local tolerance = 1e-32
 
 	local max_iterations = 200
 	local iterations = 0
+	local diff = 1
+	local maximum = -math.huge
 
 	repeat
-		Q, R = module.qr(Ak)
-		Ak = module.matmul(R, Q)
+		local identity = Ak:eye():reshape(n, n)
+		local shift = identity * Ak[-1][-1]
+
+		Q, R = module.qr(Ak - shift)
+		Ak = module.matmul(R, Q) + shift
 
 		eigen_vectors = module.matmul(eigen_vectors, Q)
 
-		local maximum = -math.huge
-
-		for i = 2, matrix.Shape[2] do
-			local Ak_row = Ak[i]
-			for k = 1, i - 1 do
-				maximum = math.max(abs(Ak_row[k]), maximum)
-			end
-		end
-
 		iterations += 1
 
-	until maximum < tolerance or iterations >= max_iterations
+		local new_max = -math.huge
+		for i = 1, n do
+			new_max = math.max(Ak[i][i], new_max)
+		end
+
+		diff = abs(maximum - new_max)
+		maximum = new_max
+
+	until diff < tolerance or iterations >= max_iterations
 
 	local result = {}
 	for i = 1, n do
@@ -590,6 +607,8 @@ module.norm = function(matrix: types.ndArray<number>, axis: number, order: numbe
 			table.insert(data, length)
 		end)
 
+		if #data == 1 then return ndarray(data[1], {}, {}, 0, "number") end
+
 		return ndarray(data, { #data }, { 1 }, 0, "number")
 	end
 
@@ -614,6 +633,8 @@ module.norm = function(matrix: types.ndArray<number>, axis: number, order: numbe
 
 			table.insert(data, length)
 		end)
+
+		if #data == 1 then return ndarray(data[1], {}, {}, 0, "number") end
 
 		return ndarray(data, { #data }, { 1 }, 0, "number")
 	end
@@ -643,40 +664,7 @@ module.svd = function(
 		singular_values[i] = sqrt(math.max(v, 0))
 	end
 
-	local indices_l = table.create(#eigenvalues_l)
-	for i = 1, #eigenvalues_l do
-		indices_l[i] = i
-	end
-
-	table.sort(indices_l, function(a, b)
-		return eigenvalues_l[a] > eigenvalues_l[b]
-	end)
-
-	local U_sorted = U:copy()
-
-	for i, index in ipairs(indices_l) do
-		U_sorted[`:,{i}`] = U[`:,{index}`]
-	end
-
-	local indices_r = table.create(#eigenvalues_r)
-	for i = 1, #eigenvalues_r do
-		indices_r[i] = i
-	end
-
-	table.sort(indices_r, function(a, b)
-		return eigenvalues_r[a] > eigenvalues_r[b]
-	end)
-
-	local V_sorted = V:copy()
-	for i, index in ipairs(indices_r) do
-		V_sorted[`:,{i}`] = V[`:,{index}`]
-	end
-
-	table.sort(singular_values.Buffer, function(a, b)
-		return a > b
-	end)
-
-	return U_sorted, singular_values, V_sorted:transpose()
+	return U, singular_values, V:transpose()
 end
 
 --- Preforms a least squares fit on x and y, producing the coefficents of degree `degree` in descending order
