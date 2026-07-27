@@ -143,6 +143,14 @@ unit_tests.Test("eigval", function()
 
 	unit_tests.AssertAproxEquals(eig_sorted, { 125, 255 })
 
+	matrix = numluau.array({ { 1, 3, 2 }, { 2, 2, 1 }, { 3, 1, 3 } })
+	eigen_values = numluau.linalg.eigenval(matrix)
+
+	eig_sorted = eigen_values:toflatlist()
+	table.sort(eig_sorted)
+
+	unit_tests.AssertAproxEquals(eig_sorted, { -math.sqrt(2), math.sqrt(2), 6 })
+
 	matrix = numluau.array({ { 3, 0, 0 }, { 0, -5, 0 }, { 0, 0, 2 } })
 	eigen_values = numluau.linalg.eigenval(matrix)
 
@@ -188,7 +196,16 @@ unit_tests.Test("eig", function()
 	unit_tests.AssertAproxEquals(determinant:item(), eig_prod)
 
 	unit_tests.AssertAproxEquals(eig_sorted, { -5, 2, 3 })
-	unit_tests.AssertAproxEquals(eigen_vectors:toflatlist(), { 1, 0, 0, 0, 1, 0, 0, 0, 1 })
+	unit_tests.AssertAproxEquals(eigen_vectors:toflatlist(), { 1, 0, 0, 0, -1, 0, 0, 0, 1 })
+
+	matrix = numluau.array({ { 1, 3, 2 }, { 2, 2, 1 }, { 3, 1, 3 } })
+	eigen_values, eigen_vectors = numluau.linalg.eig(matrix)
+
+	eig_sorted = eigen_values:toflatlist()
+	table.sort(eig_sorted)
+
+	unit_tests.AssertAproxEquals(eig_sorted, { -math.sqrt(2), math.sqrt(2), 6 })
+	unit_tests.AssertAproxEquals(eigen_vectors:toflatlist(), { 1, -3.67542, -0.0388683, 1, 2.93662, -1.50805, 1, 1, 1 })
 end)
 
 unit_tests.Test("qr", function()
@@ -199,6 +216,38 @@ unit_tests.Test("qr", function()
 	unit_tests.AssertEquals(R.Shape, { 2, 2 })
 
 	unit_tests.AssertAproxEquals(R[2][1], 0)
+
+	matrix = numluau.array({ { 1, 2, 3 }, { 3, 2, 1 }, { 2, 1, 3 } })
+	Q, R = numluau.linalg.qr(matrix)
+
+	unit_tests.AssertAproxEquals(R:toflatlist(), {
+		math.sqrt(14),
+		5 * math.sqrt(2 / 7),
+		6 * math.sqrt(2 / 7),
+
+		0,
+		math.sqrt(13 / 7),
+		17 / math.sqrt(91),
+
+		0,
+		0,
+		6 * math.sqrt(2 / 13),
+	})
+
+	unit_tests.AssertAproxEquals(Q:toflatlist(), {
+		1 / math.sqrt(14),
+		9 / math.sqrt(91),
+		1 / math.sqrt(26),
+
+		3 / math.sqrt(14),
+		-1 / math.sqrt(91),
+		-3 / math.sqrt(26),
+
+		math.sqrt(2 / 7),
+		-3 / math.sqrt(91),
+		2 * math.sqrt(2 / 13),
+	})
+	--unit_tests.AssertEquals(R:toflatlist(), { 2, 2 })
 end)
 
 unit_tests.Test("lu", function()
@@ -232,6 +281,24 @@ unit_tests.Test("svd", function()
 
 	unit_tests.AssertAproxEquals(sigma[1], 1)
 	unit_tests.AssertAproxEquals(sigma[2], 1)
+
+	A = numluau.array({ { 3, 2 }, { 2, 3 }, { 2, -2 } })
+	U, sigma, Vt = numluau.linalg.svd(A)
+
+    --stylua: ignore
+	unit_tests.AssertEquals(Vt:toflatlist(), {
+		1 / math.sqrt(2), 1 / math.sqrt(2),
+		1 / math.sqrt(2), -1 / math.sqrt(2),
+	})
+
+	-- --stylua: ignore
+	-- unit_tests.AssertAproxEquals(U:toflatlist(), {
+	--     1 / math.sqrt(2), -1 / math.sqrt(18), -2/3,
+	--     1 / math.sqrt(2), 1 / math.sqrt(18), -2/3,
+	--     0, 4 / math.sqrt(18), 1/3,
+	-- })
+
+	unit_tests.AssertEquals(sigma:toflatlist(), { 5, 3 })
 end)
 
 unit_tests.Test("lstsq", function()
