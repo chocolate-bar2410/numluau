@@ -425,6 +425,81 @@ module.eigenval = function(matrix: types.ndArray<number>)
 	return ndarray(result, { n }, { 1 }, 0, matrix.dtype)
 end
 
+local hessenberg = function(matrix: types.ndArray<number>): (types.ndArray<number>, types.ndArray<number>)
+	local n = matrix.Shape[1]
+
+	local H = matrix:copy()
+	local Q = matrix:eye():reshape(n, n)
+
+	for k = 1, n - 2 do
+		local v_len = n - k
+		local v_sum2 = 0
+		local raw_v = {}
+
+		for i = 1, v_len do
+			local value = H[k + i][k]
+			raw_v[i] = value
+			v_sum2 += value ^ 2
+		end
+
+		local norm = sqrt(v_sum2)
+
+		if norm < 1e-14 then continue end
+
+		local a1 = H[k + 1][k]
+		local alpha = (a1 <= 0) and -norm or norm
+
+		raw_v = { a1 - alpha }
+
+		v_sum2 = (a1 - alpha) ^ 2
+
+		for i = 2, v_len do
+			raw_v[i] = H[k + i][k]
+			v_sum2 += raw_v[i] ^ 2
+		end
+
+		if v_sum2 == 0 then continue end
+
+		for j = k, n do
+			local dot = 0
+			for i = 1, v_len do
+				dot += raw_v[i] * H[k + i][j]
+			end
+
+			dot *= 2 / v_sum2
+			for i = 1, v_len do
+				H[k + i][j] -= dot * raw_v[i]
+			end
+		end
+
+		for i = 1, n do
+			local dot = 0
+			for j = 1, v_len do
+				dot += H[i][k + j] * raw_v[j]
+			end
+
+			dot *= 2 / v_sum2
+			for j = 1, v_len do
+				H[i][k + j] -= dot * raw_v[j]
+			end
+		end
+
+		for i = 1, n do
+			local dot = 0
+			for j = 1, v_len do
+				dot += Q[i][k + j] * raw_v[j]
+			end
+
+			dot *= 2 / v_sum2
+			for j = 1, v_len do
+				Q[i][k + j] -= dot * raw_v[j]
+			end
+		end
+	end
+
+	return H, Q
+end
+
 --- returns the eigen values and eigen vectors of the matrix
 --- the eigen vectors being given as a single 2d ndArray in column major order.
 ---@within linalg
@@ -480,16 +555,14 @@ module.eig = function(matrix: types.ndArray<number>)
 
 	-- QR decomposition
 	local n: number = matrix.Shape[1]
-	local Ak: types.ndArray<number> = matrix:copy()
+	local Ak: types.ndArray<number>, schur_vectors: types.ndArray<number> = hessenberg(matrix)
+
 	local Q: types.ndArray<number>, R: types.ndArray<number> = module.qr(Ak)
 
-	local eigen_vectors = Q
-	local tolerance = 1e-32
+	local tolerance = 1e-16
 
 	local max_iterations = 200
 	local iterations = 0
-	local diff = 1
-	local maximum = -math.huge
 
 	repeat
 		local identity = Ak:eye():reshape(n, n)
@@ -498,23 +571,69 @@ module.eig = function(matrix: types.ndArray<number>)
 		Q, R = module.qr(Ak - shift)
 		Ak = module.matmul(R, Q) + shift
 
-		eigen_vectors = module.matmul(eigen_vectors, Q)
+		schur_vectors = module.matmul(schur_vectors, Q)
 
 		iterations += 1
 
-		local new_max = -math.huge
-		for i = 1, n do
-			new_max = math.max(Ak[i][i], new_max)
+		local sub_diagonal_sum = 0
+
+		for i = 1, n - 1 do
+			sub_diagonal_sum += abs(Ak[i + 1][i])
 		end
 
-		diff = abs(maximum - new_max)
-		maximum = new_max
-
-	until diff < tolerance or iterations >= max_iterations
+	until sub_diagonal_sum < tolerance or iterations >= max_iterations
 
 	local result = {}
 	for i = 1, n do
 		table.insert(result, Ak[i][i])
+	end
+
+	local eigen_vectors = constructors.zeros(n, n)
+
+	for col = 1, n do
+		local lambda = Ak[col][col]
+		local y = table.create(n, 0)
+
+		y[col] = 1
+
+		-- backwards subsitution to solve for each eigen vector from schur vectors
+		for k = col - 1, 1, -1 do
+			local sum = 0
+			for j = k + 1, col do
+				sum += Ak[k][j] * y[j]
+			end
+
+			local denom = Ak[k][k] - lambda
+
+			if abs(denom) > 1e-12 then
+				y[k] = -sum / denom
+			else
+				y[k] = 0
+			end
+		end
+
+		local norm = 0
+		for i = 1, #y do
+			norm += y[i] ^ 2
+		end
+		norm = sqrt(norm)
+
+		if norm ~= 0 then
+			for i = 1, #y do
+				y[i] /= norm
+			end
+		end
+
+		-- conversion to eigen vector
+		for i = 1, n do
+			local sum = 0
+
+			for j = 1, n do
+				sum += schur_vectors[i][j] * y[j]
+			end
+
+			eigen_vectors[i][col] = sum
+		end
 	end
 
 	return ndarray(result, { n }, { 1 }, 0, matrix.dtype), eigen_vectors
@@ -655,8 +774,8 @@ module.svd = function(
 	local sym_l = module.matmul(matrix, matrix_t)
 	local sym_r = module.matmul(matrix_t, matrix)
 
-	local eigenvalues_l, U = module.eig(sym_l)
-	local eigenvalues_r, V = module.eig(sym_r)
+	local eigenvalues_l, U: types.ndArray<number> = module.eig(sym_l)
+	local eigenvalues_r, V: types.ndArray<number> = module.eig(sym_r)
 
 	local singular_values = eigenvalues_r:copy()
 
