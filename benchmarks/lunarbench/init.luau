@@ -28,14 +28,18 @@ function module.bench(name: string, callback: types.bench_callback, properties: 
 		return
 	end
 
-	if properties.ignore == true then return end
+	if properties.ignore == true then
+		return
+	end
 
 	local group_name: string = properties.group or misc_group
 
-	if module.groups[group_name] == nil then module.groups[group_name] = {
-		baseline = nil,
-		cases = {},
-	} end
+	if module.groups[group_name] == nil then
+		module.groups[group_name] = {
+			baseline = nil,
+			cases = {},
+		}
+	end
 
 	local group: types.group = module.groups[group_name] :: types.group
 
@@ -44,6 +48,7 @@ function module.bench(name: string, callback: types.bench_callback, properties: 
 	else
 		table.insert(group.cases, bench_case)
 	end
+
 end
 
 function module.print_result()
@@ -53,22 +58,29 @@ function module.print_result()
 	local indent2 = "        "
 
 	for name, group in module.groups do
+		if #group.cases == 0 and group.baseline == nil then
+			continue
+		end
 		result[name] = evaluation.evaluate_group(group :: types.group)
 		count += 1
 	end
 
 	for name, entry in result do
-		if count > 1 then print(`{name}:`) end
+
+		if count > 1 then
+			print(`{name}:`)
+		end
 
 		format.pretty_print(entry)
 
 		local group: types.group = module.groups[name] :: types.group
 		if group.baseline ~= nil then
-			print(`summary\n{indent}{"\x1b[1m" .. format.set_color(group.baseline.name, "blue")}`)
+			print(`summary\n{indent}{format.make_bold(format.set_color(group.baseline.name, "blue"))}`)
 			local baseline_index: number = table.find(entry.benchmark, group.baseline.name) :: number
 			local base_time = entry.mean[baseline_index]
 
 			for i = 2, #entry.mean do
+
 				local mean_time = entry.mean[i]
 				local baseline_is_faster = base_time < mean_time
 
@@ -78,11 +90,13 @@ function module.print_result()
 				formatted_ratio = format.set_color(formatted_ratio, (baseline_is_faster and "green" or "red"))
 
 				local comparison = if baseline_is_faster then "faster" else "slower"
-				local formatted_name = "\x1b[1m" .. format.set_color(entry.benchmark[i], "blue")
+				local formatted_name = format.make_bold(format.set_color(entry.benchmark[i], "blue"))
 
 				print(`{indent2}{formatted_ratio}x {comparison} than {formatted_name}`)
 			end
+
 		end
+
 	end
 
 	return result
@@ -102,11 +116,13 @@ function module.set_printoptions(options: {
 	column_seperator: string,
 	row_seperator: string,
 	ANSI: boolean,
+	progress_bar: boolean,
 })
 	format.seperator = options.column_seperator or format.seperator
 	format.row_seperator = options.row_seperator or format.row_seperator
 
 	format.ANSI = if options.ANSI ~= nil then options.ANSI else format.ANSI
+	format.progress = if options.progress_bar ~= nil then options.progress_bar else format.progress
 end
 
 return module

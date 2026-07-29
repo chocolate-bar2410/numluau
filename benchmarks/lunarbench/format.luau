@@ -5,6 +5,7 @@ local module = {}
 module.seperator = " | "
 module.row_seperator = "-"
 module.ANSI = true
+module.progress = false
 
 local ANSI: { [string]: string } = {
 	red = "\x1b[91m",
@@ -27,16 +28,15 @@ local remove_ansi = function(text: string)
 end
 
 local format_duration = function(duration: number): string
-
-	if duration < 0.001 then
-		return string.format("%.1f", duration * 1e6) .. "ns"
+	if duration < 1e-6 then
+		return string.format("%.1f", duration * 1e9) .. "ns"
+	elseif duration < 1e-4 then
+		return string.format("%.1f", duration * 1e6) .. "μs"
 	elseif duration < 1 then
-		return string.format("%.1f", duration * 1000) .. "μs"
-	elseif duration >= 1000 then
-		return string.format("%.1f", duration / 1000) .. "sec"
+		return string.format("%.1f", duration * 1e4) .. "ms"
 	end
 
-	return string.format("%.1f", duration) .. "ms"
+	return string.format("%.1f", duration) .. "s"
 end
 
 local pad_string_table = function(string_table: { string }): number
@@ -64,6 +64,43 @@ type column = {
 	header: string,
 	values: { string },
 }
+
+local terminal_clear = "\x1b[2J\x1b[3J\x1b[H"
+
+local gradient = 0.1
+local gradients = { "░", "▒", "▓", "█" }
+
+module.progress_bar = function(ammount: number, total: number, name: string)
+	if module.progress == false then
+		return
+	end
+	local percentage = ammount / total * 100
+	local length = 64
+	local bar_string = ""
+
+	local filled_length = length * ammount / total
+	local grad_width = gradient * length
+
+	for i = 1, length do
+		local distance = filled_length - i
+		if distance >= grad_width then
+			bar_string ..= gradients[#gradients]
+		elseif distance > 0 then
+			local value = distance / grad_width
+			local index = math.floor(value * (#gradients - 1)) + 1
+			bar_string ..= gradients[index]
+		else
+			bar_string ..= gradients[1]
+		end
+	end
+
+	local result = `{bar_string}| {("%.2f"):format(percentage)}% | {ammount} / {total} | {name}`
+
+	if module.ANSI == true then
+		result = module.set_color(terminal_clear .. result, "green")
+	end
+	print(result)
+end
 
 module.pretty_print = function(result: types.bench_result)
 	local output: string = ""
@@ -156,6 +193,20 @@ module.toCSV = function(result: { [string]: types.bench_result })
 	end
 
 	return output
+end
+
+module.make_bold = function(text: string): string
+	if module.ANSI ~= true then
+		return text
+	end
+	return "\x1b[1m" .. text .. "\x1b[0m"
+end
+
+module.clear_screen = function()
+	if module.ANSI ~= true then
+		return
+	end
+	print(terminal_clear)
 end
 
 return module

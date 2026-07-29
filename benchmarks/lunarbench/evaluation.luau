@@ -1,8 +1,10 @@
 --!strict
+local format = require("./format")
 local types = require("./types")
 local module = {}
 
 module.create_bench_result = function(group: types.group): types.bench_result
+
 	local bench_result: types.bench_result = {
 		benchmark = {},
 		throughput = {},
@@ -13,7 +15,9 @@ module.create_bench_result = function(group: types.group): types.bench_result
 		p99 = {},
 		p995 = {},
 	}
-	if group.baseline ~= nil then table.insert(bench_result.benchmark, group.baseline.name) end
+	if group.baseline ~= nil then
+		table.insert(bench_result.benchmark, group.baseline.name)
+	end
 
 	for i = 1, #group.cases do
 		table.insert(bench_result.benchmark, group.cases[i].name)
@@ -28,13 +32,15 @@ local compute_percentile = function(times: { number }, percentile: number)
 	local lower = math.min(math.floor(index), #times)
 	local upper = math.min(math.ceil(index), #times)
 
-	if lower == upper then return times[lower] end
+	if lower == upper then
+		return times[lower]
+	end
 
 	local weight = index - lower
 	return math.lerp(times[lower], times[upper], weight)
 end
 
-local min_target = 0.005
+local min_target = 0.02
 
 local probe = function(callback, bench_context: types.bench_context)
 	local probe_amount = 1
@@ -59,9 +65,6 @@ module.evaluate_case = function(case: types.bench_case, result: types.bench_resu
 	local start = 0
 	local stop = 0
 
-	print(case.name)
-	print("probing")
-
 	local bench_context: types.bench_context = {
 		start = function()
 			start = os.clock()
@@ -85,16 +88,18 @@ module.evaluate_case = function(case: types.bench_case, result: types.bench_resu
 	local max: number = -math.huge
 	local total: number = 0
 
-	print("started")
+	format.progress_bar(0, iterations, case.name)
 
 	for i = 1, iterations do
-		print(`iterations {i}/{iterations}`)
+		format.progress_bar(i, iterations, case.name)
 		start = os.clock()
 		stop = 0
 
 		case.callback(bench_context)
 
-		if stop == 0 then stop = os.clock() end
+		if stop == 0 then
+			stop = os.clock()
+		end
 
 		local timetaken = stop - start
 		min = math.min(min, timetaken)
@@ -103,6 +108,7 @@ module.evaluate_case = function(case: types.bench_case, result: types.bench_resu
 		total += timetaken
 
 		times[i] = timetaken
+
 	end
 
 	throughput = iterations / total
@@ -126,10 +132,16 @@ end
 module.evaluate_group = function(group: types.group): types.bench_result
 	local result = module.create_bench_result(group)
 
-	if group.baseline ~= nil then module.evaluate_case(group.baseline, result) end
+	if group.baseline ~= nil then
+		module.evaluate_case(group.baseline, result)
+	end
 
 	for i = 1, #group.cases do
 		module.evaluate_case(group.cases[i], result)
+	end
+
+	if format.progress == true then
+		format.clear_screen()
 	end
 
 	return result
