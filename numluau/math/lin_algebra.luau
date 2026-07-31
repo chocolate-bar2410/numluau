@@ -730,7 +730,7 @@ module.norm = function(matrix: types.ndArray<number>, axis: number, order: numbe
 
 			if sum_of_abs == 0 then return end
 
-			local length = sqrt(sum_of_abs)
+			local length = sum_of_abs
 
 			table.insert(data, length)
 		end)
@@ -982,6 +982,10 @@ module.svd = function(
 		local super_diagonal_sum = 0
 
 		for i = 1, n - 1 do
+			if abs(bidiag[i][i + 1]) < tolerance * (abs(bidiag[i][i]) + abs(bidiag[i + 1][i + 1])) then
+				bidiag[i][i + 1] = 0
+			end
+
 			super_diagonal_sum += abs(bidiag[i][i + 1])
 		end
 
