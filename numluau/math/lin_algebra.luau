@@ -287,18 +287,22 @@ end
 ---@param matrix ndArray
 ---@return (ndArray,ndArray)
 module.qr = function(matrix: types.ndArray<number>)
-	local n: number = matrix.Shape[1]
+	local m: number = matrix.Shape[1]
+	local n: number = matrix.Shape[2]
 	local Q: types.ndArray<number> = matrix:eye()
 	local R: types.ndArray<number> = matrix:copy()
 
-	for k = 1, n - 1 do
+	-- householder reflections
+	-- HₙHₙ₋₁...H₁A = R
+	-- Q = HₙHₙ₋₁...H₁ since H is orthogonal
+	for k = 1, math.min(m - 1, n) do
 		local alpha = module.norm(R[`{k}:,{k}`]):item()
 		if R[k][k] == 0 then continue end
 
 		if R[k][k] > 0 then alpha = -alpha end
 
 		local raw_v = {}
-		local v_len = n - k + 1
+		local v_len = m - k + 1
 
 		raw_v[1] = R[k][k] - alpha
 
@@ -319,16 +323,16 @@ module.qr = function(matrix: types.ndArray<number>)
 
 		for j = k, n do
 			local dot = 0
-			for i = k, n do
+			for i = k, m do
 				dot += raw_v[i - k + 1] * R[i][j]
 			end
 
-			for i = k, n do
+			for i = k, m do
 				R[i][j] -= 2 * raw_v[i - k + 1] * dot
 			end
 		end
 
-		for i = 1, n do
+		for i = 1, m do
 			local dot = 0
 			local Q_row = Q[i]
 			for j = k, n do
@@ -341,14 +345,16 @@ module.qr = function(matrix: types.ndArray<number>)
 		end
 	end
 
-	for i = 2, matrix.Shape[2] do
+	-- to remove float point imprecissions in R
+	for i = 2, m do
 		local R_row = R[i]
 		for k = 1, i - 1 do
 			R_row[k] = 0
 		end
 	end
 
-	for k = 1, n do
+	-- sign flip corrections for Q and R
+	for k = 1, math.min(m, n) do
 		local R_row = R[k]
 		if R_row[k] >= 0 then continue end
 
@@ -598,12 +604,13 @@ module.eig = function(matrix: types.ndArray<number>)
 
 		-- backwards subsitution to solve for each eigen vector from schur vectors
 		for k = col - 1, 1, -1 do
+			local Ak_krow = Ak[k]
 			local sum = 0
 			for j = k + 1, col do
-				sum += Ak[k][j] * y[j]
+				sum += Ak_krow[j] * y[j]
 			end
 
-			local denom = Ak[k][k] - lambda
+			local denom = Ak_krow[k] - lambda
 
 			if abs(denom) > 1e-12 then
 				y[k] = -sum / denom
@@ -626,13 +633,15 @@ module.eig = function(matrix: types.ndArray<number>)
 
 		-- conversion to eigen vector
 		for i = 1, n do
+			local schur_row = schur_vectors[i]
+			local eig_row = eigen_vectors[i]
 			local sum = 0
 
 			for j = 1, n do
-				sum += schur_vectors[i][j] * y[j]
+				sum += schur_row[j] * y[j]
 			end
 
-			eigen_vectors[i][col] = sum
+			eig_row[col] = sum
 		end
 	end
 
@@ -761,6 +770,13 @@ module.norm = function(matrix: types.ndArray<number>, axis: number, order: numbe
 	return
 end
 
+local givens_rotation = function(a: number, b: number): (number, number)
+	if abs(b) < 1e-15 then return 1, 0 end
+	local hypot = sqrt(a * a + b * b)
+
+	return a / hypot, b / hypot
+end
+
 --- Performs a SVD decomposition, returning U, Vt and the matrix's singular values.
 ---@within linalg
 ---@method svd
@@ -769,21 +785,226 @@ end
 module.svd = function(
 	matrix: types.ndArray<number>
 ): (types.ndArray<number>, types.ndArray<number>, types.ndArray<number>)
-	local matrix_t = matrix:transpose()
+	-- bidiagonalisation step
+	-- using householder from top -> down and left -> right
+	-- (HₙHₙ₋₁...H₁)A(Ĥ₁..Ĥₙ₋₁Ĥ)ₙ = B
+	local m: number = matrix.Shape[1]
+	local n: number = matrix.Shape[2]
+	local bidiag: types.ndArray<number> = matrix:copy()
 
-	local sym_l = module.matmul(matrix, matrix_t)
-	local sym_r = module.matmul(matrix_t, matrix)
+	local U: types.ndArray<number> = constructors.zeros(m, m)
+	local V: types.ndArray<number> = constructors.zeros(n, n)
 
-	local eigenvalues_l, U: types.ndArray<number> = module.eig(sym_l)
-	local eigenvalues_r, V: types.ndArray<number> = module.eig(sym_r)
-
-	local singular_values = eigenvalues_r:copy()
-
-	for i, v in singular_values do
-		singular_values[i] = sqrt(math.max(v, 0))
+	for i = 1, m do
+		U[i][i] = 1
 	end
 
-	return U, singular_values, V:transpose()
+	for i = 1, n do
+		V[i][i] = 1
+	end
+
+	for k = 1, math.min(m, n) do
+		-- left -> right reflection
+
+		local v_len = m - k + 1
+		local x = {}
+		local sigma = 0
+		for i = 1, v_len do
+			x[i] = bidiag[k + i - 1][k]
+			sigma += x[i] ^ 2
+		end
+		sigma = sqrt(sigma)
+
+		if sigma ~= 0 then
+			x[1] = if x[1] >= 0 then x[1] + sigma else x[1] - sigma
+
+			local v_norm = 0
+			for i = 1, v_len do
+				v_norm += x[i] ^ 2
+			end
+			v_norm = sqrt(v_norm)
+
+			for i = 1, v_len do
+				x[i] /= v_norm
+			end
+
+			for j = k, n do
+				local dot = 0
+				for i = 1, v_len do
+					dot += x[i] * bidiag[k + i - 1][j]
+				end
+
+				for i = 1, v_len do
+					bidiag[k + i - 1][j] = bidiag[k + i - 1][j] - 2 * x[i] * dot
+				end
+			end
+
+			for j = 1, m do
+				local dot = 0
+				for i = 1, v_len do
+					dot += U[k + i - 1][j] * x[i]
+				end
+
+				for i = 1, v_len do
+					U[k + i - 1][j] = U[k + i - 1][j] - 2 * dot * x[i]
+				end
+			end
+		end
+
+		if k >= n then continue end
+		-- up -> down reflection
+
+		v_len = n - k
+		x = {}
+		sigma = 0
+		for i = 1, v_len do
+			x[i] = bidiag[k][k + i]
+			sigma += x[i] ^ 2
+		end
+		sigma = sqrt(sigma)
+
+		if sigma == 0 then continue end
+
+		x[1] = if x[1] >= 0 then x[1] + sigma else x[1] - sigma
+
+		local v_norm = 0
+		for i = 1, v_len do
+			v_norm += x[i] ^ 2
+		end
+		v_norm = sqrt(v_norm)
+
+		for i = 1, v_len do
+			x[i] /= v_norm
+		end
+
+		for i = 1, m do
+			local dot = 0
+			local bidiag_row = bidiag[i]
+			for j = 1, v_len do
+				dot += x[j] * bidiag_row[j + k]
+			end
+
+			for j = 1, v_len do
+				bidiag_row[j + k] = bidiag_row[j + k] - 2 * x[j] * dot
+			end
+		end
+
+		for i = 1, n do
+			local dot = 0
+			local V_row = V[i]
+			for j = 1, v_len do
+				dot += V_row[j + k] * x[j]
+			end
+
+			for j = 1, v_len do
+				V_row[j + k] = V_row[j + k] - 2 * dot * x[j]
+			end
+		end
+	end
+
+	-- diagonalisation step
+	-- givens rotations are done to eliminate non diagonal zero values from bidiagonalisation
+	-- this is called bulge chasing
+	-- wtf is this name bro :sob:
+
+	local iterations = 0
+	local max_iterations = 1000
+
+	local tolerance = 1e-16
+
+	repeat
+		-- wilkinson shift calculations
+		local d_n1: number = bidiag[n - 1][n - 1]
+		local e_n1: number = bidiag[n - 1][n]
+
+		local d_n: number = bidiag[n][n]
+
+		local a: number = d_n1 * d_n1 + e_n1 * e_n1
+		local b: number = d_n1 * e_n1
+		local c: number = d_n * d_n
+
+		local delta: number = (a - c) / 2
+		local _sign: number = delta >= 0 and 1 or -1
+
+		local mu: number = c - b * b / (delta + _sign * sqrt(delta * delta + b * b))
+		local _cos: number, _sin: number = givens_rotation(bidiag[1][1] ^ 2 - mu, bidiag[1][1] * bidiag[1][2])
+
+		-- bulge chasing
+		for k = 1, n - 1 do
+			-- right rotation
+			for row = 1, m do
+				local bidiag_row = bidiag[row]
+				local bidiag_x = bidiag_row[k]
+				local bidiag_y = bidiag_row[k + 1]
+
+				bidiag_row[k] = _cos * bidiag_x - _sin * bidiag_y
+				bidiag_row[k + 1] = _sin * bidiag_x + _cos * bidiag_y
+			end
+
+			for row = 1, n do
+				local V_row = V[row]
+				local V_x = V_row[k]
+				local V_y = V_row[k + 1]
+
+				V_row[k] = _cos * V_x - _sin * V_y
+				V_row[k + 1] = _sin * V_x + _cos * V_y
+			end
+
+			-- left rotation
+			_cos, _sin = givens_rotation(bidiag[k][k], bidiag[k + 1][k])
+
+			local bi_diag_k = bidiag[k]
+			local bi_diag_k1 = bidiag[k + 1]
+
+			local U_k = U[k]
+			local U_k1 = U[k + 1]
+			for col = 1, n do
+				local bidiag_x = bi_diag_k[col]
+				local bidiag_y = bi_diag_k1[col]
+
+				bi_diag_k[col] = _cos * bidiag_x - _sin * bidiag_y
+				bi_diag_k1[col] = _sin * bidiag_x + _cos * bidiag_y
+			end
+
+			for col = 1, m do
+				local U_x = U_k[col]
+				local U_y = U_k1[col]
+
+				U_k[col] = _cos * U_x - _sin * U_y
+				U_k1[col] = _sin * U_x + _cos * U_y
+			end
+
+			if k == n - 1 then continue end
+
+			_cos, _sin = givens_rotation(bidiag[k][k + 1], bidiag[k][k + 2])
+		end
+
+		local super_diagonal_sum = 0
+
+		for i = 1, n - 1 do
+			super_diagonal_sum += abs(bidiag[i][i + 1])
+		end
+
+		iterations += 1
+	until iterations >= max_iterations or abs(super_diagonal_sum) < tolerance
+
+	local singular_values: types.ndArray<number> = ndarray(table.create(n, 0), { n }, { 1 }, 0, bidiag.dtype)
+
+	for i = 1, n do
+		singular_values[i] = abs(bidiag[i][i])
+	end
+
+	for i = 1, n do
+		for j = i + 1, n do
+			if singular_values[i] >= singular_values[j] then continue end
+
+			singular_values:swap(i, j)
+			U:swap(i, j, 1)
+			V:swap(i, j, 0)
+		end
+	end
+
+	return U:transpose(), singular_values, V
 end
 
 --- Preforms a least squares fit on x and y, producing the coefficents of degree `degree` in descending order
