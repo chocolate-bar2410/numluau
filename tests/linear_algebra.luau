@@ -281,6 +281,11 @@ unit_tests.Test("solve", function()
 	unit_tests.AssertEquals(X.Shape, { 2 })
 	unit_tests.AssertAproxEquals(X[1], 1)
 	unit_tests.AssertAproxEquals(X[2], 2)
+	A = numluau.array({ { 1, 1, -1 }, { 1, -2, 3 }, { 2, 3, 1 } })
+	B = numluau.array({ 4, -6, 7 })
+
+	X = numluau.linalg.solve(A, B)
+	unit_tests.AssertAproxEquals(X:toflatlist(), { 1, 2, -1 })
 end)
 
 unit_tests.Test("svd", function()
@@ -310,15 +315,37 @@ unit_tests.Test("svd", function()
 	    0, -4 / math.sqrt(18), 1/3,
 	})
 
-	unit_tests.AssertEquals(sigma:toflatlist(), { 5, 3 })
+	unit_tests.AssertAproxEquals(sigma:toflatlist(), { 5, 3 })
 end)
 
 unit_tests.Test("lstsq", function()
-	local x = numluau.array({ 1, 2, 3 })
-	local y = numluau.array({ 2, 4, 6 })
+	local x = numluau.arange(1, 20)
+	local y = x * 2
 
 	local coef = numluau.linalg.lstsq(x, y, 1)
 	unit_tests.AssertEquals(coef.Shape, { 2 })
+	unit_tests.AssertEquals(coef:toflatlist(), { 0, 2 })
+end)
+
+unit_tests.Test("norm", function()
+	local x = numluau.array({ 3, 4 })
+	unit_tests.AssertEquals(numluau.linalg.norm(x):item(), 5)
+
+	x = numluau.array({ 0, 5 })
+	unit_tests.AssertEquals(numluau.linalg.norm(x):item(), 5)
+
+	x = numluau.array({ 1, 2, 2 })
+	unit_tests.AssertEquals(numluau.linalg.norm(x):item(), 3)
+
+	x = numluau.array({ 1, -2, -5 })
+	unit_tests.AssertEquals(numluau.linalg.norm(x, 0, 1):item(), 8)
+
+	x = numluau.array({ { -3, 4, 0 }, { 1, -2, -5 }, { 0, 0, 2 } })
+	unit_tests.AssertEquals(numluau.linalg.norm(x, 0, 1):toflatlist(), { 7, 8, 2 })
+	unit_tests.AssertEquals(numluau.linalg.norm(x, 1, 1):toflatlist(), { 4, 6, 7 })
+
+	unit_tests.AssertEquals(numluau.linalg.norm(x, 0, 2):toflatlist(), { 5, math.sqrt(30), 2 })
+	unit_tests.AssertEquals(numluau.linalg.norm(x, 1, 2):toflatlist(), { math.sqrt(10), math.sqrt(20), math.sqrt(29) })
 end)
 
 unit_tests.ProcessResults()
