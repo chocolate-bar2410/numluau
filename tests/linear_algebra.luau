@@ -319,12 +319,14 @@ unit_tests.Test("svd", function()
 end)
 
 unit_tests.Test("lstsq", function()
-	local x = numluau.arange(1, 20)
+	local x = numluau.arange(-1, 20)
 	local y = x * 2
 
 	local coef = numluau.linalg.lstsq(x, y, 1)
+	print(coef)
+
 	unit_tests.AssertEquals(coef.Shape, { 2 })
-	unit_tests.AssertEquals(coef:toflatlist(), { 0, 2 })
+	unit_tests.AssertAproxEquals(coef:toflatlist(), { 1.2313086118830172, 3.7001619337059184 })
 end)
 
 unit_tests.Test("norm", function()
