@@ -52,10 +52,10 @@ lunarbench.bench("lu", function(bench_context)
 end, { group = "linear algebra", ignore = false })
 
 lunarbench.bench("svd", function(bench_context)
-	local A = numluau.ones(30, 30)
+	local A = numluau.ones(30, 30):eye()
 	bench_context.start()
 	numluau.linalg.svd(A)
-end, { group = "linear algebra", ignore = true })
+end, { group = "linear algebra", ignore = false })
 
 lunarbench.bench("norm l1", function(bench_context)
 	local A = numluau.ones(1000, 1000)
