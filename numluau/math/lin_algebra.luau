@@ -1026,19 +1026,18 @@ module.lstsq = function(x: types.ndArray<number>, y: types.ndArray<number>, degr
 
 	local U, sigma, Vt = module.svd(vandemonde)
 
-	local scaled_coef = ndarray(table.create(order, 0), { order }, { 1 }, 0, "number")
+	local scaled_coef = constructors.zeros(order)
 	local fuzzy = 1e-9
 
 	local Ut_y = module.matmul(U:transpose(), y)
 
 	for i = 1, order do
-		local sig_value = sigma.Buffer[i]
+		local sig_value = sigma[i]
 
 		local inverse_sigma = if abs(sig_value) > fuzzy then 1 / sig_value else 0
 
-		scaled_coef.Buffer[i] = inverse_sigma * Ut_y.Buffer[i]
+		scaled_coef[i] = inverse_sigma * Ut_y[i]
 	end
-
 	return module.matmul(Vt:transpose(), scaled_coef)
 end
 
