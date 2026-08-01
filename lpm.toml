@@ -1,0 +1,12 @@
+[package]
+name = "chocolatebar2410/numluau"
+version = "1.1.1"
+description = "Numerical luau for all your scientific urges. Bring scientific computing in a way easy to understand and predict."
+authors = ["chocolate-bar2410"]
+repository = "https://github.com/chocolate-bar2410/numluau"
+license = "MIT"
+
+[target]
+environment = "luau"
+main = "numluau/init.luau"
+includes = ["lpm.toml", "LICENSE", "numluau/**", "README.md"]
