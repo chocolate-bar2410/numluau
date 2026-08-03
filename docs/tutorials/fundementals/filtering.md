@@ -2,16 +2,19 @@
 title: Filtering
 description: filtering N-Dimensional arrays
 ---
+Lets say you're analysing data and only want to operate on data if they pass a condition.
+Some values might be too large or too small, or you want to only observe values within an area.
+
+This can be done using filtering.
 
 ## boolean arrays
-Arrays dont have to always contain numbers.
-
+While most of our uses so far have used numbers, Arrays dont have to always contain numbers.
 For instance, here is a array that holds boolean values.
 ```luau
 local a = numluau.array({true,false,false})
 ```
 
-If we index a array with another array that contains booleans, we can retrieve all the items where a true value is.
+Here we are only selecting the values who's corresponding values are true.
 This is what we call `masking`.
 
 ```luau

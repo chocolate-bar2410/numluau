@@ -2,10 +2,15 @@
 title: N-Dimensional arrays
 description: Basics of N-Dimensional arrays
 ---
-In numluau, most of your math is going to be done using N-Dimensional Arrays.
+Lets say you're making a physics simulation with 100,000 objects.
+For every object you're going to have to have to account for every velocity, acceleration and position.
+
+Using tables for this would easily lead to verbose code and messy for loops.
+
+Numluau solves using N-Dimensional arrays which allow you to apply the same operation over every item inside it.
 
 ## creating N-Dimensional arrays
-the easiest way is to create a `array` it using a table.
+the easiest way is to create a `array` is by using a table.
 
 ```luau hl_lines="1"
 local a = numluau.array({1,2,3,4,5})
@@ -14,25 +19,26 @@ local a = numluau.array({1,2,3,4,5})
 Arrays simplify operations that would be otherwise tedious using regular tables.
 Removing the need for long for loops and table allocations.
 
-```luau title="using regular tables" hl_lines="5-7"
-local a = {1,2,3,4,5}
-local b = {10,20,30,40,50}
+=== "using regular tables"
+    ```luau hl_lines="4-7"
+    local a = {1,2,3,4,5}
+    local b = {10,20,30,40,50}
 
-local c = {}
-for i = 1,5 do
-    c[i] = a[i] + b[i]
-end
+    local c = {}
+    for i = 1,5 do
+        c[i] = a[i] + b[i]
+    end
 
-print(c) -- array([11 22 33 44 55])
-```
+    print(c) -- array([11 22 33 44 55])
+    ```
+=== "using arrays"
+    ```luau hl_lines="4"
+    local a = numluau.array({1,2,3,4,5})
+    local b = numluau.array({10,20,30,40,50})
 
-```luau title="using arrays" hl_lines="5"
-local a = numluau.array({1,2,3,4,5})
-local b = numluau.array({10,20,30,40,50})
-
-local c = a + b
-print(c) -- array([11 22 33 44 55])
-```
+    local c = a + b
+    print(c) -- array([11 22 33 44 55])
+    ```
 
 Arrays can also take in nested tables, to represent higher dimensional arrays
 

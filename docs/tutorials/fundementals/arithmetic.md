@@ -46,7 +46,9 @@ print(volumes) -- array([6 785 432 31416])
 ```
 
 ## broadcasting
-Numluau allows you to perform operations between arrays by virtually expanding dimensions, so that they match in shape.
+Often you will have a 1D array thats a measurement and another 2D array that represent multiple measurements.
+Instead of manually copying the 1D array, numluau will expand that array's dimensions to be compatible with the 2D array.
+
 This process is called **broadcasting**.
 
 Broadcasting can only be applied either if:

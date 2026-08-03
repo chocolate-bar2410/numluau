@@ -6,8 +6,12 @@ numluau allows you to index arrays in many ways.
 
 ## indexing
 
-Indexing works similarly to how you'd index tables.
-Arrays are 1-indexed, meaning arrays start from 1.
+Arrays are intended to work similarly to how you'd use tables as arrays in luau.
+The indexes of a Array start at 1 and go up.
+
+So the first element is at index 1, the second is at index 2 etc.
+
+This is standard for Arrays in languages like julia or R but differs from python's numpy arrays which start at 0.
 
 === "1d array"
     ```luau
@@ -49,8 +53,11 @@ print(a["2, 3"])  -- 6
 ```
 
 ## slicing
-Sometimes you dont want to get a single item, but instead a collection of items.
-This is what we call a **slice**.
+Now lets say we're working with data but only want a subset of that data.
+Either because the data is large, or you're data contains multiple channels like left/right channels for audio or red/blue/green/alpha for images.
+
+We can use a special index to get a subsection of our data from our array.
+This is what we call a `slice`.
 
 ### 1d arrays
 
@@ -65,8 +72,8 @@ print(a["1:3"]) -- array([1 2 3])
 print(a["1:5:2"]) -- array([1 3 5])
 ```
 
-When we create a slice, it doesn't create a whole new copy.
-This means if we mutate the slice, it will affect the original.
+A slice doesn't generate a copy of the array, but instead it points to the same data but steps through it differently.  
+This is what we call a `view`.
 
 ```luau
 local a = numluau.array({1,2,3,4,5})
