@@ -25,7 +25,7 @@ R = {(x,y) \in D \mid \sqrt{x^2 + y^2} > 0.5} \\
 
 ```lua
 
-local numluau = require("../luau_packages/numluau")
+local numluau = require("@numluau")
 
 local grid_x,grid_y = 1000,1000
 
