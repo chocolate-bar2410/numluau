@@ -4,7 +4,7 @@ title: random
 description: random module tutorial
 ---
 
-When working with quantative finance or machine learning, you may want to generate a set of random numbers.
+When working with quantative finance or machine learning, you may want to generate a set of random numbers.  
 At the moment luau's solution to this is `math.random` and `math.randomseed`.
 
 ```luau
@@ -39,7 +39,7 @@ local rng = numluau.random.default_rng()
 -- like before but you can pick a range of values
 local random_uniform = rng:uniform(1,10,{2,2})
 
--- same as random uniform but using integers
+-- same as random_uniform but using integers
 local random_integers = rng:integers(1,10,{2,2})
 ```
 
@@ -48,7 +48,7 @@ This may be fine for some usecases, but most fields want more than just a unifor
 Many fields often will require other distributions like `normal`, `binomial` or `gamma` distributions.
 
 Quants would want `lognormal` distributions for black scholes equations.
-Astronomers would need `poission` distributions for counting photons from stars.
+Astronomers would need `poisson` distributions for counting photons from stars.
 
 numluau provides access to these distributions for use.
 
@@ -88,8 +88,8 @@ local random_integers = rng:integers(1,10,{5,3})
 While generating values is necessary, the random module also has other methods for randomness.
 
 ### Shuffles
-`rng:shuffle` and `rng:permutation` both allow you to shuffle a array of numbers.
-shuffle is for shuffling implace, while permutation create a shuffled copy of a array.
+`rng:shuffle` and `rng:permutation` both allow you to shuffle a array of numbers.  
+`rng:shuffle` shuffles the values of your existing array, while `rng:permutation` creates a shuffled copy of a array.  
 === "rng:shuffle()"
 
     ```luau
@@ -112,30 +112,33 @@ shuffle is for shuffling implace, while permutation create a shuffled copy of a 
     ```
 
 By default it will swap the items around the top axis, this can also be changed as a parameter.
-```luau
-local rng = numluau.random.default_rng()
-local items = numluau.array({
-    {1,2,3,4},
-    {5,6,7,8},
-    {9,10,11,12},
-})
+=== "code"
+    ```luau
+    local rng = numluau.random.default_rng()
+    local items = numluau.array({
+        {1,2,3,4},
+        {5,6,7,8},
+        {9,10,11,12},
+    })
 
-print(rng:permutation(items))   -- swaps columns
-print(rng:permutation(items,0)) -- swaps rows
+    print(rng:permutation(items))   -- swaps columns
+    print(rng:permutation(items,0)) -- swaps rows
 
-```
-``` title="output"
-array([
-  [5 6 7 8]
-  [9  10 11 12]
-  [1 2 3 4]
-])
-array([
-  [2 3 1 4]
-  [6 7 5 8]
-  [10 11 9  12]
-])
-```
+    ```
+
+=== "output"
+    ``` title="output"
+    array([
+      [5 6 7 8]
+      [9  10 11 12]
+      [1 2 3 4]
+    ])
+    array([
+      [2 3 1 4]
+      [6 7 5 8]
+      [10 11 9  12]
+    ])
+    ```
 
 
 ### Choosing

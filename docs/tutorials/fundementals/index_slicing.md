@@ -11,7 +11,7 @@ The indexes of a Array start at 1 and go up.
 
 So the first element is at index 1, the second is at index 2 etc.
 
-This is standard for Arrays in languages like julia or R but differs from python's numpy arrays which start at 0.
+This is standard for Arrays in languages like [julia](https://julialang.org/) or [R](https://www.r-project.org/) but differs from python's numpy arrays which start at 0.
 
 === "1d array"
     ```luau
