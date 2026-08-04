@@ -73,6 +73,14 @@ nav = [
     "examples/integration.md",
     "examples/voltage.md",
   ] },
+  { "cookbook" = [
+    "cookbook/index.md",
+    { "create a bitmap image" = [
+      "cookbook/bitmap/index.md",
+      "cookbook/bitmap/bitmap1.md",
+      "cookbook/bitmap/bitmap2.md",
+    ] },
+  ] },
   { "API reference" = [
     "api-reference/index.md",
     "api-reference/numluau.md",
